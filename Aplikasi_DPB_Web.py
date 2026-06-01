@@ -11,8 +11,6 @@ st.set_page_config(page_title="DPB Schola Amoris", page_icon="📝", layout="wid
 
 st.image("banner_schola.png", use_container_width=True)
 
-st.title("Penyusun DPB Schola Amoris 🎓")
-st.write("Rancangan yang Anda buat akan otomatis tercatat di Katalog Bank Modul Sekolah.")
 st.divider()
 st.title("Penyusun DPB Schola Amoris 🎓")
 st.write("Rancangan yang Anda buat akan otomatis tercatat di Katalog Bank Modul Sekolah.")
