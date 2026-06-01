@@ -123,7 +123,7 @@ with tab5:
             with st.spinner('Sedang merakit dokumen dan menghubungi database...'):
                 try:
                     
-                    doc = DocxTemplate("Template_DPB_Schola_Amoris.docx")
+                    doc = DocxTemplate("Template_DPB_Schola Amoris.docx")
                     if foto_sdgs is not None:
                         st.session_state.data_isian['Gambar_SGDs'] = InlineImage(doc, foto_sdgs, width=Mm(30))
                     
