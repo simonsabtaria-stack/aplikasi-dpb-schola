@@ -14,6 +14,57 @@ URL_DATABASE = "https://script.google.com/macros/s/AKfycbyi9lnZJplhJDHV9RkkGq8mm
 
 
 st.divider()
+st.markdown("""
+    <style>
+    /* 1. Kustomisasi Tampilan Tab */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 10px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        background-color: #f1f5f9;
+        border-radius: 8px 8px 0px 0px;
+        padding: 10px 20px;
+        box-shadow: inset 0 -2px 0 0 #cbd5e1;
+        transition: all 0.3s ease;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #1e293b;
+        color: #ffffff !important;
+        box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+    }
+    .stTabs [data-baseweb="tab"]:hover {
+        background-color: #e2e8f0;
+    }
+
+    
+    .stTextInput input, .stTextArea textarea, .stSelectbox [data-baseweb="select"] {
+        border-radius: 8px !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+        border: 1px solid #e2e8f0 !important;
+        transition: all 0.3s ease;
+    }
+    
+    
+    .stTextInput input:focus, .stTextArea textarea:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+    }
+
+    
+    .stButton > button[kind="primary"] {
+        border-radius: 8px;
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stButton > button[kind="primary"]:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 if 'data_isian' not in st.session_state:
     st.session_state.data_isian = {}
