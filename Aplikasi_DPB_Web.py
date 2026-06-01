@@ -111,49 +111,53 @@ with tab5:
     simpan_teks('Apresiasi', st.text_area("Apresiasi:"))
     simpan_teks('Media_Pembelajaran', st.text_area("Media Pembelajaran:"))
     
-    st.divider()
-    st.subheader("🖨️ Mesin Pencetak Dokumen")
-    st.info("Pastikan seluruh Tab telah terisi. Klik tombol di bawah untuk menyatukan seluruh data Anda ke dalam file Word.")
     
-    if st.button("Rakit Dokumen DPB", type="primary", use_container_width=True):
-        try:
-            doc = DocxTemplate("Template_DPB_Schola Amoris.docx")
-            
-           
-            if foto_sdgs is not None:
-                st.session_state.data_isian['Gambar_SGDs'] = InlineImage(doc, foto_sdgs, width=Mm(30))
-            else:
-                st.session_state.data_isian['Gambar_SGDs'] = ""
-            
-            
-            doc.render(st.session_state.data_isian)
-            
-            
-            bio = io.BytesIO()
-            doc.save(bio)
-
-            data_kirim = {
+with tab5:
+    st.subheader("🖨️ Rakit Dokumen & Simpan ke Database")
+    st.info("Sistem akan membuat file Word dan mencatat modul Anda ke Bank Modul.")
+    
+    if st.button("Rakit & Simpan Data", type="primary", use_container_width=True):
+        if not st.session_state.data_isian.get('Nama_Guru'):
+            st.error("⚠️ Mohon isi Nama Guru Penyusun di Tab 1 terlebih dahulu!")
+        else:
+            with st.spinner('Sedang merakit dokumen dan menghubungi database...'):
+                try:
+                    
+                    doc = DocxTemplate("Template_DPB_Schola_Amoris.docx")
+                    if foto_sdgs is not None:
+                        st.session_state.data_isian['Gambar_SGDs'] = InlineImage(doc, foto_sdgs, width=Mm(30))
+                    
+                    doc.render(st.session_state.data_isian)
+                    bio = io.BytesIO()
+                    doc.save(bio)
+                    
+                    
+                    data_kirim = {
                         "nama_guru": st.session_state.data_isian.get('Nama_Guru', '-'),
                         "jenjang": st.session_state.data_isian.get('Jenjang', '-'),
                         "kelas": st.session_state.data_isian.get('Kelas', '-'),
                         "mapel": st.session_state.data_isian.get('MAPEL', '-'),
                         "judul": st.session_state.data_isian.get('Judul', '-')
-                }
+                    }
+                    
+                    
                     try:
-                        requests.post(URL_DATABASE, json=data_kirim, timeout=5) # Batas waktu tunggu 5 detik
-                        st.toast('Data berhasil tersimpan di Katalog Bank Modul!', icon='💾')
-                    except Exception:
-                        st.warning("⚠️ Dokumen berhasil dirakit, tapi koneksi ke Database terputus.")
-                        
-            st.success("✅ Dokumen berhasil dirakit dengan sempurna!")
-            st.download_button(
-                label="📥 Download File DPB (.docx)",
-                data=bio.getvalue(),
-                file_name=f"DPB_{st.session_state.data_isian.get('MAPEL', 'Mata_Pelajaran')}_{st.session_state.data_isian.get('Kelas', 'Kelas')}.docx",
-                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                use_container_width=True
-            )
-        except FileNotFoundError:
-            st.error("⚠️ Error: File 'Template_DPB_Schola_Amoris.docx' tidak ditemukan di folder yang sama!")
-        except Exception as e:
-            st.error(f"⚠️ Terjadi kesalahan sistem saat merakit dokumen: {e}")
+                        respon = requests.post(URL_DATABASE, json=data_kirim) 
+                        if respon.status_code == 200:
+                            st.toast('Data berhasil tersimpan di Katalog Bank Modul!', icon='💾')
+                        else:
+                            st.warning(f"Google menolak kiriman. Kode error: {respon.status_code}")
+                    except Exception as err:
+                        st.warning(f"Koneksi ke Database terputus! Penyebab: {err}")
+                    
+                    
+                    st.success("✅ Dokumen siap! Silakan unduh:")
+                    st.download_button(
+                        label="📥 Download File DPB (.docx)",
+                        data=bio.getvalue(),
+                        file_name=f"DPB_{st.session_state.data_isian.get('MAPEL', 'Mapel')}.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        use_container_width=True
+                    )
+                except Exception as e:
+                    st.error(f"⚠️ Terjadi kesalahan saat merakit dokumen: {e}")
