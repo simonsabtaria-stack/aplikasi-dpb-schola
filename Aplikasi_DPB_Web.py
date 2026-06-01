@@ -131,7 +131,20 @@ with tab5:
             
             bio = io.BytesIO()
             doc.save(bio)
-            
+
+            data_kirim = {
+                        "nama_guru": st.session_state.data_isian.get('Nama_Guru', '-'),
+                        "jenjang": st.session_state.data_isian.get('Jenjang', '-'),
+                        "kelas": st.session_state.data_isian.get('Kelas', '-'),
+                        "mapel": st.session_state.data_isian.get('MAPEL', '-'),
+                        "judul": st.session_state.data_isian.get('Judul', '-')
+                }
+                    try:
+                        requests.post(URL_DATABASE, json=data_kirim, timeout=5) # Batas waktu tunggu 5 detik
+                        st.toast('Data berhasil tersimpan di Katalog Bank Modul!', icon='💾')
+                    except Exception:
+                        st.warning("⚠️ Dokumen berhasil dirakit, tapi koneksi ke Database terputus.")
+                        
             st.success("✅ Dokumen berhasil dirakit dengan sempurna!")
             st.download_button(
                 label="📥 Download File DPB (.docx)",
