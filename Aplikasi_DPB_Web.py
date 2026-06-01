@@ -117,7 +117,7 @@ with tab5:
     
     if st.button("Rakit Dokumen DPB", type="primary", use_container_width=True):
         try:
-            doc = DocxTemplate("Template_DPB_Schola_Amoris.docx")
+            doc = DocxTemplate("Template_DPB_Schola Amoris.docx")
             
            
             if foto_sdgs is not None:
