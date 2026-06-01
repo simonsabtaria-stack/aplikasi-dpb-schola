@@ -2,24 +2,24 @@ import streamlit as st
 from docxtpl import DocxTemplate, InlineImage
 from docx.shared import Mm
 import io
-
+import requests  
 
 st.set_page_config(page_title="DPB Schola Amoris", page_icon="📝", layout="wide")
 
 st.title("Penyusun DPB Schola Amoris 🎓")
-st.write("Silakan lengkapi rancangan pembelajaran pada setiap tab. Data akan tersimpan sementara selama halaman ini tidak di-refresh.")
+st.write("Rancangan yang Anda buat akan otomatis tercatat di Katalog Bank Modul Sekolah.")
+
+
+URL_DATABASE = "https://script.google.com/macros/s/AKfycbyMIsE9aLX_hWyeUJ60FJmi_THn4z80JYNrj0sJs6F_n8sw3KODUXC60q1kxSHkM8Ui2A/exec"
+
+
 st.divider()
 
 if 'data_isian' not in st.session_state:
     st.session_state.data_isian = {}
 
-
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "📋 1. Identitas & Konten", 
-    "🏫 2. Lingkungan & Praktik", 
-    "🧠 3. Kognitif & Psikomotorik", 
-    "❤️ 4. Afektif & Karakter", 
-    "🖨️ 5. Perayaan & Cetak"
+    "📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🖨️ 5. Cetak"
 ])
 
 def simpan_teks(kunci, nilai):
@@ -27,37 +27,21 @@ def simpan_teks(kunci, nilai):
 
 
 with tab1:
-    st.subheader("A. Identitas & Jenjang")
+    st.subheader("A. Identitas Guru & Jenjang")
+    simpan_teks('Nama_Guru', st.text_input("Nama Guru Penyusun (Wajib diisi):"))
+    
     col1, col2, col3 = st.columns(3)
-    with col1:
-        jenjang = st.selectbox("Jenjang:", ["Pilih...", "TK", "SD", "SMP"])
-        simpan_teks('Jenjang', jenjang)
-    with col2:
-        simpan_teks('Fase', st.selectbox("Fase:", ["-", "Fase Fondasi", "Fase A", "Fase B", "Fase C", "Fase D"]))
-    with col3:
-        simpan_teks('Kelas', st.text_input("Kelas / Semester:"))
+    with col1: simpan_teks('Jenjang', st.selectbox("Jenjang:", ["Pilih...", "TK", "SD", "SMP"]))
+    with col2: simpan_teks('Fase', st.selectbox("Fase:", ["-", "Fase Fondasi", "Fase A", "Fase B", "Fase C", "Fase D"]))
+    with col3: simpan_teks('Kelas', st.text_input("Kelas / Semester:"))
         
-    foto_sdgs = st.file_uploader("Upload Logo SDGs (Opsional - .png/.jpg)", type=['png', 'jpg', 'jpeg'])
+    foto_sdgs = st.file_uploader("Upload Logo SDGs (Opsional)", type=['png', 'jpg', 'jpeg'])
 
     st.subheader("B. Data Umum & Konten")
-    c1, c2, c3 = st.columns(3)
-    with c1: simpan_teks('Tahun_Ajaran', st.text_input("Tahun Ajaran:"))
-    with c2: simpan_teks('Semester', st.text_input("Semester:"))
-    with c3: simpan_teks('JP', st.text_input("Alokasi Waktu (JP):"))
-
     c4, c5 = st.columns(2)
     with c4: simpan_teks('MAPEL', st.text_input("Mata Pelajaran:"))
     with c5: simpan_teks('Judul', st.text_input("Judul Modul:"))
-
-    simpan_teks('Identifikasi_Peserta_Didik', st.text_area("Identifikasi Peserta Didik:"))
-    simpan_teks('CP', st.text_area("Capaian Pembelajaran (CP):"))
-    simpan_teks('Materi_Esensial', st.text_area("Materi Esensial:"))
-    simpan_teks('Dimensi_Profil_Lulusan', st.text_area("Dimensi Profil Lulusan:"))
     
-    c6, c7 = st.columns(2)
-    with c6: simpan_teks('CP_SGDs', st.text_area("CP SDGs:"))
-    with c7: simpan_teks('TP_SGDs', st.text_area("TP SDGs:"))
-
 
 with tab2:
     st.subheader("Lingkungan & Praktik Pembelajaran")
@@ -133,9 +117,9 @@ with tab5:
     
     if st.button("Rakit Dokumen DPB", type="primary", use_container_width=True):
         try:
-            doc = DocxTemplate("Template_DPB_Schola Amoris.docx")
+            doc = DocxTemplate("Template_DPB_Schola_Amoris.docx")
             
-            
+           
             if foto_sdgs is not None:
                 st.session_state.data_isian['Gambar_SGDs'] = InlineImage(doc, foto_sdgs, width=Mm(30))
             else:
