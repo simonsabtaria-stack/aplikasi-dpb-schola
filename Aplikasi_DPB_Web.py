@@ -10,7 +10,7 @@ st.title("Penyusun DPB Schola Amoris 🎓")
 st.write("Rancangan yang Anda buat akan otomatis tercatat di Katalog Bank Modul Sekolah.")
 
 
-URL_DATABASE = "https://script.google.com/macros/s/AKfycbz5116eY0xVd2uE1oxwaLTJatT_Dv5HAwNiJvHfh7fOyB2SOH_6y8KQJ20bdXVXsa2-WQ/exec"
+URL_DATABASE = "https://script.google.com/macros/s/AKfycbyi9lnZJplhJDHV9RkkGq8mmILR7zIn7XfNTLN8Qf49XJuyRr8H5LAgr-vlrP6gyDnfjw/exec"
 
 
 st.divider()
