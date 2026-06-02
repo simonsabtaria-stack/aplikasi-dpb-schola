@@ -285,3 +285,43 @@ with tab5:
     st.subheader("🖨️ Rakit Dokumen & Simpan ke Database")
     
     if st.button("Rakit & Simpan Data", type="primary", use_container_width=True):
+        if not st.session_state.data_isian.get('Nama_Guru'):
+            st.error("Mohon isi Nama Guru Penyusun di Tab 1!")
+        else:
+            with st.spinner('Merakit dokumen...'):
+                try:
+                    doc = DocxTemplate("Template_DPB_Schola Amoris.docx")
+                    if foto_sdgs is not None:
+                        st.session_state.data_isian['Gambar_SGDs'] = InlineImage(doc, foto_sdgs, width=Mm(30))
+                    
+                    doc.render(st.session_state.data_isian)
+                    bio = io.BytesIO()
+                    doc.save(bio)
+                    
+                    data_kirim = {
+                        "nama_guru": st.session_state.data_isian.get('Nama_Guru', '-'),
+                        "jenjang": st.session_state.data_isian.get('Jenjang', '-'),
+                        "kelas": st.session_state.data_isian.get('Kelas', '-'),
+                        "mapel": st.session_state.data_isian.get('MAPEL', '-'),
+                        "judul": st.session_state.data_isian.get('Judul', '-')
+                    }
+                    
+                    try:
+                        respon = requests.post(URL_DATABASE, json=data_kirim) 
+                        if respon.status_code == 200:
+                            st.toast('Tersimpan di Katalog!', icon='💾')
+                        else:
+                            st.warning(f"Error Database: {respon.status_code}")
+                    except Exception as err:
+                        st.warning(f"Koneksi Database gagal: {err}")
+                    
+                    st.success("Dokumen siap diunduh:")
+                    st.download_button(
+                        label="📥 Download File DPB (.docx)",
+                        data=bio.getvalue(),
+                        file_name=f"DPB_{st.session_state.data_isian.get('MAPEL', 'Mapel')}.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        use_container_width=True
+                    )
+                except Exception as e:
+                    st.error(f"Terjadi kesalahan perakitan: {e}")
