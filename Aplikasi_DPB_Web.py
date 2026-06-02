@@ -9,7 +9,6 @@ import google.generativeai as genai
 st.set_page_config(page_title="DPB Schola Amoris", page_icon="📝", layout="wide")
 
 st.image("banner_schola.png", use_container_width=True)
-
 st.divider()
 st.title("Penyusun DPB Schola Amoris 🎓")
 st.write("Rancangan yang Anda buat akan otomatis tercatat di Katalog Bank Modul Sekolah.")
@@ -17,12 +16,12 @@ st.write("Rancangan yang Anda buat akan otomatis tercatat di Katalog Bank Modul 
 URL_DATABASE = "https://script.google.com/macros/s/AKfycbyi9lnZJplhJDHV9RkkGq8mmILR7zIn7XfNTLN8Qf49XJuyRr8H5LAgr-vlrP6gyDnfjw/exec"
 
 st.sidebar.subheader("🤖 Pengaturan Asisten AI")
-st.sidebar.info("Masukkan Kunci API Gemini Anda di sini untuk mengaktifkan fitur AI pembuat skenario pembelajaran.")
-api_key_guru = st.sidebar.text_input("🔑 Kunci API Gemini:", type="password", help="Dapatkan kunci gratis di aistudio.google.com")
+api_key_guru = st.sidebar.text_input("🔑 Kunci API Gemini:", type="password")
 st.sidebar.divider()
-st.sidebar.write("Pastikan indikator terisi sebelum menekan tombol AI di setiap tab.")
+st.sidebar.subheader("⚙️ Kustomisasi Gaya AI")
+instruksi_khusus = st.sidebar.text_area("Instruksi Tambahan (Opsional):")
+st.sidebar.divider()
 
-st.divider()
 st.markdown("""
     <style>
     .stTabs [data-baseweb="tab-list"] { gap: 10px; }
@@ -85,11 +84,11 @@ with tab1:
     simpan_teks('Nama_Guru', st.text_input("Nama Guru Penyusun (Wajib diisi):"))
     
     col1, col2, col3 = st.columns(3)
-    with col1: simpan_teks('Jenjang', st.selectbox("Jenjang:", ["Pilih...", "TK", "SD", "SMP"]))
-    with col2: simpan_teks('Fase', st.selectbox("Fase:", ["-", "Fase Fondasi", "Fase A", "Fase B", "Fase C", "Fase D"]))
+    with col1: simpan_teks('Jenjang', st.selectbox("Jenjang:", ["Pilih...", "TK", "SD", "SMP", "SMA/SMK"]))
+    with col2: simpan_teks('Fase', st.selectbox("Fase:", ["-", "Fase Fondasi", "Fase A", "Fase B", "Fase C", "Fase D", "Fase E", "Fase F"]))
     with col3: simpan_teks('Kelas', st.text_input("Kelas / Semester:"))
         
-    foto_sdgs = st.file_uploader("Upload Logo SDGs (Opsional)", type=['png', 'jpg', 'jpeg'])
+    foto_sdgs = st.file_uploader("Upload Logo SDGs", type=['png', 'jpg', 'jpeg'])
 
     st.subheader("B. Data Umum & Konten")
     
@@ -103,16 +102,16 @@ with tab1:
         elemen_terpilih = st.selectbox(f"Elemen ({mapel_terpilih}):", daftar_elemen)
         simpan_teks('Elemen', elemen_terpilih)
     with c_materi:
-        materi_terpilih = st.text_input("Materi Esensial (Ketik Bebas):", placeholder="Misal: Sistem Tata Surya...")
+        materi_terpilih = st.text_input("Materi Esensial:")
         simpan_teks('Materi', materi_terpilih)
         
     simpan_teks('Judul', st.text_input("Judul Modul:"))
     
     st.divider()
     st.subheader("🎯 Capaian Pembelajaran & Target SDGs")
-    simpan_teks('Capaian_Pembelajaran', st.text_area("Capaian Pembelajaran (CP):", height=150, placeholder="Tempel atau ketik Capaian Pembelajaran (CP) di sini..."))
-    simpan_teks('Capaian_SDGs', st.text_input("Capaian SDGs:", placeholder="Misal: SDGs 4 - Pendidikan Berkualitas"))
-    simpan_teks('TP_SDGs', st.text_area("Tujuan Pembelajaran (TP) SDGs:", height=100, placeholder="Ketik target atau tujuan khusus SDGs yang ingin dicapai..."))
+    simpan_teks('Capaian_Pembelajaran', st.text_area("Capaian Pembelajaran (CP):", height=150))
+    simpan_teks('Capaian_SDGs', st.text_input("Capaian SDGs:"))
+    simpan_teks('TP_SDGs', st.text_area("Tujuan Pembelajaran (TP) SDGs:", height=100))
 
 with tab2:
     st.subheader("Lingkungan & Praktik Pembelajaran")
@@ -133,11 +132,11 @@ with tab3:
     
     if st.button("✨ Rumuskan Pengalaman Kognitif (AI)", key="btn_kog"):
         if not api_key_guru:
-            st.error("⚠️ Masukkan Kunci API di Sidebar sebelah kiri!")
+            st.error("Masukkan Kunci API di Sidebar!")
         elif not indikator_kognitif:
-            st.warning("⚠️ Isi Indikator Kognitif terlebih dahulu!")
+            st.warning("Isi Indikator Kognitif terlebih dahulu!")
         else:
-            with st.spinner("AI sedang merancang aktivitas kognitif yang menyenangkan..."):
+            with st.spinner("Merancang aktivitas..."):
                 try:
                     genai.configure(api_key=api_key_guru)
                     nama_mesin = None
@@ -147,10 +146,13 @@ with tab3:
                             if 'flash' in m.name.lower():
                                 break
                     if not nama_mesin:
-                        raise Exception("Tidak ada model AI yang diizinkan untuk Kunci API ini.")
+                        raise Exception("Tidak ada model AI.")
                     model = genai.GenerativeModel(nama_mesin)
                     
                     prompt = f"Sebagai ahli desain instruksional, buatkan skenario 'Pengalaman Belajar' (Kegiatan Inti) untuk mencapai indikator kognitif berikut: {indikator_kognitif}. Buat aktivitas eksplorasi yang menyenangkan dan memancing rasa ingin tahu. Tuliskan dalam bentuk 3-4 poin langkah kegiatan yang praktis."
+                    if instruksi_khusus:
+                        prompt += f"\n\nPENTING - Ikuti instruksi tambahan dari guru berikut ini: {instruksi_khusus}"
+                        
                     respon = model.generate_content(prompt)
                     st.session_state.draft_kognitif = respon.text
                 except Exception as e:
@@ -174,11 +176,11 @@ with tab3:
     
     if st.button("✨ Rumuskan Pengalaman Psikomotorik (AI)", key="btn_psi"):
         if not api_key_guru:
-            st.error("⚠️ Masukkan Kunci API di Sidebar sebelah kiri!")
+            st.error("Masukkan Kunci API di Sidebar!")
         elif not indikator_psikomotorik:
-            st.warning("⚠️ Isi Indikator Psikomotorik terlebih dahulu!")
+            st.warning("Isi Indikator Psikomotorik terlebih dahulu!")
         else:
-            with st.spinner("AI sedang merancang aktivitas unjuk kerja/proyek..."):
+            with st.spinner("Merancang aktivitas..."):
                 try:
                     genai.configure(api_key=api_key_guru)
                     nama_mesin = None
@@ -188,10 +190,13 @@ with tab3:
                             if 'flash' in m.name.lower():
                                 break
                     if not nama_mesin:
-                        raise Exception("Tidak ada model AI yang diizinkan untuk Kunci API ini.")
+                        raise Exception("Tidak ada model AI.")
                     model = genai.GenerativeModel(nama_mesin)
                     
                     prompt = f"Sebagai ahli desain instruksional, buatkan skenario 'Pengalaman Belajar' (Praktik/Kinerja) untuk mencapai indikator psikomotorik berikut: {indikator_psikomotorik}. Buat aktivitas unjuk kerja, karya, atau proyek yang terstruktur. Tuliskan dalam bentuk 3-4 poin praktis."
+                    if instruksi_khusus:
+                        prompt += f"\n\nPENTING - Ikuti instruksi tambahan dari guru berikut ini: {instruksi_khusus}"
+                        
                     respon = model.generate_content(prompt)
                     st.session_state.draft_psikomotor = respon.text
                 except Exception as e:
@@ -236,11 +241,11 @@ with tab4:
     
     if st.button("✨ Rumuskan Pengalaman Afektif (AI)", key="btn_afe"):
         if not api_key_guru:
-            st.error("⚠️ Masukkan Kunci API di Sidebar sebelah kiri!")
+            st.error("Masukkan Kunci API di Sidebar!")
         elif not indikator_afektif:
-            st.warning("⚠️ Isi Indikator Afektif terlebih dahulu!")
+            st.warning("Isi Indikator Afektif terlebih dahulu!")
         else:
-            with st.spinner("AI sedang merancang aktivitas pembentukan karakter..."):
+            with st.spinner("Merancang aktivitas..."):
                 try:
                     genai.configure(api_key=api_key_guru)
                     nama_mesin = None
@@ -250,10 +255,13 @@ with tab4:
                             if 'flash' in m.name.lower():
                                 break
                     if not nama_mesin:
-                        raise Exception("Tidak ada model AI yang diizinkan untuk Kunci API ini.")
+                        raise Exception("Tidak ada model AI.")
                     model = genai.GenerativeModel(nama_mesin)
                     
                     prompt = f"Sebagai ahli desain instruksional, buatkan skenario 'Pengalaman Belajar' untuk mencapai indikator afektif (sikap/karakter) berikut: {indikator_afektif}. Rancang aktivitas yang memancing empati, refleksi diri, atau diskusi nilai moral yang bermakna. Tuliskan dalam bentuk 3-4 poin langkah kegiatan."
+                    if instruksi_khusus:
+                        prompt += f"\n\nPENTING - Ikuti instruksi tambahan dari guru berikut ini: {instruksi_khusus}"
+                        
                     respon = model.generate_content(prompt)
                     st.session_state.draft_afektif = respon.text
                 except Exception as e:
@@ -275,46 +283,5 @@ with tab5:
     
     st.divider()
     st.subheader("🖨️ Rakit Dokumen & Simpan ke Database")
-    st.info("Sistem akan membuat file Word dan mencatat modul Anda ke Bank Modul.")
     
-    if st.button("Rakit & Simpan Data", type="primary", use_container_width=True):
-        if not st.session_state.data_isian.get('Nama_Guru'):
-            st.error("⚠️ Mohon isi Nama Guru Penyusun di Tab 1 terlebih dahulu!")
-        else:
-            with st.spinner('Sedang merakit dokumen dan menghubungi database...'):
-                try:
-                    doc = DocxTemplate("Template_DPB_Schola Amoris.docx")
-                    if foto_sdgs is not None:
-                        st.session_state.data_isian['Gambar_SGDs'] = InlineImage(doc, foto_sdgs, width=Mm(30))
-                    
-                    doc.render(st.session_state.data_isian)
-                    bio = io.BytesIO()
-                    doc.save(bio)
-                    
-                    data_kirim = {
-                        "nama_guru": st.session_state.data_isian.get('Nama_Guru', '-'),
-                        "jenjang": st.session_state.data_isian.get('Jenjang', '-'),
-                        "kelas": st.session_state.data_isian.get('Kelas', '-'),
-                        "mapel": st.session_state.data_isian.get('MAPEL', '-'),
-                        "judul": st.session_state.data_isian.get('Judul', '-')
-                    }
-                    
-                    try:
-                        respon = requests.post(URL_DATABASE, json=data_kirim) 
-                        if respon.status_code == 200:
-                            st.toast('Data berhasil tersimpan di Katalog Bank Modul!', icon='💾')
-                        else:
-                            st.warning(f"Google menolak kiriman. Kode error: {respon.status_code}")
-                    except Exception as err:
-                        st.warning(f"Koneksi ke Database terputus! Penyebab: {err}")
-                    
-                    st.success("✅ Dokumen siap! Silakan unduh:")
-                    st.download_button(
-                        label="📥 Download File DPB (.docx)",
-                        data=bio.getvalue(),
-                        file_name=f"DPB_{st.session_state.data_isian.get('MAPEL', 'Mapel')}.docx",
-                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                        use_container_width=True
-                    )
-                except Exception as e:
-                    st.error(f"⚠️ Terjadi kesalahan saat merakit dokumen: {e}")
+    if st.button("Rakit & Simpan Data", type="primary",
