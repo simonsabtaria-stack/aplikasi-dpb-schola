@@ -98,9 +98,28 @@ with tab1:
     foto_sdgs = st.file_uploader("Upload Logo SDGs (Opsional)", type=['png', 'jpg', 'jpeg'])
 
     st.subheader("B. Data Umum & Konten")
-    c4, c5 = st.columns(2)
-    with c4: simpan_teks('MAPEL', st.text_input("Mata Pelajaran:"))
-    with c5: simpan_teks('Judul', st.text_input("Judul Modul:"))
+    
+    
+    
+    daftar_mapel = list(bank_kurikulum.keys())
+    mapel_terpilih = st.selectbox("Mata Pelajaran:", daftar_mapel)
+    simpan_teks('MAPEL', mapel_terpilih)
+    
+    
+    c_elemen, c_materi = st.columns(2)
+    
+    with c_elemen:
+        daftar_elemen = list(bank_kurikulum[mapel_terpilih].keys())
+        elemen_terpilih = st.selectbox(f"Elemen ({mapel_terpilih}):", daftar_elemen)
+        simpan_teks('Elemen', elemen_terpilih)
+        
+    with c_materi:
+        daftar_materi = bank_kurikulum[mapel_terpilih][elemen_terpilih]
+        materi_terpilih = st.selectbox("Materi Esensial:", daftar_materi)
+        simpan_teks('Materi', materi_terpilih)
+        
+     
+    simpan_teks('Judul', st.text_input("Judul Modul:"))
     
     
     st.divider()
