@@ -4,31 +4,32 @@ from docx.shared import Mm
 import io
 import requests  
 from data_kurikulum import bank_kurikulum
+import google.generativeai as genai
 
 
 st.set_page_config(page_title="DPB Schola Amoris", page_icon="📝", layout="wide")
-
-st.set_page_config(page_title="DPB Schola Amoris", page_icon="📝", layout="wide")
-
 
 st.image("banner_schola.png", use_container_width=True)
-
 
 st.divider()
 st.title("Penyusun DPB Schola Amoris 🎓")
 st.write("Rancangan yang Anda buat akan otomatis tercatat di Katalog Bank Modul Sekolah.")
 
-
 URL_DATABASE = "https://script.google.com/macros/s/AKfycbyi9lnZJplhJDHV9RkkGq8mmILR7zIn7XfNTLN8Qf49XJuyRr8H5LAgr-vlrP6gyDnfjw/exec"
+
+
+st.sidebar.subheader("🤖 Pengaturan Asisten AI")
+st.sidebar.info("Masukkan Kunci API Gemini Anda di sini untuk mengaktifkan fitur AI pembuat skenario pembelajaran.")
+api_key_guru = st.sidebar.text_input("🔑 Kunci API Gemini:", type="password", help="Dapatkan kunci gratis di aistudio.google.com")
+st.sidebar.divider()
+st.sidebar.write("Pastikan indikator terisi sebelum menekan tombol AI di setiap tab.")
 
 
 st.divider()
 st.markdown("""
     <style>
-    /* 1. Kustomisasi Tampilan Tab */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 10px;
-    }
+    /* Kustomisasi Tampilan Tab */
+    .stTabs [data-baseweb="tab-list"] { gap: 10px; }
     .stTabs [data-baseweb="tab"] {
         background-color: #f1f5f9;
         border-radius: 8px 8px 0px 0px;
@@ -41,25 +42,17 @@ st.markdown("""
         color: #ffffff !important;
         box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
     }
-    .stTabs [data-baseweb="tab"]:hover {
-        background-color: #e2e8f0;
-    }
-
-    
+    .stTabs [data-baseweb="tab"]:hover { background-color: #e2e8f0; }
     .stTextInput input, .stTextArea textarea, .stSelectbox [data-baseweb="select"] {
         border-radius: 8px !important;
         box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
         border: 1px solid #e2e8f0 !important;
         transition: all 0.3s ease;
     }
-    
-    
     .stTextInput input:focus, .stTextArea textarea:focus {
         border-color: #3b82f6 !important;
         box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
     }
-
-    
     .stButton > button[kind="primary"] {
         border-radius: 8px;
         background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
@@ -75,15 +68,22 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+
 if 'data_isian' not in st.session_state:
     st.session_state.data_isian = {}
+if 'draft_kognitif' not in st.session_state:
+    st.session_state.draft_kognitif = ""
+if 'draft_psikomotor' not in st.session_state:
+    st.session_state.draft_psikomotor = ""
+if 'draft_afektif' not in st.session_state:
+    st.session_state.draft_afektif = ""
+
+def simpan_teks(kunci, nilai):
+    st.session_state.data_isian[kunci] = nilai
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🖨️ 5. Cetak"
 ])
-
-def simpan_teks(kunci, nilai):
-    st.session_state.data_isian[kunci] = nilai
 
 
 with tab1:
@@ -99,37 +99,27 @@ with tab1:
 
     st.subheader("B. Data Umum & Konten")
     
-    
     daftar_mapel = list(bank_kurikulum.keys())
     mapel_terpilih = st.selectbox("Mata Pelajaran:", daftar_mapel)
     simpan_teks('MAPEL', mapel_terpilih)
     
-    
     c_elemen, c_materi = st.columns(2)
-    
     with c_elemen:
-        
         daftar_elemen = bank_kurikulum[mapel_terpilih]
         elemen_terpilih = st.selectbox(f"Elemen ({mapel_terpilih}):", daftar_elemen)
         simpan_teks('Elemen', elemen_terpilih)
-        
     with c_materi:
-        
         materi_terpilih = st.text_input("Materi Esensial (Ketik Bebas):", placeholder="Misal: Sistem Tata Surya...")
         simpan_teks('Materi', materi_terpilih)
         
-    
     simpan_teks('Judul', st.text_input("Judul Modul:"))
-    
     
     st.divider()
     st.subheader("🎯 Capaian Pembelajaran & Target SDGs")
-    
     simpan_teks('Capaian_Pembelajaran', st.text_area("Capaian Pembelajaran (CP):", height=150, placeholder="Tempel atau ketik Capaian Pembelajaran (CP) di sini..."))
     simpan_teks('Capaian_SDGs', st.text_input("Capaian SDGs:", placeholder="Misal: SDGs 4 - Pendidikan Berkualitas"))
     simpan_teks('TP_SDGs', st.text_area("Tujuan Pembelajaran (TP) SDGs:", height=100, placeholder="Ketik target atau tujuan khusus SDGs yang ingin dicapai..."))
-    
-    
+
 
 with tab2:
     st.subheader("Lingkungan & Praktik Pembelajaran")
@@ -143,18 +133,65 @@ with tab2:
 
 with tab3:
     st.subheader("Aspek Kognitif")
-    simpan_teks('TP_KOGNITIF', st.text_area("TP Kognitif:"))
-    simpan_teks('Indikator_Kognitif', st.text_area("Indikator Kognitif:"))
-    simpan_teks('Pengalaman_Belajar', st.text_area("Pengalaman Belajar Kognitif:"))
+    tp_kognitif = st.text_area("TP Kognitif:")
+    simpan_teks('TP_KOGNITIF', tp_kognitif)
+    
+    indikator_kognitif = st.text_area("Indikator Kognitif:")
+    simpan_teks('Indikator_Kognitif', indikator_kognitif)
+    
+    
+    if st.button("✨ Rumuskan Pengalaman Kognitif (AI)", key="btn_kog"):
+        if not api_key_guru:
+            st.error("⚠️ Masukkan Kunci API di Sidebar sebelah kiri!")
+        elif not indikator_kognitif:
+            st.warning("⚠️ Isi Indikator Kognitif terlebih dahulu!")
+        else:
+            with st.spinner("AI sedang merancang aktivitas kognitif yang menyenangkan..."):
+                try:
+                    genai.configure(api_key=api_key_guru)
+                    model = genai.GenerativeModel('gemini-1.5-flash')
+                    prompt = f"Sebagai ahli desain instruksional, buatkan skenario 'Pengalaman Belajar' (Kegiatan Inti) untuk mencapai indikator kognitif berikut: {indikator_kognitif}. Buat aktivitas eksplorasi yang menyenangkan dan memancing rasa ingin tahu. Tuliskan dalam bentuk 3-4 poin langkah kegiatan yang praktis."
+                    respon = model.generate_content(prompt)
+                    st.session_state.draft_kognitif = respon.text
+                except Exception as e:
+                    st.error(f"Gagal memanggil AI: {e}")
+                    
+    pengalaman_kognitif = st.text_area("Pengalaman Belajar Kognitif:", value=st.session_state.draft_kognitif, height=200)
+    simpan_teks('Pengalaman_Belajar', pengalaman_kognitif)
+    
     c1, c2 = st.columns(2)
     with c1: simpan_teks('Asesmen_Formatif', st.text_area("Asesmen Formatif (Kognitif):"))
     with c2: simpan_teks('Asesmen_Sumatif', st.text_area("Asesmen Sumatif (Kognitif):"))
 
     st.divider()
+    
     st.subheader("Aspek Psikomotorik")
-    simpan_teks('TP_Psikomotorik', st.text_area("TP Psikomotorik:"))
-    simpan_teks('Indikator_Psikomotorik', st.text_area("Indikator Psikomotorik:"))
-    simpan_teks('Pengalaman_Belajar_Psikomotorik', st.text_area("Pengalaman Belajar Psikomotorik:"))
+    tp_psikomotorik = st.text_area("TP Psikomotorik:")
+    simpan_teks('TP_Psikomotorik', tp_psikomotorik)
+    
+    indikator_psikomotorik = st.text_area("Indikator Psikomotorik:")
+    simpan_teks('Indikator_Psikomotorik', indikator_psikomotorik)
+    
+    
+    if st.button("✨ Rumuskan Pengalaman Psikomotorik (AI)", key="btn_psi"):
+        if not api_key_guru:
+            st.error("⚠️ Masukkan Kunci API di Sidebar sebelah kiri!")
+        elif not indikator_psikomotorik:
+            st.warning("⚠️ Isi Indikator Psikomotorik terlebih dahulu!")
+        else:
+            with st.spinner("AI sedang merancang aktivitas unjuk kerja/proyek..."):
+                try:
+                    genai.configure(api_key=api_key_guru)
+                    model = genai.GenerativeModel('gemini-1.5-flash')
+                    prompt = f"Sebagai ahli desain instruksional, buatkan skenario 'Pengalaman Belajar' (Praktik/Kinerja) untuk mencapai indikator psikomotorik berikut: {indikator_psikomotorik}. Buat aktivitas unjuk kerja, karya, atau proyek yang terstruktur. Tuliskan dalam bentuk 3-4 poin praktis."
+                    respon = model.generate_content(prompt)
+                    st.session_state.draft_psikomotor = respon.text
+                except Exception as e:
+                    st.error(f"Gagal memanggil AI: {e}")
+
+    pengalaman_psikomotorik = st.text_area("Pengalaman Belajar Psikomotorik:", value=st.session_state.draft_psikomotor, height=200)
+    simpan_teks('Pengalaman_Belajar_Psikomotorik', pengalaman_psikomotorik)
+    
     c3, c4 = st.columns(2)
     with c3: simpan_teks('Asesmen_Formatif_Psikomotorik', st.text_area("Asesmen Formatif (Psikomotorik):"))
     with c4: simpan_teks('Asesmen_Sumatif_Psikomotorik', st.text_area("Asesmen Sumatif (Psikomotorik):"))
@@ -184,9 +221,32 @@ with tab4:
     simpan_teks('Capaian_Nilai', st.text_area("Capaian Nilai:"))
 
     st.subheader("D. Rencana Pembelajaran Afektif")
-    simpan_teks('TP_Afektif', st.text_area("TP Afektif:"))
-    simpan_teks('Indikator_Afektif', st.text_area("Indikator Afektif:"))
-    simpan_teks('Pengalaman_Belajar_Afektif', st.text_area("Pengalaman Belajar Afektif:"))
+    tp_afektif = st.text_area("TP Afektif:")
+    simpan_teks('TP_Afektif', tp_afektif)
+    
+    indikator_afektif = st.text_area("Indikator Afektif:")
+    simpan_teks('Indikator_Afektif', indikator_afektif)
+    
+    
+    if st.button("✨ Rumuskan Pengalaman Afektif (AI)", key="btn_afe"):
+        if not api_key_guru:
+            st.error("⚠️ Masukkan Kunci API di Sidebar sebelah kiri!")
+        elif not indikator_afektif:
+            st.warning("⚠️ Isi Indikator Afektif terlebih dahulu!")
+        else:
+            with st.spinner("AI sedang merancang aktivitas pembentukan karakter..."):
+                try:
+                    genai.configure(api_key=api_key_guru)
+                    model = genai.GenerativeModel('gemini-1.5-flash')
+                    prompt = f"Sebagai ahli desain instruksional, buatkan skenario 'Pengalaman Belajar' untuk mencapai indikator afektif (sikap/karakter) berikut: {indikator_afektif}. Rancang aktivitas yang memancing empati, refleksi diri, atau diskusi nilai moral yang bermakna. Tuliskan dalam bentuk 3-4 poin langkah kegiatan."
+                    respon = model.generate_content(prompt)
+                    st.session_state.draft_afektif = respon.text
+                except Exception as e:
+                    st.error(f"Gagal memanggil AI: {e}")
+
+    pengalaman_afektif = st.text_area("Pengalaman Belajar Afektif:", value=st.session_state.draft_afektif, height=200)
+    simpan_teks('Pengalaman_Belajar_Afektif', pengalaman_afektif)
+    
     c11, c12 = st.columns(2)
     with c11: simpan_teks('Formatif', st.text_area("Asesmen Formatif (Afektif):"))
     with c12: simpan_teks('Sumatif', st.text_area("Asesmen Sumatif (Afektif):"))
@@ -199,8 +259,7 @@ with tab5:
     simpan_teks('Apresiasi', st.text_area("Apresiasi:"))
     simpan_teks('Media_Pembelajaran', st.text_area("Media Pembelajaran:"))
     
-    
-with tab5:
+    st.divider()
     st.subheader("🖨️ Rakit Dokumen & Simpan ke Database")
     st.info("Sistem akan membuat file Word dan mencatat modul Anda ke Bank Modul.")
     
@@ -210,7 +269,6 @@ with tab5:
         else:
             with st.spinner('Sedang merakit dokumen dan menghubungi database...'):
                 try:
-                    
                     doc = DocxTemplate("Template_DPB_Schola Amoris.docx")
                     if foto_sdgs is not None:
                         st.session_state.data_isian['Gambar_SGDs'] = InlineImage(doc, foto_sdgs, width=Mm(30))
@@ -218,7 +276,6 @@ with tab5:
                     doc.render(st.session_state.data_isian)
                     bio = io.BytesIO()
                     doc.save(bio)
-                    
                     
                     data_kirim = {
                         "nama_guru": st.session_state.data_isian.get('Nama_Guru', '-'),
@@ -228,7 +285,6 @@ with tab5:
                         "judul": st.session_state.data_isian.get('Judul', '-')
                     }
                     
-                    
                     try:
                         respon = requests.post(URL_DATABASE, json=data_kirim) 
                         if respon.status_code == 200:
@@ -237,7 +293,6 @@ with tab5:
                             st.warning(f"Google menolak kiriman. Kode error: {respon.status_code}")
                     except Exception as err:
                         st.warning(f"Koneksi ke Database terputus! Penyebab: {err}")
-                    
                     
                     st.success("✅ Dokumen siap! Silakan unduh:")
                     st.download_button(
