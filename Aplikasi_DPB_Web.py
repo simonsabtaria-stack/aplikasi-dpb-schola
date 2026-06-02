@@ -100,7 +100,6 @@ with tab1:
     st.subheader("B. Data Umum & Konten")
     
     
-    
     daftar_mapel = list(bank_kurikulum.keys())
     mapel_terpilih = st.selectbox("Mata Pelajaran:", daftar_mapel)
     simpan_teks('MAPEL', mapel_terpilih)
@@ -109,16 +108,17 @@ with tab1:
     c_elemen, c_materi = st.columns(2)
     
     with c_elemen:
-        daftar_elemen = list(bank_kurikulum[mapel_terpilih].keys())
+        
+        daftar_elemen = bank_kurikulum[mapel_terpilih]
         elemen_terpilih = st.selectbox(f"Elemen ({mapel_terpilih}):", daftar_elemen)
         simpan_teks('Elemen', elemen_terpilih)
         
     with c_materi:
-        daftar_materi = bank_kurikulum[mapel_terpilih][elemen_terpilih]
-        materi_terpilih = st.selectbox("Materi Esensial:", daftar_materi)
+        
+        materi_terpilih = st.text_input("Materi Esensial (Ketik Bebas):", placeholder="Misal: Sistem Tata Surya...")
         simpan_teks('Materi', materi_terpilih)
         
-     
+    
     simpan_teks('Judul', st.text_input("Judul Modul:"))
     
     
