@@ -284,4 +284,4 @@ with tab5:
     st.divider()
     st.subheader("🖨️ Rakit Dokumen & Simpan ke Database")
     
-    if st.button("Rakit & Simpan Data", type="primary",
+    if st.button("Rakit & Simpan Data", type="primary", use_container_width=True):
