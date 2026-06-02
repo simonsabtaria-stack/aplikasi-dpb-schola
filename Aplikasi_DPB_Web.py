@@ -6,7 +6,6 @@ import requests
 from data_kurikulum import bank_kurikulum
 import google.generativeai as genai
 
-
 st.set_page_config(page_title="DPB Schola Amoris", page_icon="📝", layout="wide")
 
 st.image("banner_schola.png", use_container_width=True)
@@ -17,18 +16,15 @@ st.write("Rancangan yang Anda buat akan otomatis tercatat di Katalog Bank Modul 
 
 URL_DATABASE = "https://script.google.com/macros/s/AKfycbyi9lnZJplhJDHV9RkkGq8mmILR7zIn7XfNTLN8Qf49XJuyRr8H5LAgr-vlrP6gyDnfjw/exec"
 
-
 st.sidebar.subheader("🤖 Pengaturan Asisten AI")
 st.sidebar.info("Masukkan Kunci API Gemini Anda di sini untuk mengaktifkan fitur AI pembuat skenario pembelajaran.")
 api_key_guru = st.sidebar.text_input("🔑 Kunci API Gemini:", type="password", help="Dapatkan kunci gratis di aistudio.google.com")
 st.sidebar.divider()
 st.sidebar.write("Pastikan indikator terisi sebelum menekan tombol AI di setiap tab.")
 
-
 st.divider()
 st.markdown("""
     <style>
-    /* Kustomisasi Tampilan Tab */
     .stTabs [data-baseweb="tab-list"] { gap: 10px; }
     .stTabs [data-baseweb="tab"] {
         background-color: #f1f5f9;
@@ -68,7 +64,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-
 if 'data_isian' not in st.session_state:
     st.session_state.data_isian = {}
 if 'draft_kognitif' not in st.session_state:
@@ -84,7 +79,6 @@ def simpan_teks(kunci, nilai):
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🖨️ 5. Cetak"
 ])
-
 
 with tab1:
     st.subheader("A. Identitas Guru & Jenjang")
@@ -120,7 +114,6 @@ with tab1:
     simpan_teks('Capaian_SDGs', st.text_input("Capaian SDGs:", placeholder="Misal: SDGs 4 - Pendidikan Berkualitas"))
     simpan_teks('TP_SDGs', st.text_area("Tujuan Pembelajaran (TP) SDGs:", height=100, placeholder="Ketik target atau tujuan khusus SDGs yang ingin dicapai..."))
 
-
 with tab2:
     st.subheader("Lingkungan & Praktik Pembelajaran")
     simpan_teks('Kemitraan_Pembelajaran', st.text_area("Kemitraan Pembelajaran:"))
@@ -130,7 +123,6 @@ with tab2:
     simpan_teks('Ruang_Virtual', st.text_area("Ruang Virtual:"))
     simpan_teks('Budaya_Belajar', st.text_area("Budaya Belajar:"))
 
-
 with tab3:
     st.subheader("Aspek Kognitif")
     tp_kognitif = st.text_area("TP Kognitif:")
@@ -138,7 +130,6 @@ with tab3:
     
     indikator_kognitif = st.text_area("Indikator Kognitif:")
     simpan_teks('Indikator_Kognitif', indikator_kognitif)
-    
     
     if st.button("✨ Rumuskan Pengalaman Kognitif (AI)", key="btn_kog"):
         if not api_key_guru:
@@ -149,7 +140,16 @@ with tab3:
             with st.spinner("AI sedang merancang aktivitas kognitif yang menyenangkan..."):
                 try:
                     genai.configure(api_key=api_key_guru)
-                    model = genai.GenerativeModel('gemini-pro')
+                    nama_mesin = None
+                    for m in genai.list_models():
+                        if 'generateContent' in m.supported_generation_methods:
+                            nama_mesin = m.name
+                            if 'flash' in m.name.lower():
+                                break
+                    if not nama_mesin:
+                        raise Exception("Tidak ada model AI yang diizinkan untuk Kunci API ini.")
+                    model = genai.GenerativeModel(nama_mesin)
+                    
                     prompt = f"Sebagai ahli desain instruksional, buatkan skenario 'Pengalaman Belajar' (Kegiatan Inti) untuk mencapai indikator kognitif berikut: {indikator_kognitif}. Buat aktivitas eksplorasi yang menyenangkan dan memancing rasa ingin tahu. Tuliskan dalam bentuk 3-4 poin langkah kegiatan yang praktis."
                     respon = model.generate_content(prompt)
                     st.session_state.draft_kognitif = respon.text
@@ -172,7 +172,6 @@ with tab3:
     indikator_psikomotorik = st.text_area("Indikator Psikomotorik:")
     simpan_teks('Indikator_Psikomotorik', indikator_psikomotorik)
     
-    
     if st.button("✨ Rumuskan Pengalaman Psikomotorik (AI)", key="btn_psi"):
         if not api_key_guru:
             st.error("⚠️ Masukkan Kunci API di Sidebar sebelah kiri!")
@@ -182,7 +181,16 @@ with tab3:
             with st.spinner("AI sedang merancang aktivitas unjuk kerja/proyek..."):
                 try:
                     genai.configure(api_key=api_key_guru)
-                    model = genai.GenerativeModel('gemini-pro')
+                    nama_mesin = None
+                    for m in genai.list_models():
+                        if 'generateContent' in m.supported_generation_methods:
+                            nama_mesin = m.name
+                            if 'flash' in m.name.lower():
+                                break
+                    if not nama_mesin:
+                        raise Exception("Tidak ada model AI yang diizinkan untuk Kunci API ini.")
+                    model = genai.GenerativeModel(nama_mesin)
+                    
                     prompt = f"Sebagai ahli desain instruksional, buatkan skenario 'Pengalaman Belajar' (Praktik/Kinerja) untuk mencapai indikator psikomotorik berikut: {indikator_psikomotorik}. Buat aktivitas unjuk kerja, karya, atau proyek yang terstruktur. Tuliskan dalam bentuk 3-4 poin praktis."
                     respon = model.generate_content(prompt)
                     st.session_state.draft_psikomotor = respon.text
@@ -195,7 +203,6 @@ with tab3:
     c3, c4 = st.columns(2)
     with c3: simpan_teks('Asesmen_Formatif_Psikomotorik', st.text_area("Asesmen Formatif (Psikomotorik):"))
     with c4: simpan_teks('Asesmen_Sumatif_Psikomotorik', st.text_area("Asesmen Sumatif (Psikomotorik):"))
-
 
 with tab4:
     st.subheader("A. Profil Pelajar Pancasila (P3)")
@@ -227,7 +234,6 @@ with tab4:
     indikator_afektif = st.text_area("Indikator Afektif:")
     simpan_teks('Indikator_Afektif', indikator_afektif)
     
-    
     if st.button("✨ Rumuskan Pengalaman Afektif (AI)", key="btn_afe"):
         if not api_key_guru:
             st.error("⚠️ Masukkan Kunci API di Sidebar sebelah kiri!")
@@ -237,7 +243,16 @@ with tab4:
             with st.spinner("AI sedang merancang aktivitas pembentukan karakter..."):
                 try:
                     genai.configure(api_key=api_key_guru)
-                    model = genai.GenerativeModel('gemini-pro')
+                    nama_mesin = None
+                    for m in genai.list_models():
+                        if 'generateContent' in m.supported_generation_methods:
+                            nama_mesin = m.name
+                            if 'flash' in m.name.lower():
+                                break
+                    if not nama_mesin:
+                        raise Exception("Tidak ada model AI yang diizinkan untuk Kunci API ini.")
+                    model = genai.GenerativeModel(nama_mesin)
+                    
                     prompt = f"Sebagai ahli desain instruksional, buatkan skenario 'Pengalaman Belajar' untuk mencapai indikator afektif (sikap/karakter) berikut: {indikator_afektif}. Rancang aktivitas yang memancing empati, refleksi diri, atau diskusi nilai moral yang bermakna. Tuliskan dalam bentuk 3-4 poin langkah kegiatan."
                     respon = model.generate_content(prompt)
                     st.session_state.draft_afektif = respon.text
@@ -250,7 +265,6 @@ with tab4:
     c11, c12 = st.columns(2)
     with c11: simpan_teks('Formatif', st.text_area("Asesmen Formatif (Afektif):"))
     with c12: simpan_teks('Sumatif', st.text_area("Asesmen Sumatif (Afektif):"))
-
 
 with tab5:
     st.subheader("Perayaan Belajar & Media")
