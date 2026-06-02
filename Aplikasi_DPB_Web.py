@@ -100,6 +100,15 @@ with tab1:
     with c4: simpan_teks('MAPEL', st.text_input("Mata Pelajaran:"))
     with c5: simpan_teks('Judul', st.text_input("Judul Modul:"))
     
+    
+    st.divider()
+    st.subheader("🎯 Capaian Pembelajaran & Target SDGs")
+    
+    simpan_teks('Capaian_Pembelajaran', st.text_area("Capaian Pembelajaran (CP):", height=150, placeholder="Tempel atau ketik Capaian Pembelajaran (CP) di sini..."))
+    simpan_teks('Capaian_SDGs', st.text_input("Capaian SDGs:", placeholder="Misal: SDGs 4 - Pendidikan Berkualitas"))
+    simpan_teks('TP_SDGs', st.text_area("Tujuan Pembelajaran (TP) SDGs:", height=100, placeholder="Ketik target atau tujuan khusus SDGs yang ingin dicapai..."))
+    
+    
 
 with tab2:
     st.subheader("Lingkungan & Praktik Pembelajaran")
