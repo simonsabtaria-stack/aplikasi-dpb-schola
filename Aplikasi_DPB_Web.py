@@ -149,7 +149,7 @@ with tab3:
             with st.spinner("AI sedang merancang aktivitas kognitif yang menyenangkan..."):
                 try:
                     genai.configure(api_key=api_key_guru)
-                    model = genai.GenerativeModel('gemini-1.5-flash')
+                    model = genai.GenerativeModel('gemini-1.5-flash-latest')
                     prompt = f"Sebagai ahli desain instruksional, buatkan skenario 'Pengalaman Belajar' (Kegiatan Inti) untuk mencapai indikator kognitif berikut: {indikator_kognitif}. Buat aktivitas eksplorasi yang menyenangkan dan memancing rasa ingin tahu. Tuliskan dalam bentuk 3-4 poin langkah kegiatan yang praktis."
                     respon = model.generate_content(prompt)
                     st.session_state.draft_kognitif = respon.text
@@ -182,7 +182,7 @@ with tab3:
             with st.spinner("AI sedang merancang aktivitas unjuk kerja/proyek..."):
                 try:
                     genai.configure(api_key=api_key_guru)
-                    model = genai.GenerativeModel('gemini-1.5-flash')
+                    model = genai.GenerativeModel('gemini-1.5-flash-latest')
                     prompt = f"Sebagai ahli desain instruksional, buatkan skenario 'Pengalaman Belajar' (Praktik/Kinerja) untuk mencapai indikator psikomotorik berikut: {indikator_psikomotorik}. Buat aktivitas unjuk kerja, karya, atau proyek yang terstruktur. Tuliskan dalam bentuk 3-4 poin praktis."
                     respon = model.generate_content(prompt)
                     st.session_state.draft_psikomotor = respon.text
@@ -237,7 +237,7 @@ with tab4:
             with st.spinner("AI sedang merancang aktivitas pembentukan karakter..."):
                 try:
                     genai.configure(api_key=api_key_guru)
-                    model = genai.GenerativeModel('gemini-1.5-flash')
+                    model = genai.GenerativeModel('gemini-1.5-flash-latest')
                     prompt = f"Sebagai ahli desain instruksional, buatkan skenario 'Pengalaman Belajar' untuk mencapai indikator afektif (sikap/karakter) berikut: {indikator_afektif}. Rancang aktivitas yang memancing empati, refleksi diri, atau diskusi nilai moral yang bermakna. Tuliskan dalam bentuk 3-4 poin langkah kegiatan."
                     respon = model.generate_content(prompt)
                     st.session_state.draft_afektif = respon.text
