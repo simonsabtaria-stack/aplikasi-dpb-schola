@@ -3,6 +3,8 @@ from docxtpl import DocxTemplate, InlineImage
 from docx.shared import Mm
 import io
 import requests  
+from data_kurikulum import bank_kurikulum
+
 
 st.set_page_config(page_title="DPB Schola Amoris", page_icon="📝", layout="wide")
 
