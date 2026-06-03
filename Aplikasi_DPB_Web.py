@@ -65,10 +65,11 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
 ])
 
 # ================= TAB 1 =================
-st.subheader("A. Identitas Guru & Jenjang")
+# ================= TAB 1 =================
+with tab1:
+    st.subheader("A. Identitas Guru & Jenjang")
     simpan_teks('Nama_Guru', st.text_input("Nama Guru Penyusun (Wajib diisi):"))
     
-    # Diubah menjadi 4 kolom untuk memisahkan Kelas dan Semester
     col1, col2, col3, col4 = st.columns(4)
     with col1: simpan_teks('Jenjang', st.selectbox("Jenjang:", ["Pilih...", "TK", "SD", "SMP", "SMA/SMK"]))
     with col2: simpan_teks('Fase', st.selectbox("Fase:", ["-", "Fase Fondasi", "Fase A", "Fase B", "Fase C", "Fase D", "Fase E", "Fase F"]))
