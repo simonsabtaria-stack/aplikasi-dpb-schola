@@ -1,5 +1,5 @@
 import streamlit as st
-from docxtpl import DocxTemplate, InlineImage
+from docxtpl import DocxTemplate InlineImage
 from docx.shared import Mm
 import io
 import requests  
