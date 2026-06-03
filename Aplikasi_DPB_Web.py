@@ -98,11 +98,11 @@ with tab1:
         with col3: simpan_teks('Kelas', st.text_input("Kelas (Contoh: 1, 2, VII):"))
         with col4: simpan_teks('Semester', st.selectbox("Semester:", ["Ganjil", "Genap"]))
             
-     col_profil, col_sdgs = st.columns(2)
-     with col_profil:
-         daftar_dpl = list(bank_dpl.keys())
-         pilihan_profil = st.selectbox("Dimensi Profil Lulusan:", ["Pilih..."] + daftar_dpl, help="Pilih target profil lulusan. Data ini akan otomatis tersambung ke Tab 4.")
-         simpan_teks('Dimensi_Lulusan', pilihan_profil)
+        col_profil, col_sdgs = st.columns(2)
+        with col_profil:
+            daftar_dpl = list(bank_dpl.keys())
+            pilihan_profil = st.selectbox("Dimensi Profil Lulusan:", ["Pilih..."] + daftar_dpl, help="Pilih target profil lulusan. Data ini akan otomatis tersambung ke Tab 4.")
+            simpan_teks('Dimensi_Lulusan', pilihan_profil)
         
         with col_sdgs:
             foto_sdgs = st.file_uploader("Upload Logo SDGs (Opsional)", type=['png', 'jpg', 'jpeg'], help="Unggah ikon SDGs yang sesuai untuk disematkan di pojok dokumen.")
@@ -254,7 +254,7 @@ with tab4:
         
         with col_kiri:
             st.markdown("##### 1. Profil Pelajar Pancasila (P3)")
-            st.info("Pilihan Subelemen & Capaian akan otomatis menyesuaikan Fase yang Anda pilih di Tab 1.")
+            st.info("Pilihan Subelemen & Capaian otomatis menyesuaikan Fase di Tab 1.")
             
             # Sistem Dropdown Bersarang P3
             fase_terpilih = st.session_state.data_isian.get('Fase', '')
@@ -289,16 +289,15 @@ with tab4:
                 simpan_teks('Elemen', "")
                 simpan_teks('Sub_elemen', "")
                 simpan_teks('Capaian_P3', "")
+                cp_p3 = ""
             
             st.divider()
             st.markdown("##### 2. Santo / Santa Pelindung")
-            # ... (Lanjutkan dengan kode Santo/Santa yang sudah ada sebelumnya) ...
             opsi_santo = ["Pilih...", "Santo Fransiskus Asisi", "Santa Clara", "Santa Maria", "Lainnya"]
             pilihan_santo = st.selectbox("Pilih Pelindung:", opsi_santo)
             simpan_teks('Santo_Santa_Pelindung', st.text_input("Ketik Nama Pelindung:") if pilihan_santo == "Lainnya" else pilihan_santo)
             
-            # --- TAMBAHAN BARU: Nilai / Keutamaan Pelindung ---
-            nilai_santo = st.text_input("Nilai/Keutamaan Pelindung:", help="Ketik keteladanan tokoh (Misal: Cinta alam, Kesederhanaan, Kedisiplinan).")
+            nilai_santo = st.text_input("Nilai/Keutamaan Pelindung:", help="Ketik keteladanan tokoh (Misal: Cinta alam, Kesederhanaan).")
             simpan_teks('Nilai_Santo_Santa', nilai_santo)
 
         with col_kanan:
@@ -314,39 +313,39 @@ with tab4:
             pilihan_7kaih = st.selectbox("Pilih 7KAIH:", opsi_7kaih)
             simpan_teks('KAIH', st.text_input("Ketik 7KAIH:") if pilihan_7kaih == "Lainnya" else pilihan_7kaih)
             
-         st.divider()
-         st.markdown("##### 5. Dimensi Profil Lulusan")
-         st.info("Pilihan Sub Dimensi & Kompetensi Lulusan otomatis menyesuaikan Dimensi dan Fase Anda di Tab 1.")
+            st.divider()
+            st.markdown("##### 5. Dimensi Profil Lulusan")
+            st.info("Pilihan Sub Dimensi & Kompetensi Lulusan otomatis menyesuaikan Dimensi dan Fase Anda di Tab 1.")
 
-         profil_terpilih = st.session_state.data_isian.get('Dimensi_Lulusan', '')
-         fase_terpilih = st.session_state.data_isian.get('Fase', '')
+            profil_terpilih = st.session_state.data_isian.get('Dimensi_Lulusan', '')
+            fase_terpilih = st.session_state.data_isian.get('Fase', '')
 
-         if profil_terpilih and profil_terpilih != "Pilih..." and profil_terpilih in bank_dpl:
-             st.success(f"📌 Dimensi Terpilih: **{profil_terpilih}** *(Dari Tab 1)*")
+            if profil_terpilih and profil_terpilih != "Pilih..." and profil_terpilih in bank_dpl:
+                st.success(f"📌 Dimensi Terpilih: **{profil_terpilih}** *(Dari Tab 1)*")
 
-             # Memunculkan sub-dimensi berdasarkan Dimensi terpilih
-             daftar_sub_dpl = list(bank_dpl[profil_terpilih].keys())
-             pilihan_sub_dpl = st.selectbox("Pilih Sub Dimensi:", ["Pilih..."] + daftar_sub_dpl)
+                # Memunculkan sub-dimensi berdasarkan Dimensi terpilih
+                daftar_sub_dpl = list(bank_dpl[profil_terpilih].keys())
+                pilihan_sub_dpl = st.selectbox("Pilih Sub Dimensi:", ["Pilih..."] + daftar_sub_dpl)
 
-             if pilihan_sub_dpl != "Pilih...":
-                 simpan_teks('Sub_Dimensi', pilihan_sub_dpl)
+                if pilihan_sub_dpl != "Pilih...":
+                    simpan_teks('Sub_Dimensi', pilihan_sub_dpl)
 
-                 # AI penarik kompetensi otomatis berdasarkan Fase
-                 if fase_terpilih in ["Fase Fondasi", "Fase A", "Fase B", "Fase C", "Fase D", "Fase E", "Fase F"]:
-                     teks_kompetensi = bank_dpl[profil_terpilih][pilihan_sub_dpl].get(fase_terpilih, "Data kompetensi belum tersedia untuk fase ini.")
-                 else:
-                     teks_kompetensi = "⚠️ Silakan pilih Fase terlebih dahulu di Tab 1 (Identitas)."
+                    # AI penarik kompetensi otomatis berdasarkan Fase
+                    if fase_terpilih in ["Fase Fondasi", "Fase A", "Fase B", "Fase C", "Fase D", "Fase E", "Fase F"]:
+                        teks_kompetensi = bank_dpl[profil_terpilih][pilihan_sub_dpl].get(fase_terpilih, "Data kompetensi belum tersedia untuk fase ini.")
+                    else:
+                        teks_kompetensi = "⚠️ Silakan pilih Fase terlebih dahulu di Tab 1 (Identitas)."
 
-                 komp_input = st.text_area("Kompetensi Lulusan (Otomatis Terisi & Bisa Diedit):", value=teks_kompetensi, height=120)
-                 simpan_teks('Kompetensi', komp_input)
-             else:
-                 simpan_teks('Sub_Dimensi', "")
-                 simpan_teks('Kompetensi', "")
+                    komp_input = st.text_area("Kompetensi Lulusan (Otomatis Terisi & Bisa Diedit):", value=teks_kompetensi, height=120)
+                    simpan_teks('Kompetensi', komp_input)
+                else:
+                    simpan_teks('Sub_Dimensi', "")
+                    simpan_teks('Kompetensi', "")
 
-         else:
-             st.warning("⚠️ Dimensi Profil Lulusan belum dipilih di Tab 1.")
-             simpan_teks('Sub_Dimensi', "")
-             simpan_teks('Kompetensi', "")
+            else:
+                st.warning("⚠️ Dimensi Profil Lulusan belum dipilih di Tab 1.")
+                simpan_teks('Sub_Dimensi', "")
+                simpan_teks('Kompetensi', "")
 
     with st.container(border=True): # --- KARTU CORE VALUES ---
         st.subheader("B. Core Values / Ke-SFD-an")
@@ -393,10 +392,8 @@ with tab4:
                 with st.spinner("Mereduksi nilai dan menaikkan level KKO..."):
                     try:
                         sfd_cn = st.session_state.data_isian.get('Capaian_Nilai', '')
-                        # Menarik data nilai keteladanan pelindung yang baru ditambahkan
                         nilai_pelindung = st.session_state.data_isian.get('Nilai_Santo_Santa', '')
                         
-                        # Menyuntikkan nilai pelindung ke dalam instruksi AI
                         prompt_tp_afe = f"Saya memiliki elemen afektif: P3 ({cp_p3}), Nilai SFD ({sfd_cn}), Nilai Keteladanan Pelindung ({nilai_pelindung}), dan Kearifan Lokal ({kearifan_input}). Identifikasi level KKO afektif (A1-A5) pada Nilai SFD tersebut. Tolong reduksi/sintesis elemen-elemen ini menjadi satu rumusan Tujuan Pembelajaran (TP) Afektif yang kuat, dengan menaikkan level KKO satu tingkat lebih tinggi. Jadikan 1 paragraf padu yang elegan."
                         
                         st.session_state['draft_tp_afektif'] = panggil_ai(prompt_tp_afe)
