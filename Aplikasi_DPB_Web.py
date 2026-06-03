@@ -191,4 +191,6 @@ with tab3:
                 with st.spinner("Merancang aktivitas kognitif..."):
                     try:
                         konteks = f"Materi: {materi_terpilih}\nCP: {cp_input}\n"
-                        prompt = f"Berdasarkan {konteks}, buat skenario 'Pengalaman Belajar' (Kegiatan Inti) untuk mencapai indikator: {indikator_kognitif}. Buat aktivitas eksplorasi
+                        prompt = f"Berdasarkan {konteks}, buat skenario 'Pengalaman Belajar' (Kegiatan Inti) untuk mencapai indikator: {indikator_kognitif}. Buat aktivitas eksplorasi dalam 3-4 poin praktis."
+                        st.session_state.draft_kognitif = panggil_ai(prompt)
+                    except Exception as e: st.error(e)
