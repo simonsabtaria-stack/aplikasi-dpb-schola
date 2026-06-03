@@ -93,11 +93,39 @@ with tab1:
     
     st.divider()
     st.subheader("🎯 Capaian Pembelajaran & Target SDGs")
-    cp_input = st.text_area("Capaian Pembelajaran (CP):", height=150)
+    
+    # 1. Capaian Pembelajaran (CP)
+    cp_input = st.text_area("1. Capaian Pembelajaran (CP):", height=150)
     simpan_teks('Capaian_Pembelajaran', cp_input)
-    simpan_teks('Capaian_SDGs', st.text_input("Capaian SDGs (Contoh: Perdamaian & Keadilan):"))
-    simpan_teks('TP_SDGs', st.text_area("Tujuan Pembelajaran (TP) SDGs:", height=100))
-
+    
+    # 2. Capaian SDGs (Dropdown 17 Target)
+    opsi_sdgs = [
+        "Pilih...",
+        "1. Tanpa Kemiskinan",
+        "2. Tanpa Kelaparan",
+        "3. Kehidupan Sehat dan Sejahtera",
+        "4. Pendidikan Berkualitas",
+        "5. Kesetaraan Gender",
+        "6. Air Bersih dan Sanitasi Layak",
+        "7. Energi Bersih dan Terjangkau",
+        "8. Pekerjaan Layak dan Pertumbuhan Ekonomi",
+        "9. Industri, Inovasi dan Infrastruktur",
+        "10. Berkurangnya Kesenjangan",
+        "11. Kota dan Permukiman yang Berkelanjutan",
+        "12. Konsumsi dan Produksi yang Bertanggung Jawab",
+        "13. Penanganan Perubahan Iklim",
+        "14. Ekosistem Lautan",
+        "15. Ekosistem Daratan",
+        "16. Perdamaian, Keadilan dan Kelembagaan yang Tangguh",
+        "17. Kemitraan untuk Mencapai Tujuan"
+    ]
+    pilihan_sdgs = st.selectbox("2. Capaian SDGs:", opsi_sdgs)
+    simpan_teks('Capaian_SDGs', pilihan_sdgs if pilihan_sdgs != "Pilih..." else "")
+    
+    # 3. Tujuan Pembelajaran SDGs
+    tp_sdgs_input = st.text_area("3. Tujuan Pembelajaran (TP) SDGs:", height=100)
+    simpan_teks('TP_SDGs', tp_sdgs_input)
+    
 # ================= TAB 2 =================
 with tab2:
     st.subheader("Lingkungan & Praktik Pembelajaran")
