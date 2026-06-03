@@ -5,6 +5,7 @@ import io
 import requests  
 from data_kurikulum import bank_kurikulum
 import google.generativeai as genai
+from data_sfd import bank_sfd
 
 st.set_page_config(page_title="DPB Schola Amoris", page_icon="📝", layout="wide")
 
@@ -195,11 +196,47 @@ with tab4:
 
     st.divider()
     st.subheader("B. Core Values / Ke-SFD-an")
-    st.info("Fitur ekstraksi dokumen Nilai Ke-SFD-an akan diaktifkan setelah dokumen diunggah.")
-    c9, c10 = st.columns(2)
-    with c9: simpan_teks('Nilai', st.text_input("Nilai Ke-SFD-an:"))
-    with c10: simpan_teks('Keutamaan', st.text_input("Keutamaan:"))
-    simpan_teks('Capaian_Nilai', st.text_area("Capaian Nilai:"))
+    st.info("Pilihan Capaian Nilai (CN) di bawah ini akan otomatis menyesuaikan dengan Jenjang yang Anda pilih di Tab 1!")
+    
+    # Menarik data jenjang dari Tab 1
+    jenjang_terpilih = st.session_state.data_isian.get('Jenjang', '')
+    
+    col_nilai, col_keutamaan = st.columns(2)
+    
+    with col_nilai:
+        daftar_nilai = list(bank_sfd.keys())
+        pilihan_nilai = st.selectbox("1. Pilih Nilai Ke-SFD-an:", ["Pilih..."] + daftar_nilai)
+        
+    if pilihan_nilai != "Pilih...":
+        simpan_teks('Nilai', pilihan_nilai)
+        
+        with col_keutamaan:
+            daftar_keutamaan = list(bank_sfd[pilihan_nilai].keys())
+            pilihan_keutamaan = st.selectbox("2. Pilih Keutamaan:", ["Pilih..."] + daftar_keutamaan)
+            
+        if pilihan_keutamaan != "Pilih...":
+            simpan_teks('Keutamaan', pilihan_keutamaan)
+            
+            daftar_praksis = list(bank_sfd[pilihan_nilai][pilihan_keutamaan].keys())
+            pilihan_praksis = st.selectbox("3. Pilih Praksis Moral (Indikator):", ["Pilih..."] + daftar_praksis)
+            
+            if pilihan_praksis != "Pilih...":
+                # Mesin otomatis menentukan Capaian Nilai (CN) berdasarkan Jenjang
+                if jenjang_terpilih in ["TK", "SD", "SMP"]:
+                    teks_cn_otomatis = bank_sfd[pilihan_nilai][pilihan_keutamaan][pilihan_praksis].get(jenjang_terpilih, "Data tidak ditemukan.")
+                elif jenjang_terpilih == "SMA/SMK":
+                    teks_cn_otomatis = "Capaian Nilai (CN) Ke-SFD-an untuk jenjang SMA saat ini masih dalam tahap perumusan oleh Yayasan."
+                else:
+                    teks_cn_otomatis = "⚠️ Silakan kembali ke Tab 1 dan pilih Jenjang (TK/SD/SMP/SMA) terlebih dahulu agar sistem bisa menarik data yang tepat."
+                
+                # Kotak teks yang sudah terisi otomatis tapi masih bisa diedit oleh guru jika perlu
+                cn_input = st.text_area("Capaian Nilai (Otomatis Terisi):", value=teks_cn_otomatis, height=150)
+                simpan_teks('Capaian_Nilai', cn_input)
+    else:
+        # Jika belum ada yang dipilih, kosongkan data agar Word tidak error
+        simpan_teks('Nilai', "")
+        simpan_teks('Keutamaan', "")
+        simpan_teks('Capaian_Nilai', "")
 
     st.divider()
     st.subheader("C. Rencana Pembelajaran Afektif")
