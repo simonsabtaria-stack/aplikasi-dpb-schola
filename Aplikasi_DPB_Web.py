@@ -13,18 +13,27 @@ from data_kko import bank_kko
 st.set_page_config(page_title="DPB Schola Amoris", page_icon="📝", layout="wide")
 
 st.image("banner_schola.png", use_container_width=True)
-st.divider()
 st.title("Penyusun DPB Schola Amoris 🎓")
-st.write("Rancangan yang Anda buat akan otomatis tercatat di Katalog Bank Modul Sekolah.")
+st.markdown("*Rancangan yang Anda buat akan otomatis tercatat di Katalog Bank Modul Sekolah.*")
+st.divider()
 
 URL_DATABASE = "https://script.google.com/macros/s/AKfycbyi9lnZJplhJDHV9RkkGq8mmILR7zIn7XfNTLN8Qf49XJuyRr8H5LAgr-vlrP6gyDnfjw/exec"
 
-st.sidebar.subheader("🤖 Pengaturan Asisten AI")
-api_key_guru = st.sidebar.text_input("🔑 Kunci API Gemini:", type="password")
-st.sidebar.divider()
-st.sidebar.subheader("⚙️ Kustomisasi Gaya AI")
-instruksi_khusus = st.sidebar.text_area("Instruksi Tambahan (Opsional):", placeholder="Contoh: Fokuskan pada metode diskusi kelompok.")
-st.sidebar.divider()
+# --- SIDEBAR MEWAH ---
+with st.sidebar:
+    st.header("🤖 Pusat Kontrol AI")
+    api_key_guru = st.text_input("🔑 Kunci API Gemini:", type="password", help="Dapatkan API Key dari Google AI Studio")
+    st.divider()
+    st.subheader("⚙️ Kustomisasi Gaya AI")
+    instruksi_khusus = st.text_area("Instruksi Tambahan (Opsional):", placeholder="Contoh: Fokuskan pada metode diskusi kelompok untuk anak kinestetik.", help="Perintah di sini akan selalu ditaati oleh AI di semua tab.")
+    
+    # Indikator Status Kesiapan
+    st.divider()
+    st.markdown("**Status Sistem:**")
+    if api_key_guru:
+        st.success("✅ AI Terhubung")
+    else:
+        st.error("❌ API Key Belum Diisi")
 
 st.markdown("""
     <style>
@@ -66,21 +75,21 @@ def panggil_ai(prompt):
     return model.generate_content(prompt + aturan).text
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🖨️ 5. Cetak"
+    "📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🖨️ 5. Pratinjau & Cetak"
 ])
 
 # ================= TAB 1 =================
 with tab1:
     st.subheader("A. Identitas Guru & Jenjang")
-    simpan_teks('Nama_Guru', st.text_input("Nama Guru Penyusun (Wajib diisi):"))
+    simpan_teks('Nama_Guru', st.text_input("Nama Guru Penyusun (Wajib diisi):", help="Ketikkan nama lengkap beserta gelar untuk dicetak di modul."))
     
     col1, col2, col3, col4 = st.columns(4)
-    with col1: simpan_teks('Jenjang', st.selectbox("Jenjang:", ["Pilih...", "TK", "SD", "SMP", "SMA/SMK"]))
+    with col1: simpan_teks('Jenjang', st.selectbox("Jenjang:", ["Pilih...", "TK", "SD", "SMP", "SMA/SMK"], help="Pilih jenjang untuk menyesuaikan Capaian Nilai SFD nanti."))
     with col2: simpan_teks('Fase', st.selectbox("Fase:", ["-", "Fase Fondasi", "Fase A", "Fase B", "Fase C", "Fase D", "Fase E", "Fase F"]))
     with col3: simpan_teks('Kelas', st.text_input("Kelas (Contoh: 1, 2, VII):"))
     with col4: simpan_teks('Semester', st.selectbox("Semester:", ["Ganjil", "Genap"]))
         
-    foto_sdgs = st.file_uploader("Upload Logo SDGs", type=['png', 'jpg', 'jpeg'])
+    foto_sdgs = st.file_uploader("Upload Logo SDGs (Opsional)", type=['png', 'jpg', 'jpeg'], help="Unggah ikon SDGs yang sesuai untuk disematkan di pojok dokumen.")
 
     st.subheader("B. Data Umum & Konten")
     daftar_mapel = list(bank_kurikulum.keys())
@@ -93,7 +102,7 @@ with tab1:
         elemen_terpilih = st.selectbox(f"Elemen ({mapel_terpilih}):", daftar_elemen)
         simpan_teks('Elemen', elemen_terpilih)
     with c_materi:
-        materi_terpilih = st.text_input("Materi Esensial:")
+        materi_terpilih = st.text_input("Materi Esensial:", help="Topik inti yang akan dipelajari siswa.")
         simpan_teks('Materi', materi_terpilih)
         
     simpan_teks('Judul', st.text_input("Judul Modul:"))
@@ -101,11 +110,9 @@ with tab1:
     st.divider()
     st.subheader("🎯 Capaian Pembelajaran & Target SDGs")
     
-    # 1. Capaian Pembelajaran
-    cp_input = st.text_area("1. Capaian Pembelajaran (CP):", height=150)
+    cp_input = st.text_area("1. Capaian Pembelajaran (CP):", height=120, help="Salin CP dari dokumen standar kurikulum nasional berdasarkan Fase.")
     simpan_teks('Capaian_Pembelajaran', cp_input)
     
-    # 2. Capaian SDGs
     opsi_sdgs = [
         "Pilih...", "1. Tanpa Kemiskinan", "2. Tanpa Kelaparan", "3. Kehidupan Sehat dan Sejahtera", 
         "4. Pendidikan Berkualitas", "5. Kesetaraan Gender", "6. Air Bersih dan Sanitasi Layak", 
@@ -115,47 +122,47 @@ with tab1:
         "13. Penanganan Perubahan Iklim", "14. Ekosistem Lautan", "15. Ekosistem Daratan", 
         "16. Perdamaian, Keadilan dan Kelembagaan yang Tangguh", "17. Kemitraan untuk Mencapai Tujuan"
     ]
-    pilihan_sdgs = st.selectbox("2. Capaian SDGs:", opsi_sdgs)
+    pilihan_sdgs = st.selectbox("2. Capaian SDGs:", opsi_sdgs, help="Pilih 1 dari 17 Tujuan Pembangunan Berkelanjutan global.")
     simpan_teks('Capaian_SDGs', pilihan_sdgs if pilihan_sdgs != "Pilih..." else "")
     
-    # 3. Tujuan Pembelajaran SDGs
-    tp_sdgs_input = st.text_area("3. Tujuan Pembelajaran (TP) SDGs:", height=100)
+    tp_sdgs_input = st.text_area("3. Tujuan Pembelajaran (TP) SDGs:", height=100, help="Rumuskan bagaimana materi ini berkontribusi pada target SDGs yang dipilih.")
     simpan_teks('TP_SDGs', tp_sdgs_input)
 
 # ================= TAB 2 =================
 with tab2:
     st.subheader("Lingkungan & Praktik Pembelajaran")
     
-    # 1. Kemitraan Pembelajaran
-    opsi_mitra = ["Pilih...", "Orang Tua/Wali Murid", "Komunitas Lokal", "Pakar/Praktisi", "Instansi Pemerintah/Puskesmas", "Lembaga Swadaya Masyarakat (LSM)", "Lainnya"]
-    pilihan_mitra = st.selectbox("Kemitraan Pembelajaran:", opsi_mitra)
-    simpan_teks('Kemitraan_Pembelajaran', st.text_input("Ketik Detail Kemitraan:") if pilihan_mitra == "Lainnya" else pilihan_mitra)
+    col_mitra, col_peda = st.columns(2)
+    with col_mitra:
+        opsi_mitra = ["Pilih...", "Orang Tua/Wali Murid", "Komunitas Lokal", "Pakar/Praktisi", "Instansi Pemerintah/Puskesmas", "Lembaga Swadaya Masyarakat (LSM)", "Lainnya"]
+        pilihan_mitra = st.selectbox("Kemitraan Pembelajaran:", opsi_mitra)
+        simpan_teks('Kemitraan_Pembelajaran', st.text_input("Ketik Detail Kemitraan:") if pilihan_mitra == "Lainnya" else pilihan_mitra)
     
-    # 2. Praktik Pedagogis
-    opsi_pedagogis = ["Pilih...", "Problem Based Learning (PBL)", "Project Based Learning (PjBL)", "Inquiry/Discovery Learning", "Teaching at the Right Level (TaRL)", "Cooperative Learning", "Lainnya"]
-    pilihan_pedagogis = st.selectbox("Praktik Pedagogis (Model Belajar):", opsi_pedagogis)
-    simpan_teks('Praktik_Pedagogis', st.text_input("Ketik Model Pedagogis:") if pilihan_pedagogis == "Lainnya" else pilihan_pedagogis)
+    with col_peda:
+        opsi_pedagogis = ["Pilih...", "Problem Based Learning (PBL)", "Project Based Learning (PjBL)", "Inquiry/Discovery Learning", "Teaching at the Right Level (TaRL)", "Cooperative Learning", "Lainnya"]
+        pilihan_pedagogis = st.selectbox("Praktik Pedagogis (Model Belajar):", opsi_pedagogis)
+        simpan_teks('Praktik_Pedagogis', st.text_input("Ketik Model Pedagogis:") if pilihan_pedagogis == "Lainnya" else pilihan_pedagogis)
     
-    # 3. Budaya Belajar
     opsi_budaya = ["Pilih...", "Disiplin Positif & Restitusi", "Growth Mindset (Pola Pikir Berkembang)", "Kolaboratif & Inklusif", "Pembelajaran Berbasis Umpan Balik (Feedback)", "Lainnya"]
     pilihan_budaya = st.selectbox("Budaya Belajar:", opsi_budaya)
     simpan_teks('Budaya_Belajar', st.text_input("Ketik Budaya Belajar:") if pilihan_budaya == "Lainnya" else pilihan_budaya)
 
     st.divider()
-    simpan_teks('Urutan_Sintkas', st.text_area("Urutan Sintaks Pembelajaran:", height=150))
-    simpan_teks('Ruang_Fisik', st.text_area("Ruang Fisik:"))
-    simpan_teks('Ruang_Virtual', st.text_area("Ruang Virtual:"))
+    simpan_teks('Urutan_Sintkas', st.text_area("Urutan Sintaks Pembelajaran:", height=120, help="Langkah-langkah operasional dari model pedagogis yang dipilih."))
+    
+    col_fisik, col_virtual = st.columns(2)
+    with col_fisik: simpan_teks('Ruang_Fisik', st.text_area("Ruang Fisik:", help="Contoh: Kelas dengan meja melingkar, laboratorium, taman."))
+    with col_virtual: simpan_teks('Ruang_Virtual', st.text_area("Ruang Virtual:", help="Contoh: Google Classroom, Grup WhatsApp, Zoom."))
 
 # ================= TAB 3 =================
 with tab3:
-    st.subheader("Aspek Kognitif")
+    st.subheader("🧠 Aspek Kognitif")
     with st.expander("💡 Buka Contekan KKO Kognitif (C1-C6)"):
         for level, kata in bank_kko["KOGNITIF (C)"].items():
             st.markdown(f"**{level}**: {kata}")
             
-    # AI Perumus TP Kognitif Berjenjang
     if st.button("📈 Rumuskan TP Kognitif (Otomatis Naik Level KKO)", key="btn_tp_kog"):
-        if not api_key_guru: st.error("Masukkan Kunci API di Sidebar!")
+        if not api_key_guru: st.warning("⚠️ Masukkan Kunci API di Sidebar terlebih dahulu!")
         else:
             with st.spinner("Menganalisis KKO CP dan menaikkan level..."):
                 try:
@@ -166,11 +173,11 @@ with tab3:
     tp_kognitif = st.text_area("TP Kognitif:", value=st.session_state['draft_tp_kognitif'], height=100)
     simpan_teks('TP_KOGNITIF', tp_kognitif)
     
-    indikator_kognitif = st.text_area("Indikator Kognitif:")
+    indikator_kognitif = st.text_area("Indikator Kognitif:", help="Turunan dari TP Kognitif yang bisa diukur pencapaiannya.")
     simpan_teks('Indikator_Kognitif', indikator_kognitif)
     
     if st.button("✨ Rumuskan Pengalaman Kognitif (AI)", key="btn_kog"):
-        if not api_key_guru: st.error("Masukkan Kunci API di Sidebar!")
+        if not api_key_guru: st.warning("⚠️ Masukkan Kunci API di Sidebar terlebih dahulu!")
         else:
             with st.spinner("Merancang aktivitas kognitif..."):
                 try:
@@ -179,21 +186,21 @@ with tab3:
                     st.session_state.draft_kognitif = panggil_ai(prompt)
                 except Exception as e: st.error(e)
                     
-    simpan_teks('Pengalaman_Belajar', st.text_area("Pengalaman Belajar Kognitif:", value=st.session_state.draft_kognitif, height=150))
+    simpan_teks('Pengalaman_Belajar', st.text_area("Pengalaman Belajar Kognitif:", value=st.session_state.draft_kognitif, height=120))
+    
     c1, c2 = st.columns(2)
     with c1: simpan_teks('Asesmen_Formatif', st.text_area("Asesmen Formatif (Kognitif):"))
     with c2: simpan_teks('Asesmen_Sumatif', st.text_area("Asesmen Sumatif (Kognitif):"))
 
     st.divider()
     
-    st.subheader("Aspek Psikomotorik")
+    st.subheader("🏃 Aspek Psikomotorik")
     with st.expander("💡 Buka Contekan KKO Psikomotorik (P1-P5)"):
         for level, kata in bank_kko["PSIKOMOTORIK (P)"].items():
             st.markdown(f"**{level}**: {kata}")
 
-    # AI Perumus TP Psikomotorik Berjenjang
     if st.button("📈 Rumuskan TP Psikomotorik (Otomatis Naik Level KKO)", key="btn_tp_psi"):
-        if not api_key_guru: st.error("Masukkan Kunci API di Sidebar!")
+        if not api_key_guru: st.warning("⚠️ Masukkan Kunci API di Sidebar!")
         else:
             with st.spinner("Menganalisis KKO CP dan menaikkan level..."):
                 try:
@@ -208,7 +215,7 @@ with tab3:
     simpan_teks('Indikator_Psikomotorik', indikator_psikomotorik)
     
     if st.button("✨ Rumuskan Pengalaman Psikomotorik (AI)", key="btn_psi"):
-        if not api_key_guru: st.error("Masukkan Kunci API di Sidebar!")
+        if not api_key_guru: st.warning("⚠️ Masukkan Kunci API di Sidebar!")
         else:
             with st.spinner("Merancang aktivitas psikomotorik..."):
                 try:
@@ -217,7 +224,7 @@ with tab3:
                     st.session_state.draft_psikomotor = panggil_ai(prompt)
                 except Exception as e: st.error(e)
 
-    simpan_teks('Pengalaman_Belajar_Psikomotorik', st.text_area("Pengalaman Belajar Psikomotorik:", value=st.session_state.draft_psikomotor, height=150))
+    simpan_teks('Pengalaman_Belajar_Psikomotorik', st.text_area("Pengalaman Belajar Psikomotorik:", value=st.session_state.draft_psikomotor, height=120))
     c3, c4 = st.columns(2)
     with c3: simpan_teks('Asesmen_Formatif_Psikomotorik', st.text_area("Asesmen Formatif (Psikomotorik):"))
     with c4: simpan_teks('Asesmen_Sumatif_Psikomotorik', st.text_area("Asesmen Sumatif (Psikomotorik):"))
@@ -232,10 +239,8 @@ with tab4:
         opsi_p3 = ["Pilih...", "Beriman & Bertakwa", "Berkebinekaan Global", "Bergotong Royong", "Mandiri", "Bernalar Kritis", "Kreatif", "Lainnya"]
         pilihan_p3 = st.selectbox("Dimensi P3:", opsi_p3)
         simpan_teks('Dimensi', st.text_input("Ketik Dimensi P3:") if pilihan_p3 == "Lainnya" else pilihan_p3)
-        simpan_teks('Elemen', st.text_input("Elemen P3:", placeholder="Contoh: Akhlak bernegara"))
+        simpan_teks('Elemen', st.text_input("Elemen P3:"))
         simpan_teks('Sub_elemen', st.text_input("Sub Elemen P3:"))
-        
-        # Simpan Capaian P3 untuk dibaca AI
         cp_p3 = st.text_area("Capaian P3:")
         simpan_teks('Capaian_P3', cp_p3)
         
@@ -249,8 +254,6 @@ with tab4:
         st.markdown("##### 3. Kearifan Lokal")
         opsi_kearifan = ["Pilih...", "Belum Bahadat", "Huma Betang", "Handep", "Lainnya"]
         pilihan_kearifan = st.selectbox("Pilih Kearifan Lokal:", opsi_kearifan)
-        
-        # Simpan Kearifan Lokal untuk dibaca AI
         kearifan_input = st.text_input("Ketik Kearifan Lokal:") if pilihan_kearifan == "Lainnya" else pilihan_kearifan
         simpan_teks('Kearifan_Lokal', kearifan_input)
         
@@ -270,7 +273,7 @@ with tab4:
 
     st.divider()
     st.subheader("B. Core Values / Ke-SFD-an")
-    st.info("Capaian Nilai (CN) akan otomatis ditarik sebagai narasi utuh menyesuaikan Jenjang dan Keutamaan yang dipilih.")
+    st.info("💡 Capaian Nilai (CN) akan otomatis ditarik sebagai narasi utuh menyesuaikan Jenjang dan Keutamaan yang dipilih.")
     
     jenjang_terpilih = st.session_state.data_isian.get('Jenjang', '')
     col_nilai, col_keutamaan = st.columns(2)
@@ -287,7 +290,6 @@ with tab4:
             
         if pilihan_keutamaan != "Pilih...":
             simpan_teks('Keutamaan', pilihan_keutamaan)
-            
             if jenjang_terpilih in ["TK", "SD", "SMP"]:
                 teks_cn_otomatis = bank_sfd[pilihan_nilai][pilihan_keutamaan].get(jenjang_terpilih, "Data tidak ditemukan.")
             elif jenjang_terpilih == "SMA/SMK":
@@ -303,30 +305,28 @@ with tab4:
         simpan_teks('Capaian_Nilai', "")
 
     st.divider()
-    st.subheader("C. Rencana Pembelajaran Afektif")
+    st.subheader("❤️ C. Rencana Pembelajaran Afektif")
     with st.expander("💡 Buka Contekan KKO Afektif (A1-A5)"):
         for level, kata in bank_kko["AFEKTIF (A)"].items():
             st.markdown(f"**{level}**: {kata}")
 
-    # AI Perumus TP Afektif Berjenjang & Reduksi
     if st.button("📈 Rumuskan TP Afektif (Sintesis & Naik Level)", key="btn_tp_afe"):
-        if not api_key_guru: st.error("Masukkan Kunci API di Sidebar!")
+        if not api_key_guru: st.warning("⚠️ Masukkan Kunci API di Sidebar!")
         else:
             with st.spinner("Mereduksi nilai dan menaikkan level KKO..."):
                 try:
                     sfd_cn = st.session_state.data_isian.get('Capaian_Nilai', '')
-                    prompt_tp_afe = f"Saya memiliki elemen afektif: P3 ({cp_p3}), Nilai SFD ({sfd_cn}), dan Kearifan Lokal ({kearifan_input}). Identifikasi level KKO afektif (A1-A5) pada Nilai SFD tersebut. Tolong reduksi/sintesis elemen-elemen ini menjadi satu rumusan Tujuan Pembelajaran (TP) Afektif yang kuat, dengan menaikkan level KKO satu tingkat lebih tinggi (misal jika A2, ubah ke A3). Jadikan 1 paragraf padu yang elegan."
+                    prompt_tp_afe = f"Saya memiliki elemen afektif: P3 ({cp_p3}), Nilai SFD ({sfd_cn}), dan Kearifan Lokal ({kearifan_input}). Identifikasi level KKO afektif (A1-A5) pada Nilai SFD tersebut. Tolong reduksi/sintesis elemen-elemen ini menjadi satu rumusan Tujuan Pembelajaran (TP) Afektif yang kuat, dengan menaikkan level KKO satu tingkat lebih tinggi. Jadikan 1 paragraf padu yang elegan."
                     st.session_state['draft_tp_afektif'] = panggil_ai(prompt_tp_afe)
                 except Exception as e: st.error(e)
 
     tp_afektif = st.text_area("TP Afektif:", value=st.session_state['draft_tp_afektif'], height=120)
     simpan_teks('TP_Afektif', tp_afektif)
-    
     indikator_afektif = st.text_area("Indikator Afektif:")
     simpan_teks('Indikator_Afektif', indikator_afektif)
     
     if st.button("✨ Rumuskan Pengalaman Afektif (AI)", key="btn_afe"):
-        if not api_key_guru: st.error("Masukkan Kunci API di Sidebar!")
+        if not api_key_guru: st.warning("⚠️ Masukkan Kunci API di Sidebar!")
         else:
             with st.spinner("Merancang aktivitas karakter..."):
                 try:
@@ -343,19 +343,33 @@ with tab4:
 # ================= TAB 5 =================
 with tab5:
     st.subheader("Perayaan Belajar & Media")
-    simpan_teks('Membagikan_Pengalaman_Belajar', st.text_area("Membagikan Pengalaman Belajar:"))
+    simpan_teks('Membagikan_Pengalaman_Belajar', st.text_area("Membagikan Pengalaman Belajar:", help="Bagaimana siswa merayakan hasil belajarnya? (Contoh: Pameran karya, presentasi, mading)."))
     simpan_teks('Refleksi_Perkembangan_Kompetensi', st.text_area("Refleksi Perkembangan Kompetensi:"))
     simpan_teks('Apresiasi', st.text_area("Apresiasi:"))
-    simpan_teks('Media_Pembelajaran', st.text_area("Media Pembelajaran:"))
+    simpan_teks('Media_Pembelajaran', st.text_area("Media Pembelajaran:", help="Alat, bahan, atau sumber belajar pendukung."))
+    
+    st.divider()
+    
+    # --- FITUR BARU: LIVE PREVIEW ---
+    st.subheader("👁️ Pratinjau Dokumen Sementara")
+    with st.expander("Klik untuk memeriksa isian Anda sebelum merakit dokumen", expanded=False):
+        st.markdown(f"""
+        **Identitas:** {st.session_state.data_isian.get('Nama_Guru', '-')} | Jenjang {st.session_state.data_isian.get('Jenjang', '-')} | Fase {st.session_state.data_isian.get('Fase', '-')}
+        **Mapel:** {st.session_state.data_isian.get('MAPEL', '-')}
+        **Materi:** {st.session_state.data_isian.get('Materi', '-')}
+        **Nilai SFD:** {st.session_state.data_isian.get('Nilai', '-')} - {st.session_state.data_isian.get('Keutamaan', '-')}
+        """)
+        if not st.session_state.data_isian.get('Nama_Guru'):
+            st.warning("⚠️ Perhatian: Nama Guru belum diisi di Tab 1.")
     
     st.divider()
     st.subheader("🖨️ Rakit Dokumen & Simpan ke Database")
     
     if st.button("Rakit & Simpan Data", type="primary", use_container_width=True):
         if not st.session_state.data_isian.get('Nama_Guru'):
-            st.error("Mohon isi Nama Guru Penyusun di Tab 1!")
+            st.error("❌ Mohon isi Nama Guru Penyusun di Tab 1 terlebih dahulu!")
         else:
-            with st.spinner('Merakit dokumen dan mengirim ke database...'):
+            with st.spinner('Memproses dokumen cerdas Anda...'):
                 try:
                     doc = DocxTemplate("Template_DPB_Schola Amoris.docx")
                     if foto_sdgs is not None:
@@ -376,13 +390,13 @@ with tab5:
                     try:
                         respon = requests.post(URL_DATABASE, json=data_kirim) 
                         if respon.status_code == 200:
-                            st.toast('Data Modul Tersimpan di Katalog!', icon='✅')
+                            st.toast('Data berhasil tersinkronisasi dengan Database Sekolah!', icon='✅')
                         else:
                             st.warning(f"Error Database: {respon.status_code}")
                     except Exception as err:
                         st.warning(f"Gagal menyambung ke database Google Sheet: {err}")
                     
-                    st.success("✅ Dokumen DPB berhasil dirakit dan siap diunduh:")
+                    st.success("🎉 Berhasil! Dokumen DPB Anda sudah siap diunduh.")
                     st.download_button(
                         label="📥 Download File DPB (.docx)",
                         data=bio.getvalue(),
