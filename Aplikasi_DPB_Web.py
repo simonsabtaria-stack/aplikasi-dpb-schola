@@ -196,7 +196,7 @@ with tab4:
 
     st.divider()
     st.subheader("B. Core Values / Ke-SFD-an")
-    st.info("Pilihan Capaian Nilai (CN) di bawah ini akan otomatis menyesuaikan dengan Jenjang yang Anda pilih di Tab 1!")
+    st.info("Capaian Nilai (CN) akan otomatis ditarik sebagai narasi utuh menyesuaikan Jenjang dan Keutamaan yang dipilih.")
     
     # Menarik data jenjang dari Tab 1
     jenjang_terpilih = st.session_state.data_isian.get('Jenjang', '')
@@ -217,23 +217,19 @@ with tab4:
         if pilihan_keutamaan != "Pilih...":
             simpan_teks('Keutamaan', pilihan_keutamaan)
             
-            daftar_praksis = list(bank_sfd[pilihan_nilai][pilihan_keutamaan].keys())
-            pilihan_praksis = st.selectbox("3. Pilih Praksis Moral (Indikator):", ["Pilih..."] + daftar_praksis)
+            # Mesin langsung menarik narasi CN tanpa perlu dropdown Praksis Moral lagi!
+            if jenjang_terpilih in ["TK", "SD", "SMP"]:
+                teks_cn_otomatis = bank_sfd[pilihan_nilai][pilihan_keutamaan].get(jenjang_terpilih, "Data tidak ditemukan.")
+            elif jenjang_terpilih == "SMA/SMK":
+                teks_cn_otomatis = "Capaian Nilai (CN) Ke-SFD-an untuk jenjang SMA saat ini masih dalam tahap perumusan oleh Yayasan."
+            else:
+                teks_cn_otomatis = "⚠️ Silakan kembali ke Tab 1 dan pilih Jenjang (TK/SD/SMP/SMA) terlebih dahulu."
             
-            if pilihan_praksis != "Pilih...":
-                # Mesin otomatis menentukan Capaian Nilai (CN) berdasarkan Jenjang
-                if jenjang_terpilih in ["TK", "SD", "SMP"]:
-                    teks_cn_otomatis = bank_sfd[pilihan_nilai][pilihan_keutamaan][pilihan_praksis].get(jenjang_terpilih, "Data tidak ditemukan.")
-                elif jenjang_terpilih == "SMA/SMK":
-                    teks_cn_otomatis = "Capaian Nilai (CN) Ke-SFD-an untuk jenjang SMA saat ini masih dalam tahap perumusan oleh Yayasan."
-                else:
-                    teks_cn_otomatis = "⚠️ Silakan kembali ke Tab 1 dan pilih Jenjang (TK/SD/SMP/SMA) terlebih dahulu agar sistem bisa menarik data yang tepat."
-                
-                # Kotak teks yang sudah terisi otomatis tapi masih bisa diedit oleh guru jika perlu
-                cn_input = st.text_area("Capaian Nilai (Otomatis Terisi):", value=teks_cn_otomatis, height=150)
-                simpan_teks('Capaian_Nilai', cn_input)
+            # Kotak teks otomatis
+            cn_input = st.text_area("3. Capaian Nilai (Otomatis Terisi & Bisa Diedit):", value=teks_cn_otomatis, height=120)
+            simpan_teks('Capaian_Nilai', cn_input)
     else:
-        # Jika belum ada yang dipilih, kosongkan data agar Word tidak error
+        # Kosongkan data jika dikembalikan ke "Pilih..."
         simpan_teks('Nilai', "")
         simpan_teks('Keutamaan', "")
         simpan_teks('Capaian_Nilai', "")
