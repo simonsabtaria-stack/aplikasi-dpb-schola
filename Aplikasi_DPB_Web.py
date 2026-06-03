@@ -97,7 +97,15 @@ with tab1:
         with col3: simpan_teks('Kelas', st.text_input("Kelas (Contoh: 1, 2, VII):"))
         with col4: simpan_teks('Semester', st.selectbox("Semester:", ["Ganjil", "Genap"]))
             
-        foto_sdgs = st.file_uploader("Upload Logo SDGs (Opsional)", type=['png', 'jpg', 'jpeg'], help="Unggah ikon SDGs yang sesuai untuk disematkan di pojok dokumen.")
+        col_profil, col_sdgs = st.columns(2)
+        with col_profil:
+            # --- FITUR BARU: Dimensi Profil Lulusan dipindah ke Tab 1 ---
+            opsi_profil = ["Pilih...", "Kewargaan", "Cerdas Intelektual", "Tangguh Berkarakter", "Lainnya"]
+            pilihan_profil = st.selectbox("Dimensi Profil Lulusan:", opsi_profil, help="Pilih target profil lulusan. Data ini akan otomatis tersambung ke Tab 4.")
+            simpan_teks('Dimensi_Lulusan', st.text_input("Ketik Profil Lulusan:") if pilihan_profil == "Lainnya" else pilihan_profil)
+        
+        with col_sdgs:
+            foto_sdgs = st.file_uploader("Upload Logo SDGs (Opsional)", type=['png', 'jpg', 'jpeg'], help="Unggah ikon SDGs yang sesuai untuk disematkan di pojok dokumen.")
 
     with st.container(border=True): # --- KARTU 2 ---
         st.subheader("B. Data Umum & Konten")
@@ -307,10 +315,15 @@ with tab4:
             simpan_teks('KAIH', st.text_input("Ketik 7KAIH:") if pilihan_7kaih == "Lainnya" else pilihan_7kaih)
             
             st.divider()
+            # --- FITUR BARU: Menarik Data Profil Lulusan dari Tab 1 ---
             st.markdown("##### 5. Dimensi Profil Lulusan")
-            opsi_profil = ["Pilih...", "Kewargaan", "Cerdas Intelektual", "Tangguh Berkarakter", "Lainnya"]
-            pilihan_profil = st.selectbox("Profil Lulusan:", opsi_profil)
-            simpan_teks('Dimensi_Lulusan', st.text_input("Ketik Profil:") if pilihan_profil == "Lainnya" else pilihan_profil)
+            profil_terpilih = st.session_state.data_isian.get('Dimensi_Lulusan', '')
+            
+            if profil_terpilih and profil_terpilih != "Pilih...":
+                st.success(f"📌 Dimensi Terpilih: **{profil_terpilih}** *(Dari Tab 1)*")
+            else:
+                st.warning("⚠️ Dimensi Profil Lulusan belum dipilih di Tab 1.")
+                
             simpan_teks('Sub_Dimensi', st.text_input("Sub Dimensi:"))
             simpan_teks('Kompetensi', st.text_input("Kompetensi Lulusan:"))
 
