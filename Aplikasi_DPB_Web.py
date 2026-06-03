@@ -73,7 +73,7 @@ def panggil_ai(prompt):
     model = genai.GenerativeModel(nama_mesin)
     return model.generate_content(prompt + aturan).text
 
-# --- SISTEM INDIKATOR PROGRES (NEW) ---
+# --- SISTEM INDIKATOR PROGRES ---
 kunci_wajib = ['Nama_Guru', 'MAPEL', 'Materi', 'Capaian_Pembelajaran', 'TP_KOGNITIF', 'TP_Psikomotorik', 'TP_Afektif']
 terisi = sum(1 for k in kunci_wajib if st.session_state.data_isian.get(k) and str(st.session_state.data_isian.get(k)).strip() != "")
 progres_persen = int((terisi / len(kunci_wajib)) * 100)
@@ -115,7 +115,7 @@ with tab1:
         # 1. Ambil daftar mapel dari database (jika fasenya ada)
         daftar_mapel_db = list(bank_kurikulum.get(fase_terpilih, {}).keys()) if fase_terpilih else []
         
-        # 2. Tambahkan opsi "Lainnya" sebagai jalur penyelamat untuk mapel yang belum ada di database
+        # 2. Tambahkan opsi "Lainnya" sebagai jalur penyelamat
         opsi_mapel = ["Pilih..."] + daftar_mapel_db + ["Lainnya (Ketik Manual)"]
         pilihan_mapel = st.selectbox("Mata Pelajaran:", opsi_mapel, help="Pilih mapel yang tersedia untuk otomatisasi, atau pilih 'Lainnya' untuk mengetik manual.")
         
@@ -136,43 +136,61 @@ with tab1:
             simpan_teks('MAPEL', mapel_terpilih)
             
             daftar_elemen = list(bank_kurikulum[fase_terpilih][mapel_terpilih].keys())
-            elemen_terpilih = st.selectbox(f"Elemen ({mapel_terpilih}):", ["Pilih..."] + daftar_elemen)
             
-            if elemen_terpilih != "Pilih...":
-                simpan_teks('Elemen', elemen_terpilih)
+            # MULTISELECT UNTUK ELEMEN
+            elemen_terpilih = st.multiselect(f"Elemen ({mapel_terpilih}):", daftar_elemen, help="Anda bisa memilih lebih dari satu Elemen.")
+            
+            if elemen_terpilih: # Jika ada Elemen yang dipilih
+                simpan_teks('Elemen', ", ".join(elemen_terpilih))
                 
-                # Menarik data CP berdasarkan Elemen yang dipilih
-                list_data_cp = bank_kurikulum[fase_terpilih][mapel_terpilih][elemen_terpilih]
-                daftar_teks_cp = [data["cp"] for data in list_data_cp]
+                # Menggabungkan semua CP dari semua elemen yang dipilih
+                list_data_cp_combined = []
+                for el in elemen_terpilih:
+                    list_data_cp_combined.extend(bank_kurikulum[fase_terpilih][mapel_terpilih][el])
                 
-                cp_terpilih = st.selectbox("Pilih Capaian Pembelajaran (CP):", ["Pilih..."] + daftar_teks_cp)
+                daftar_teks_cp = [data["cp"] for data in list_data_cp_combined]
                 
-                if cp_terpilih != "Pilih...":
-                    # Menyimpan CP ke memori sementara untuk Kartu 3
-                    st.session_state['temp_cp'] = cp_terpilih
+                # MULTISELECT UNTUK CP
+                cp_terpilih = st.multiselect("Pilih Capaian Pembelajaran (CP):", daftar_teks_cp, help="Anda bisa memilih lebih dari satu CP.")
+                
+                if cp_terpilih:
+                    # Gabungkan teks CP untuk Kartu 3
+                    st.session_state['temp_cp'] = "\n\n".join(cp_terpilih)
                     
-                    # Menarik data Materi Esensial khusus untuk CP yang dipilih
-                    materi_options = next(data["materi"] for data in list_data_cp if data["cp"] == cp_terpilih)
-                    materi_terpilih = st.selectbox("Materi Esensial:", ["Pilih..."] + materi_options)
-                    simpan_teks('Materi', materi_terpilih)
+                    # Menggabungkan semua opsi materi dari CP yang dipilih
+                    materi_options = []
+                    for cp_teks in cp_terpilih:
+                        for data in list_data_cp_combined:
+                            if data["cp"] == cp_teks:
+                                materi_options.extend(data["materi"])
+                                
+                    # Hilangkan duplikat materi jika ada yang sama
+                    materi_options = list(dict.fromkeys(materi_options))
+                    
+                    # MULTISELECT UNTUK MATERI
+                    materi_terpilih = st.multiselect("Materi Esensial:", materi_options, help="Pilih materi esensial sebanyak yang dibutuhkan.")
+                    simpan_teks('Materi', ", ".join(materi_terpilih))
                 else:
                     st.session_state['temp_cp'] = ""
                     simpan_teks('Materi', "")
             else:
                 st.session_state['temp_cp'] = ""
                 simpan_teks('Elemen', "")
+                simpan_teks('Materi', "")
         else:
             st.session_state['temp_cp'] = ""
             simpan_teks('MAPEL', "")
+            simpan_teks('Elemen', "")
+            simpan_teks('Materi', "")
             
         simpan_teks('Judul', st.text_input("Judul Modul:"))
     
     with st.container(border=True): # --- KARTU 3 ---
         st.subheader("🎯 Capaian Pembelajaran & Target SDGs")
         
-        # Menarik otomatis teks CP dari Kartu 2 (jika pakai database) atau biarkan kosong (jika manual)
+        # Menarik otomatis teks CP dari Kartu 2
         teks_cp_otomatis = st.session_state.get('temp_cp', '')
-        cp_input = st.text_area("1. Capaian Pembelajaran (Otomatis Tersedot & Bisa Diedit):", value=teks_cp_otomatis, height=120, help="Salin CP dari standar kurikulum, atau biarkan otomatis terisi jika Anda memilih Mapel dari database.")
+        cp_input = st.text_area("1. Capaian Pembelajaran (Otomatis Tersedot & Bisa Diedit):", value=teks_cp_otomatis, height=150, help="Salin CP dari standar kurikulum, atau biarkan otomatis terisi jika Anda memilih Mapel dari database.")
         simpan_teks('Capaian_Pembelajaran', cp_input)
         
         opsi_sdgs = [
@@ -230,7 +248,6 @@ with tab3:
             else:
                 with st.spinner("Menganalisis KKO CP dan menaikkan level..."):
                     try:
-                        materi_val = st.session_state.data_isian.get('Materi', '')
                         cp_val = st.session_state.data_isian.get('Capaian_Pembelajaran', '')
                         tp_sdgs_val = st.session_state.data_isian.get('TP_SDGs', '')
                         prompt_tp_kog = f"Baca Capaian Pembelajaran ini: '{cp_val}'. Identifikasi level KKO kognitifnya (C1-C6). Kemudian, buatkan rumusan Tujuan Pembelajaran (TP) Kognitif yang menaikkan KKO-nya 1 atau 2 level lebih tinggi agar lebih menantang (HOTS). Integrasikan dengan semangat TP SDGs: '{tp_sdgs_val}'. Berikan 2 pilihan rumusan singkat."
