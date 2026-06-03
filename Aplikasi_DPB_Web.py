@@ -6,6 +6,7 @@ import requests
 from data_kurikulum import bank_kurikulum
 import google.generativeai as genai
 from data_sfd import bank_sfd
+from data_kko import bank_kko
 
 st.set_page_config(page_title="DPB Schola Amoris", page_icon="📝", layout="wide")
 
@@ -139,6 +140,9 @@ with tab2:
 # ================= TAB 3 =================
 with tab3:
     st.subheader("Aspek Kognitif")
+    with st.expander("💡 Buka Contekan KKO Kognitif (C1-C6)"):
+        for level, kata in bank_kko["KOGNITIF (C)"].items():
+            st.markdown(f"**{level}**: {kata}")
     tp_kognitif = st.text_area("TP Kognitif:")
     simpan_teks('TP_KOGNITIF', tp_kognitif)
     indikator_kognitif = st.text_area("Indikator Kognitif:")
@@ -162,6 +166,9 @@ with tab3:
     st.divider()
     
     st.subheader("Aspek Psikomotorik")
+    with st.expander("💡 Buka Contekan KKO Psikomotorik (P1-P5)"):
+        for level, kata in bank_kko["PSIKOMOTORIK (P)"].items():
+            st.markdown(f"**{level}**: {kata}")
     tp_psikomotorik = st.text_area("TP Psikomotorik:")
     simpan_teks('TP_Psikomotorik', tp_psikomotorik)
     indikator_psikomotorik = st.text_area("Indikator Psikomotorik:")
@@ -264,6 +271,9 @@ with tab4:
 
     st.divider()
     st.subheader("C. Rencana Pembelajaran Afektif")
+    with st.expander("💡 Buka Contekan KKO Afektif (A1-A5)"):
+        for level, kata in bank_kko["AFEKTIF (A)"].items():
+            st.markdown(f"**{level}**: {kata}")
     simpan_teks('TP_Afektif', st.text_area("TP Afektif:"))
     indikator_afektif = st.text_area("Indikator Afektif:")
     simpan_teks('Indikator_Afektif', indikator_afektif)
