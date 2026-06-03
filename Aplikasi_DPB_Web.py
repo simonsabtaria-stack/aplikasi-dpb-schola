@@ -10,6 +10,7 @@ from data_kurikulum import bank_kurikulum
 from data_sfd import bank_sfd
 from data_kko import bank_kko
 from data_p3 import bank_p3
+from data_dpl import bank_dpl
 
 st.set_page_config(page_title="DPB Schola Amoris", page_icon="📝", layout="wide")
 
@@ -97,12 +98,11 @@ with tab1:
         with col3: simpan_teks('Kelas', st.text_input("Kelas (Contoh: 1, 2, VII):"))
         with col4: simpan_teks('Semester', st.selectbox("Semester:", ["Ganjil", "Genap"]))
             
-        col_profil, col_sdgs = st.columns(2)
-        with col_profil:
-            # --- FITUR BARU: Dimensi Profil Lulusan dipindah ke Tab 1 ---
-            opsi_profil = ["Pilih...", "Kewargaan", "Cerdas Intelektual", "Tangguh Berkarakter", "Lainnya"]
-            pilihan_profil = st.selectbox("Dimensi Profil Lulusan:", opsi_profil, help="Pilih target profil lulusan. Data ini akan otomatis tersambung ke Tab 4.")
-            simpan_teks('Dimensi_Lulusan', st.text_input("Ketik Profil Lulusan:") if pilihan_profil == "Lainnya" else pilihan_profil)
+     col_profil, col_sdgs = st.columns(2)
+     with col_profil:
+         daftar_dpl = list(bank_dpl.keys())
+         pilihan_profil = st.selectbox("Dimensi Profil Lulusan:", ["Pilih..."] + daftar_dpl, help="Pilih target profil lulusan. Data ini akan otomatis tersambung ke Tab 4.")
+         simpan_teks('Dimensi_Lulusan', pilihan_profil)
         
         with col_sdgs:
             foto_sdgs = st.file_uploader("Upload Logo SDGs (Opsional)", type=['png', 'jpg', 'jpeg'], help="Unggah ikon SDGs yang sesuai untuk disematkan di pojok dokumen.")
@@ -314,18 +314,39 @@ with tab4:
             pilihan_7kaih = st.selectbox("Pilih 7KAIH:", opsi_7kaih)
             simpan_teks('KAIH', st.text_input("Ketik 7KAIH:") if pilihan_7kaih == "Lainnya" else pilihan_7kaih)
             
-            st.divider()
-            # --- FITUR BARU: Menarik Data Profil Lulusan dari Tab 1 ---
-            st.markdown("##### 5. Dimensi Profil Lulusan")
-            profil_terpilih = st.session_state.data_isian.get('Dimensi_Lulusan', '')
-            
-            if profil_terpilih and profil_terpilih != "Pilih...":
-                st.success(f"📌 Dimensi Terpilih: **{profil_terpilih}** *(Dari Tab 1)*")
-            else:
-                st.warning("⚠️ Dimensi Profil Lulusan belum dipilih di Tab 1.")
-                
-            simpan_teks('Sub_Dimensi', st.text_input("Sub Dimensi:"))
-            simpan_teks('Kompetensi', st.text_input("Kompetensi Lulusan:"))
+         st.divider()
+         st.markdown("##### 5. Dimensi Profil Lulusan")
+         st.info("Pilihan Sub Dimensi & Kompetensi Lulusan otomatis menyesuaikan Dimensi dan Fase Anda di Tab 1.")
+
+         profil_terpilih = st.session_state.data_isian.get('Dimensi_Lulusan', '')
+         fase_terpilih = st.session_state.data_isian.get('Fase', '')
+
+         if profil_terpilih and profil_terpilih != "Pilih..." and profil_terpilih in bank_dpl:
+             st.success(f"📌 Dimensi Terpilih: **{profil_terpilih}** *(Dari Tab 1)*")
+
+             # Memunculkan sub-dimensi berdasarkan Dimensi terpilih
+             daftar_sub_dpl = list(bank_dpl[profil_terpilih].keys())
+             pilihan_sub_dpl = st.selectbox("Pilih Sub Dimensi:", ["Pilih..."] + daftar_sub_dpl)
+
+             if pilihan_sub_dpl != "Pilih...":
+                 simpan_teks('Sub_Dimensi', pilihan_sub_dpl)
+
+                 # AI penarik kompetensi otomatis berdasarkan Fase
+                 if fase_terpilih in ["Fase Fondasi", "Fase A", "Fase B", "Fase C", "Fase D", "Fase E", "Fase F"]:
+                     teks_kompetensi = bank_dpl[profil_terpilih][pilihan_sub_dpl].get(fase_terpilih, "Data kompetensi belum tersedia untuk fase ini.")
+                 else:
+                     teks_kompetensi = "⚠️ Silakan pilih Fase terlebih dahulu di Tab 1 (Identitas)."
+
+                 komp_input = st.text_area("Kompetensi Lulusan (Otomatis Terisi & Bisa Diedit):", value=teks_kompetensi, height=120)
+                 simpan_teks('Kompetensi', komp_input)
+             else:
+                 simpan_teks('Sub_Dimensi', "")
+                 simpan_teks('Kompetensi', "")
+
+         else:
+             st.warning("⚠️ Dimensi Profil Lulusan belum dipilih di Tab 1.")
+             simpan_teks('Sub_Dimensi', "")
+             simpan_teks('Kompetensi', "")
 
     with st.container(border=True): # --- KARTU CORE VALUES ---
         st.subheader("B. Core Values / Ke-SFD-an")
