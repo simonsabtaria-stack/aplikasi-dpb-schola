@@ -106,7 +106,12 @@ with tab1:
         
         with col_sdgs:
             foto_sdgs = st.file_uploader("Upload Logo SDGs (Opsional)", type=['png', 'jpg', 'jpeg'], help="Unggah ikon SDGs yang sesuai untuk disematkan di pojok dokumen.")
-
+        # --- FITUR BARU: IDENTIFIKASI PESERTA DIDIK ---
+        st.divider()
+        st.markdown("##### C. Identifikasi Peserta Didik")
+        identifikasi_siswa = st.text_area("Hasil Asesmen Diagnostik:", help="Ketikkan pemetaan gaya belajar (Visual/Auditori/Kinestetik), minat, atau kesiapan belajar siswa di sini.")
+        simpan_teks('Identifikasi_Peserta_Didik', identifikasi_siswa)
+        
     with st.container(border=True): # --- KARTU 2 ---
         st.subheader("B. Data Umum & Konten")
         
@@ -379,6 +384,7 @@ with tab4:
             simpan_teks('Santo_Santa_Pelindung', st.text_input("Ketik Nama Pelindung:") if pilihan_santo == "Lainnya" else pilihan_santo)
             
             nilai_santo = st.text_input("Nilai/Keutamaan Pelindung:", help="Ketik keteladanan tokoh (Misal: Cinta alam, Kesederhanaan).")
+            simpan_teks('Nilai_Keutamaan', nilai_santo)
             simpan_teks('Nilai_Santo_Santa', nilai_santo)
 
         with col_kanan:
