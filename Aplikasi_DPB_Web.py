@@ -189,6 +189,7 @@ with tab1:
         
         tp_sdgs_input = st.text_area("3. Tujuan Pembelajaran (TP) SDGs:", height=100, help="Rumuskan bagaimana materi ini berkontribusi pada target SDGs yang dipilih.")
         simpan_teks('TP_SDGs', tp_sdgs_input)
+
 # ================= TAB 2 =================
 with tab2:
     with st.container(border=True): # --- KARTU 1 ---
@@ -229,7 +230,10 @@ with tab3:
             else:
                 with st.spinner("Menganalisis KKO CP dan menaikkan level..."):
                     try:
-                        prompt_tp_kog = f"Baca Capaian Pembelajaran ini: '{cp_input}'. Identifikasi level KKO kognitifnya (C1-C6). Kemudian, buatkan rumusan Tujuan Pembelajaran (TP) Kognitif yang menaikkan KKO-nya 1 atau 2 level lebih tinggi agar lebih menantang (HOTS). Integrasikan dengan semangat TP SDGs: '{tp_sdgs_input}'. Berikan 2 pilihan rumusan singkat."
+                        materi_val = st.session_state.data_isian.get('Materi', '')
+                        cp_val = st.session_state.data_isian.get('Capaian_Pembelajaran', '')
+                        tp_sdgs_val = st.session_state.data_isian.get('TP_SDGs', '')
+                        prompt_tp_kog = f"Baca Capaian Pembelajaran ini: '{cp_val}'. Identifikasi level KKO kognitifnya (C1-C6). Kemudian, buatkan rumusan Tujuan Pembelajaran (TP) Kognitif yang menaikkan KKO-nya 1 atau 2 level lebih tinggi agar lebih menantang (HOTS). Integrasikan dengan semangat TP SDGs: '{tp_sdgs_val}'. Berikan 2 pilihan rumusan singkat."
                         st.session_state['draft_tp_kognitif'] = panggil_ai(prompt_tp_kog)
                     except Exception as e: st.error(e)
 
@@ -244,7 +248,9 @@ with tab3:
             else:
                 with st.spinner("Merancang aktivitas kognitif..."):
                     try:
-                        konteks = f"Materi: {materi_terpilih}\nCP: {cp_input}\n"
+                        materi_val = st.session_state.data_isian.get('Materi', '')
+                        cp_val = st.session_state.data_isian.get('Capaian_Pembelajaran', '')
+                        konteks = f"Materi: {materi_val}\nCP: {cp_val}\n"
                         prompt = f"Berdasarkan {konteks}, buat skenario 'Pengalaman Belajar' (Kegiatan Inti) untuk mencapai indikator: {indikator_kognitif}. Buat aktivitas eksplorasi dalam 3-4 poin praktis."
                         st.session_state.draft_kognitif = panggil_ai(prompt)
                     except Exception as e: st.error(e)
@@ -266,7 +272,9 @@ with tab3:
             else:
                 with st.spinner("Menganalisis KKO CP dan menaikkan level..."):
                     try:
-                        prompt_tp_psi = f"Baca Capaian Pembelajaran ini: '{cp_input}'. Identifikasi level KKO psikomotoriknya (P1-P5). Kemudian, buatkan rumusan Tujuan Pembelajaran (TP) Psikomotorik yang menaikkan KKO-nya 1 atau 2 level lebih tinggi. Integrasikan dengan semangat TP SDGs: '{tp_sdgs_input}'. Berikan 2 pilihan rumusan singkat."
+                        cp_val = st.session_state.data_isian.get('Capaian_Pembelajaran', '')
+                        tp_sdgs_val = st.session_state.data_isian.get('TP_SDGs', '')
+                        prompt_tp_psi = f"Baca Capaian Pembelajaran ini: '{cp_val}'. Identifikasi level KKO psikomotoriknya (P1-P5). Kemudian, buatkan rumusan Tujuan Pembelajaran (TP) Psikomotorik yang menaikkan KKO-nya 1 atau 2 level lebih tinggi. Integrasikan dengan semangat TP SDGs: '{tp_sdgs_val}'. Berikan 2 pilihan rumusan singkat."
                         st.session_state['draft_tp_psikomotor'] = panggil_ai(prompt_tp_psi)
                     except Exception as e: st.error(e)
 
@@ -281,7 +289,9 @@ with tab3:
             else:
                 with st.spinner("Merancang aktivitas psikomotorik..."):
                     try:
-                        konteks = f"Materi: {materi_terpilih}\nCP: {cp_input}\nKegiatan Kognitif Sebelumnya: {st.session_state.draft_kognitif}\n"
+                        materi_val = st.session_state.data_isian.get('Materi', '')
+                        cp_val = st.session_state.data_isian.get('Capaian_Pembelajaran', '')
+                        konteks = f"Materi: {materi_val}\nCP: {cp_val}\nKegiatan Kognitif Sebelumnya: {st.session_state.draft_kognitif}\n"
                         prompt = f"Berdasarkan {konteks}, buat skenario unjuk kerja/proyek untuk mencapai indikator psikomotorik: {indikator_psikomotorik}. Tuliskan dalam 3-4 poin praktis."
                         st.session_state.draft_psikomotor = panggil_ai(prompt)
                     except Exception as e: st.error(e)
@@ -329,6 +339,15 @@ with tab4:
                         
                         cp_p3 = st.text_area("Capaian P3 (Otomatis Terisi):", value=teks_cp_p3, height=120)
                         simpan_teks('Capaian_P3', cp_p3)
+                    else:
+                        simpan_teks('Sub_elemen', "")
+                        simpan_teks('Capaian_P3', "")
+                        cp_p3 = ""
+                else:
+                    simpan_teks('Elemen', "")
+                    simpan_teks('Sub_elemen', "")
+                    simpan_teks('Capaian_P3', "")
+                    cp_p3 = ""
             else:
                 simpan_teks('Dimensi', "")
                 simpan_teks('Elemen', "")
@@ -438,8 +457,10 @@ with tab4:
                     try:
                         sfd_cn = st.session_state.data_isian.get('Capaian_Nilai', '')
                         nilai_pelindung = st.session_state.data_isian.get('Nilai_Santo_Santa', '')
+                        cp_p3_val = st.session_state.data_isian.get('Capaian_P3', '')
+                        kearifan_val = st.session_state.data_isian.get('Kearifan_Lokal', '')
                         
-                        prompt_tp_afe = f"Saya memiliki elemen afektif: P3 ({cp_p3}), Nilai SFD ({sfd_cn}), Nilai Keteladanan Pelindung ({nilai_pelindung}), dan Kearifan Lokal ({kearifan_input}). Identifikasi level KKO afektif (A1-A5) pada Nilai SFD tersebut. Tolong reduksi/sintesis elemen-elemen ini menjadi satu rumusan Tujuan Pembelajaran (TP) Afektif yang kuat, dengan menaikkan level KKO satu tingkat lebih tinggi. Jadikan 1 paragraf padu yang elegan."
+                        prompt_tp_afe = f"Saya memiliki elemen afektif: P3 ({cp_p3_val}), Nilai SFD ({sfd_cn}), Nilai Keteladanan Pelindung ({nilai_pelindung}), dan Kearifan Lokal ({kearifan_val}). Identifikasi level KKO afektif (A1-A5) pada Nilai SFD tersebut. Tolong reduksi/sintesis elemen-elemen ini menjadi satu rumusan Tujuan Pembelajaran (TP) Afektif yang kuat, dengan menaikkan level KKO satu tingkat lebih tinggi. Jadikan 1 paragraf padu yang elegan."
                         
                         st.session_state['draft_tp_afektif'] = panggil_ai(prompt_tp_afe)
                     except Exception as e: st.error(e)
@@ -454,7 +475,8 @@ with tab4:
             else:
                 with st.spinner("Merancang aktivitas karakter..."):
                     try:
-                        konteks = f"Materi: {materi_terpilih}\nKognitif: {st.session_state.draft_kognitif}\nPsikomotorik: {st.session_state.draft_psikomotor}\n"
+                        materi_val = st.session_state.data_isian.get('Materi', '')
+                        konteks = f"Materi: {materi_val}\nKognitif: {st.session_state.draft_kognitif}\nPsikomotorik: {st.session_state.draft_psikomotor}\n"
                         prompt = f"Berdasarkan {konteks}, rancang 'Pengalaman Belajar' afektif (sikap/karakter) untuk indikator: {indikator_afektif}. Buat aktivitas reflektif/empati dalam 3-4 poin praktis yang selaras dengan kegiatan sebelumnya."
                         st.session_state.draft_afektif = panggil_ai(prompt)
                     except Exception as e: st.error(e)
