@@ -19,66 +19,50 @@ st.sidebar.subheader("🤖 Pengaturan Asisten AI")
 api_key_guru = st.sidebar.text_input("🔑 Kunci API Gemini:", type="password")
 st.sidebar.divider()
 st.sidebar.subheader("⚙️ Kustomisasi Gaya AI")
-instruksi_khusus = st.sidebar.text_area("Instruksi Tambahan (Opsional):")
+instruksi_khusus = st.sidebar.text_area("Instruksi Tambahan (Opsional):", placeholder="Contoh: Fokuskan pada metode diskusi kelompok.")
 st.sidebar.divider()
 
 st.markdown("""
     <style>
     .stTabs [data-baseweb="tab-list"] { gap: 10px; }
-    .stTabs [data-baseweb="tab"] {
-        background-color: #f1f5f9;
-        border-radius: 8px 8px 0px 0px;
-        padding: 10px 20px;
-        box-shadow: inset 0 -2px 0 0 #cbd5e1;
-        transition: all 0.3s ease;
-    }
-    .stTabs [aria-selected="true"] {
-        background-color: #1e293b;
-        color: #ffffff !important;
-        box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
-    }
+    .stTabs [data-baseweb="tab"] { background-color: #f1f5f9; border-radius: 8px 8px 0px 0px; padding: 10px 20px; box-shadow: inset 0 -2px 0 0 #cbd5e1; transition: all 0.3s ease; }
+    .stTabs [aria-selected="true"] { background-color: #1e293b; color: #ffffff !important; box-shadow: 0 -4px 10px rgba(0,0,0,0.1); }
     .stTabs [data-baseweb="tab"]:hover { background-color: #e2e8f0; }
-    .stTextInput input, .stTextArea textarea, .stSelectbox [data-baseweb="select"] {
-        border-radius: 8px !important;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
-        border: 1px solid #e2e8f0 !important;
-        transition: all 0.3s ease;
-    }
-    .stTextInput input:focus, .stTextArea textarea:focus {
-        border-color: #3b82f6 !important;
-        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
-    }
-    .stButton > button[kind="primary"] {
-        border-radius: 8px;
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        color: white;
-        border: none;
-        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .stButton > button[kind="primary"]:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
-    }
+    .stTextInput input, .stTextArea textarea, .stSelectbox [data-baseweb="select"] { border-radius: 8px !important; box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important; border: 1px solid #e2e8f0 !important; transition: all 0.3s ease; }
+    .stTextInput input:focus, .stTextArea textarea:focus { border-color: #3b82f6 !important; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important; }
+    .stButton > button[kind="primary"] { border-radius: 8px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3); transition: transform 0.2s, box-shadow 0.2s; }
+    .stButton > button[kind="primary"]:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4); }
     </style>
 """, unsafe_allow_html=True)
 
-if 'data_isian' not in st.session_state:
-    st.session_state.data_isian = {}
-if 'draft_kognitif' not in st.session_state:
-    st.session_state.draft_kognitif = ""
-if 'draft_psikomotor' not in st.session_state:
-    st.session_state.draft_psikomotor = ""
-if 'draft_afektif' not in st.session_state:
-    st.session_state.draft_afektif = ""
+# --- INISIALISASI MEMORI ---
+if 'data_isian' not in st.session_state: st.session_state.data_isian = {}
+if 'draft_kognitif' not in st.session_state: st.session_state.draft_kognitif = ""
+if 'draft_psikomotor' not in st.session_state: st.session_state.draft_psikomotor = ""
+if 'draft_afektif' not in st.session_state: st.session_state.draft_afektif = ""
 
 def simpan_teks(kunci, nilai):
     st.session_state.data_isian[kunci] = nilai
+
+# --- FUNGSI AI ANTI-ERROR ---
+def panggil_ai(prompt):
+    genai.configure(api_key=api_key_guru)
+    mesin_tersedia = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+    mesin_flash = [m for m in mesin_tersedia if 'flash' in m.lower() and 'interactions' not in m.lower()]
+    if not mesin_flash: raise Exception("API Key tidak memiliki akses ke model Flash.")
+    nama_mesin = next((m for m in mesin_flash if '1.5' in m), mesin_flash[0])
+    
+    aturan = "\n\nATURAN FORMAT: Gunakan kalimat efektif, hindari UPPERCASE, gunakan list poin biasa tanpa simbol markdown rumit."
+    if instruksi_khusus: aturan += f"\nINSTRUKSI KHUSUS GURU: {instruksi_khusus}"
+    
+    model = genai.GenerativeModel(nama_mesin)
+    return model.generate_content(prompt + aturan).text
 
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🖨️ 5. Cetak"
 ])
 
+# ================= TAB 1 =================
 with tab1:
     st.subheader("A. Identitas Guru & Jenjang")
     simpan_teks('Nama_Guru', st.text_input("Nama Guru Penyusun (Wajib diisi):"))
@@ -91,14 +75,13 @@ with tab1:
     foto_sdgs = st.file_uploader("Upload Logo SDGs", type=['png', 'jpg', 'jpeg'])
 
     st.subheader("B. Data Umum & Konten")
-    
-    daftar_mapel = list(bank_kurikulum.keys())
+    daftar_mapel = list(bank_kurikulum.keys()) if 'bank_kurikulum' in globals() else ["Pendidikan Pancasila", "Matematika"]
     mapel_terpilih = st.selectbox("Mata Pelajaran:", daftar_mapel)
     simpan_teks('MAPEL', mapel_terpilih)
     
     c_elemen, c_materi = st.columns(2)
     with c_elemen:
-        daftar_elemen = bank_kurikulum[mapel_terpilih]
+        daftar_elemen = bank_kurikulum[mapel_terpilih] if 'bank_kurikulum' in globals() else ["Elemen 1", "Elemen 2"]
         elemen_terpilih = st.selectbox(f"Elemen ({mapel_terpilih}):", daftar_elemen)
         simpan_teks('Elemen', elemen_terpilih)
     with c_materi:
@@ -109,58 +92,40 @@ with tab1:
     
     st.divider()
     st.subheader("🎯 Capaian Pembelajaran & Target SDGs")
-    simpan_teks('Capaian_Pembelajaran', st.text_area("Capaian Pembelajaran (CP):", height=150))
-    simpan_teks('Capaian_SDGs', st.text_input("Capaian SDGs:"))
+    cp_input = st.text_area("Capaian Pembelajaran (CP):", height=150)
+    simpan_teks('Capaian_Pembelajaran', cp_input)
+    simpan_teks('Capaian_SDGs', st.text_input("Capaian SDGs (Contoh: Perdamaian & Keadilan):"))
     simpan_teks('TP_SDGs', st.text_area("Tujuan Pembelajaran (TP) SDGs:", height=100))
 
+# ================= TAB 2 =================
 with tab2:
     st.subheader("Lingkungan & Praktik Pembelajaran")
     simpan_teks('Kemitraan_Pembelajaran', st.text_area("Kemitraan Pembelajaran:"))
-    simpan_teks('Praktik_Pedagogis', st.text_area("Praktik Pedagogis:"))
+    simpan_teks('Praktik_Pedagogis', st.text_area("Praktik Pedagogis (Model Belajar):"))
     simpan_teks('Urutan_Sintkas', st.text_area("Urutan Sintaks Pembelajaran:", height=150))
     simpan_teks('Ruang_Fisik', st.text_area("Ruang Fisik:"))
     simpan_teks('Ruang_Virtual', st.text_area("Ruang Virtual:"))
     simpan_teks('Budaya_Belajar', st.text_area("Budaya Belajar:"))
 
+# ================= TAB 3 =================
 with tab3:
     st.subheader("Aspek Kognitif")
     tp_kognitif = st.text_area("TP Kognitif:")
     simpan_teks('TP_KOGNITIF', tp_kognitif)
-    
     indikator_kognitif = st.text_area("Indikator Kognitif:")
     simpan_teks('Indikator_Kognitif', indikator_kognitif)
     
     if st.button("✨ Rumuskan Pengalaman Kognitif (AI)", key="btn_kog"):
-        if not api_key_guru:
-            st.error("Masukkan Kunci API di Sidebar!")
-        elif not indikator_kognitif:
-            st.warning("Isi Indikator Kognitif terlebih dahulu!")
+        if not api_key_guru: st.error("Masukkan Kunci API di Sidebar!")
         else:
-            with st.spinner("Merancang aktivitas..."):
+            with st.spinner("Merancang aktivitas kognitif..."):
                 try:
-                    genai.configure(api_key=api_key_guru)
-                    nama_mesin = None
-                    for m in genai.list_models():
-                        if 'generateContent' in m.supported_generation_methods:
-                            nama_mesin = m.name
-                            if 'flash' in m.name.lower():
-                                break
-                    if not nama_mesin:
-                        raise Exception("Tidak ada model AI.")
-                    model = genai.GenerativeModel(nama_mesin)
+                    konteks = f"Materi: {materi_terpilih}\nCP: {cp_input}\n"
+                    prompt = f"Berdasarkan {konteks}, buat skenario 'Pengalaman Belajar' (Kegiatan Inti) untuk mencapai indikator: {indikator_kognitif}. Buat aktivitas eksplorasi dalam 3-4 poin praktis."
+                    st.session_state.draft_kognitif = panggil_ai(prompt)
+                except Exception as e: st.error(e)
                     
-                    prompt = f"Sebagai ahli desain instruksional, buatkan skenario 'Pengalaman Belajar' (Kegiatan Inti) untuk mencapai indikator kognitif berikut: {indikator_kognitif}. Buat aktivitas eksplorasi yang menyenangkan dan memancing rasa ingin tahu. Tuliskan dalam bentuk 3-4 poin langkah kegiatan yang praktis."
-                    if instruksi_khusus:
-                        prompt += f"\n\nPENTING - Ikuti instruksi tambahan dari guru berikut ini: {instruksi_khusus}"
-                        
-                    respon = model.generate_content(prompt)
-                    st.session_state.draft_kognitif = respon.text
-                except Exception as e:
-                    st.error(f"Gagal memanggil AI: {e}")
-                    
-    pengalaman_kognitif = st.text_area("Pengalaman Belajar Kognitif:", value=st.session_state.draft_kognitif, height=200)
-    simpan_teks('Pengalaman_Belajar', pengalaman_kognitif)
-    
+    simpan_teks('Pengalaman_Belajar', st.text_area("Pengalaman Belajar Kognitif:", value=st.session_state.draft_kognitif, height=150))
     c1, c2 = st.columns(2)
     with c1: simpan_teks('Asesmen_Formatif', st.text_area("Asesmen Formatif (Kognitif):"))
     with c2: simpan_teks('Asesmen_Sumatif', st.text_area("Asesmen Sumatif (Kognitif):"))
@@ -170,110 +135,94 @@ with tab3:
     st.subheader("Aspek Psikomotorik")
     tp_psikomotorik = st.text_area("TP Psikomotorik:")
     simpan_teks('TP_Psikomotorik', tp_psikomotorik)
-    
     indikator_psikomotorik = st.text_area("Indikator Psikomotorik:")
     simpan_teks('Indikator_Psikomotorik', indikator_psikomotorik)
     
     if st.button("✨ Rumuskan Pengalaman Psikomotorik (AI)", key="btn_psi"):
-        if not api_key_guru:
-            st.error("Masukkan Kunci API di Sidebar!")
-        elif not indikator_psikomotorik:
-            st.warning("Isi Indikator Psikomotorik terlebih dahulu!")
+        if not api_key_guru: st.error("Masukkan Kunci API di Sidebar!")
         else:
-            with st.spinner("Merancang aktivitas..."):
+            with st.spinner("Merancang aktivitas psikomotorik..."):
                 try:
-                    genai.configure(api_key=api_key_guru)
-                    nama_mesin = None
-                    for m in genai.list_models():
-                        if 'generateContent' in m.supported_generation_methods:
-                            nama_mesin = m.name
-                            if 'flash' in m.name.lower():
-                                break
-                    if not nama_mesin:
-                        raise Exception("Tidak ada model AI.")
-                    model = genai.GenerativeModel(nama_mesin)
-                    
-                    prompt = f"Sebagai ahli desain instruksional, buatkan skenario 'Pengalaman Belajar' (Praktik/Kinerja) untuk mencapai indikator psikomotorik berikut: {indikator_psikomotorik}. Buat aktivitas unjuk kerja, karya, atau proyek yang terstruktur. Tuliskan dalam bentuk 3-4 poin praktis."
-                    if instruksi_khusus:
-                        prompt += f"\n\nPENTING - Ikuti instruksi tambahan dari guru berikut ini: {instruksi_khusus}"
-                        
-                    respon = model.generate_content(prompt)
-                    st.session_state.draft_psikomotor = respon.text
-                except Exception as e:
-                    st.error(f"Gagal memanggil AI: {e}")
+                    konteks = f"Materi: {materi_terpilih}\nCP: {cp_input}\nKegiatan Kognitif Sebelumnya: {st.session_state.draft_kognitif}\n"
+                    prompt = f"Berdasarkan {konteks}, buat skenario unjuk kerja/proyek untuk mencapai indikator psikomotorik: {indikator_psikomotorik}. Tuliskan dalam 3-4 poin praktis."
+                    st.session_state.draft_psikomotor = panggil_ai(prompt)
+                except Exception as e: st.error(e)
 
-    pengalaman_psikomotorik = st.text_area("Pengalaman Belajar Psikomotorik:", value=st.session_state.draft_psikomotor, height=200)
-    simpan_teks('Pengalaman_Belajar_Psikomotorik', pengalaman_psikomotorik)
-    
+    simpan_teks('Pengalaman_Belajar_Psikomotorik', st.text_area("Pengalaman Belajar Psikomotorik:", value=st.session_state.draft_psikomotor, height=150))
     c3, c4 = st.columns(2)
     with c3: simpan_teks('Asesmen_Formatif_Psikomotorik', st.text_area("Asesmen Formatif (Psikomotorik):"))
     with c4: simpan_teks('Asesmen_Sumatif_Psikomotorik', st.text_area("Asesmen Sumatif (Psikomotorik):"))
 
+# ================= TAB 4 (ROMBAK TOTAL AFEKTIF) =================
 with tab4:
-    st.subheader("A. Profil Pelajar Pancasila (P3)")
-    c1, c2, c3 = st.columns(3)
-    with c1: simpan_teks('Dimensi', st.text_input("Dimensi P3:"))
-    with c2: simpan_teks('Elemen', st.text_input("Elemen P3:"))
-    with c3: simpan_teks('Sub_elemen', st.text_input("Sub Elemen P3:"))
-    simpan_teks('Capaian_P3', st.text_area("Capaian P3:"))
+    st.subheader("A. Identitas Karakter & Nilai Yayasan")
+    col_kiri, col_kanan = st.columns(2)
+    
+    with col_kiri:
+        st.markdown("##### 1. Profil Pelajar Pancasila (P3)")
+        opsi_p3 = ["Beriman & Bertakwa", "Berkebinekaan Global", "Bergotong Royong", "Mandiri", "Bernalar Kritis", "Kreatif", "Lainnya"]
+        pilihan_p3 = st.selectbox("Dimensi P3:", opsi_p3)
+        simpan_teks('Dimensi', st.text_input("Ketik Dimensi P3:") if pilihan_p3 == "Lainnya" else pilihan_p3)
+        simpan_teks('Elemen', st.text_input("Elemen P3:", placeholder="Contoh: Akhlak bernegara"))
+        simpan_teks('Sub_elemen', st.text_input("Sub Elemen P3:"))
+        simpan_teks('Capaian_P3', st.text_area("Capaian P3:"))
+        
+        st.divider()
+        st.markdown("##### 2. Santo / Santa Pelindung")
+        opsi_santo = ["Santo Fransiskus Asisi", "Santa Clara", "Santa Maria", "Lainnya"]
+        pilihan_santo = st.selectbox("Pilih Pelindung:", opsi_santo)
+        simpan_teks('Santo_Santa_Pelindung', st.text_input("Ketik Nama Pelindung:") if pilihan_santo == "Lainnya" else pilihan_santo)
 
-    st.subheader("B. Kearifan Lokal & Pelindung")
-    c4, c5 = st.columns(2)
-    with c4: simpan_teks('Santo_Santa_Pelindung', st.text_input("Santo/Santa Pelindung:"))
-    with c5: simpan_teks('Kearifan_Lokal', st.text_input("Kearifan Lokal:"))
-    c6, c7, c8 = st.columns(3)
-    with c6: simpan_teks('KAIH', st.text_input("KAIH:"))
-    with c7: simpan_teks('Sub_Dimensi', st.text_input("Sub Dimensi:"))
-    with c8: simpan_teks('Kompetensi', st.text_input("Kompetensi:"))
+    with col_kanan:
+        st.markdown("##### 3. Kearifan Lokal")
+        opsi_kearifan = ["Belum Bahadat", "Huma Betang", "Handep", "Lainnya"]
+        pilihan_kearifan = st.selectbox("Pilih Kearifan Lokal:", opsi_kearifan)
+        simpan_teks('Kearifan_Lokal', st.text_input("Ketik Kearifan Lokal:") if pilihan_kearifan == "Lainnya" else pilihan_kearifan)
+        
+        st.divider()
+        st.markdown("##### 4. 7 Kebiasaan Anak Indonesia Hebat")
+        opsi_7kaih = ["Bangun Pagi", "Beribadah", "Berolahraga", "Makan Sehat dan Bergizi", "Gemar Belajar", "Bermasyarakat", "Tidur Cepat"]
+        pilihan_7kaih = st.selectbox("Pilih 7KAIH:", opsi_7kaih)
+        simpan_teks('KAIH', st.text_input("Ketik 7KAIH:") if pilihan_7kaih == "Lainnya" else pilihan_7kaih)
+        
+        st.divider()
+        st.markdown("##### 5. Dimensi Profil Lulusan")
+        opsi_profil = ["Keimanan & Ketakwaan Kepada Tuhan Yang Maha Esa", "Kewargaan", "Penalaran Kritis", "Kreativitas", "Kolaborasi", "Kemandirian", "Kesehatan", "Komunikasi", "Lainnya"]
+        pilihan_profil = st.selectbox("Profil Lulusan:", opsi_profil)
+        simpan_teks('Dimensi_Lulusan', st.text_input("Ketik Profil:") if pilihan_profil == "Lainnya" else pilihan_profil)
+        simpan_teks('Sub_Dimensi', st.text_input("Sub Dimensi:"))
+        simpan_teks('Kompetensi', st.text_input("Kompetensi Lulusan:"))
 
-    st.subheader("C. Core Values / Ke-SFD-an")
+    st.divider()
+    st.subheader("B. Core Values / Ke-SFD-an")
+    st.info("Fitur ekstraksi dokumen Nilai Ke-SFD-an akan diaktifkan setelah dokumen diunggah.")
     c9, c10 = st.columns(2)
     with c9: simpan_teks('Nilai', st.text_input("Nilai Ke-SFD-an:"))
     with c10: simpan_teks('Keutamaan', st.text_input("Keutamaan:"))
     simpan_teks('Capaian_Nilai', st.text_area("Capaian Nilai:"))
 
-    st.subheader("D. Rencana Pembelajaran Afektif")
-    tp_afektif = st.text_area("TP Afektif:")
-    simpan_teks('TP_Afektif', tp_afektif)
-    
+    st.divider()
+    st.subheader("C. Rencana Pembelajaran Afektif")
+    simpan_teks('TP_Afektif', st.text_area("TP Afektif:"))
     indikator_afektif = st.text_area("Indikator Afektif:")
     simpan_teks('Indikator_Afektif', indikator_afektif)
     
     if st.button("✨ Rumuskan Pengalaman Afektif (AI)", key="btn_afe"):
-        if not api_key_guru:
-            st.error("Masukkan Kunci API di Sidebar!")
-        elif not indikator_afektif:
-            st.warning("Isi Indikator Afektif terlebih dahulu!")
+        if not api_key_guru: st.error("Masukkan Kunci API di Sidebar!")
         else:
-            with st.spinner("Merancang aktivitas..."):
+            with st.spinner("Merancang aktivitas karakter..."):
                 try:
-                    genai.configure(api_key=api_key_guru)
-                    nama_mesin = None
-                    for m in genai.list_models():
-                        if 'generateContent' in m.supported_generation_methods:
-                            nama_mesin = m.name
-                            if 'flash' in m.name.lower():
-                                break
-                    if not nama_mesin:
-                        raise Exception("Tidak ada model AI.")
-                    model = genai.GenerativeModel(nama_mesin)
-                    
-                    prompt = f"Sebagai ahli desain instruksional, buatkan skenario 'Pengalaman Belajar' untuk mencapai indikator afektif (sikap/karakter) berikut: {indikator_afektif}. Rancang aktivitas yang memancing empati, refleksi diri, atau diskusi nilai moral yang bermakna. Tuliskan dalam bentuk 3-4 poin langkah kegiatan."
-                    if instruksi_khusus:
-                        prompt += f"\n\nPENTING - Ikuti instruksi tambahan dari guru berikut ini: {instruksi_khusus}"
-                        
-                    respon = model.generate_content(prompt)
-                    st.session_state.draft_afektif = respon.text
-                except Exception as e:
-                    st.error(f"Gagal memanggil AI: {e}")
+                    konteks = f"Materi: {materi_terpilih}\nKognitif: {st.session_state.draft_kognitif}\nPsikomotorik: {st.session_state.draft_psikomotor}\n"
+                    prompt = f"Berdasarkan {konteks}, rancang 'Pengalaman Belajar' afektif (sikap/karakter) untuk indikator: {indikator_afektif}. Buat aktivitas reflektif/empati dalam 3-4 poin praktis yang selaras dengan kegiatan sebelumnya."
+                    st.session_state.draft_afektif = panggil_ai(prompt)
+                except Exception as e: st.error(e)
 
-    pengalaman_afektif = st.text_area("Pengalaman Belajar Afektif:", value=st.session_state.draft_afektif, height=200)
-    simpan_teks('Pengalaman_Belajar_Afektif', pengalaman_afektif)
-    
+    simpan_teks('Pengalaman_Belajar_Afektif', st.text_area("Pengalaman Belajar Afektif:", value=st.session_state.draft_afektif, height=150))
     c11, c12 = st.columns(2)
     with c11: simpan_teks('Formatif', st.text_area("Asesmen Formatif (Afektif):"))
     with c12: simpan_teks('Sumatif', st.text_area("Asesmen Sumatif (Afektif):"))
 
+# ================= TAB 5 =================
 with tab5:
     st.subheader("Perayaan Belajar & Media")
     simpan_teks('Membagikan_Pengalaman_Belajar', st.text_area("Membagikan Pengalaman Belajar:"))
@@ -288,7 +237,7 @@ with tab5:
         if not st.session_state.data_isian.get('Nama_Guru'):
             st.error("Mohon isi Nama Guru Penyusun di Tab 1!")
         else:
-            with st.spinner('Merakit dokumen...'):
+            with st.spinner('Merakit dokumen dan mengirim ke database...'):
                 try:
                     doc = DocxTemplate("Template_DPB_Schola Amoris.docx")
                     if foto_sdgs is not None:
@@ -309,13 +258,13 @@ with tab5:
                     try:
                         respon = requests.post(URL_DATABASE, json=data_kirim) 
                         if respon.status_code == 200:
-                            st.toast('Tersimpan di Katalog!', icon='💾')
+                            st.toast('Data Modul Tersimpan di Katalog!', icon='✅')
                         else:
                             st.warning(f"Error Database: {respon.status_code}")
                     except Exception as err:
-                        st.warning(f"Koneksi Database gagal: {err}")
+                        st.warning(f"Gagal menyambung ke database Google Sheet: {err}")
                     
-                    st.success("Dokumen siap diunduh:")
+                    st.success("✅ Dokumen DPB berhasil dirakit dan siap diunduh:")
                     st.download_button(
                         label="📥 Download File DPB (.docx)",
                         data=bio.getvalue(),
@@ -324,4 +273,4 @@ with tab5:
                         use_container_width=True
                     )
                 except Exception as e:
-                    st.error(f"Terjadi kesalahan perakitan: {e}")
+                    st.error(f"Terjadi kesalahan perakitan Word: {e}\nPastikan nama variabel di template .docx sudah persis sama!")
