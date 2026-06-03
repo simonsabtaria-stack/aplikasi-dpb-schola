@@ -258,6 +258,10 @@ with tab4:
             opsi_santo = ["Pilih...", "Santo Fransiskus Asisi", "Santa Clara", "Santa Maria", "Lainnya"]
             pilihan_santo = st.selectbox("Pilih Pelindung:", opsi_santo)
             simpan_teks('Santo_Santa_Pelindung', st.text_input("Ketik Nama Pelindung:") if pilihan_santo == "Lainnya" else pilihan_santo)
+            
+            # --- TAMBAHAN BARU: Nilai / Keutamaan Pelindung ---
+            nilai_santo = st.text_input("Nilai/Keutamaan Pelindung:", help="Ketik keteladanan tokoh (Misal: Cinta alam, Kesederhanaan, Kedisiplinan).")
+            simpan_teks('Nilai_Santo_Santa', nilai_santo)
 
         with col_kanan:
             st.markdown("##### 3. Kearifan Lokal")
@@ -325,7 +329,12 @@ with tab4:
                 with st.spinner("Mereduksi nilai dan menaikkan level KKO..."):
                     try:
                         sfd_cn = st.session_state.data_isian.get('Capaian_Nilai', '')
-                        prompt_tp_afe = f"Saya memiliki elemen afektif: P3 ({cp_p3}), Nilai SFD ({sfd_cn}), dan Kearifan Lokal ({kearifan_input}). Identifikasi level KKO afektif (A1-A5) pada Nilai SFD tersebut. Tolong reduksi/sintesis elemen-elemen ini menjadi satu rumusan Tujuan Pembelajaran (TP) Afektif yang kuat, dengan menaikkan level KKO satu tingkat lebih tinggi. Jadikan 1 paragraf padu yang elegan."
+                        # Menarik data nilai keteladanan pelindung yang baru ditambahkan
+                        nilai_pelindung = st.session_state.data_isian.get('Nilai_Santo_Santa', '')
+                        
+                        # Menyuntikkan nilai pelindung ke dalam instruksi AI
+                        prompt_tp_afe = f"Saya memiliki elemen afektif: P3 ({cp_p3}), Nilai SFD ({sfd_cn}), Nilai Keteladanan Pelindung ({nilai_pelindung}), dan Kearifan Lokal ({kearifan_input}). Identifikasi level KKO afektif (A1-A5) pada Nilai SFD tersebut. Tolong reduksi/sintesis elemen-elemen ini menjadi satu rumusan Tujuan Pembelajaran (TP) Afektif yang kuat, dengan menaikkan level KKO satu tingkat lebih tinggi. Jadikan 1 paragraf padu yang elegan."
+                        
                         st.session_state['draft_tp_afektif'] = panggil_ai(prompt_tp_afe)
                     except Exception as e: st.error(e)
 
