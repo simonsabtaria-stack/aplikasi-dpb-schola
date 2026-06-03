@@ -109,24 +109,70 @@ with tab1:
 
     with st.container(border=True): # --- KARTU 2 ---
         st.subheader("B. Data Umum & Konten")
-        daftar_mapel = list(bank_kurikulum.keys())
-        mapel_terpilih = st.selectbox("Mata Pelajaran:", daftar_mapel)
-        simpan_teks('MAPEL', mapel_terpilih)
         
-        c_elemen, c_materi = st.columns(2)
-        with c_elemen:
-            daftar_elemen = bank_kurikulum[mapel_terpilih]
-            elemen_terpilih = st.selectbox(f"Elemen ({mapel_terpilih}):", daftar_elemen)
-            simpan_teks('Elemen', elemen_terpilih)
-        with c_materi:
-            materi_terpilih = st.text_input("Materi Esensial:", help="Topik inti yang akan dipelajari siswa.")
-            simpan_teks('Materi', materi_terpilih)
+        fase_terpilih = st.session_state.data_isian.get('Fase', '')
+        
+        # 1. Ambil daftar mapel dari database (jika fasenya ada)
+        daftar_mapel_db = list(bank_kurikulum.get(fase_terpilih, {}).keys()) if fase_terpilih else []
+        
+        # 2. Tambahkan opsi "Lainnya" sebagai jalur penyelamat untuk mapel yang belum ada di database
+        opsi_mapel = ["Pilih..."] + daftar_mapel_db + ["Lainnya (Ketik Manual)"]
+        pilihan_mapel = st.selectbox("Mata Pelajaran:", opsi_mapel, help="Pilih mapel yang tersedia untuk otomatisasi, atau pilih 'Lainnya' untuk mengetik manual.")
+        
+        # --- JIKA GURU MEMILIH KETIK MANUAL (MAPEL LAIN) ---
+        if pilihan_mapel == "Lainnya (Ketik Manual)":
+            mapel_terpilih = st.text_input("Ketik Nama Mata Pelajaran:")
+            simpan_teks('MAPEL', mapel_terpilih)
+            
+            c_elemen, c_materi = st.columns(2)
+            with c_elemen: simpan_teks('Elemen', st.text_input("Ketik Elemen:"))
+            with c_materi: simpan_teks('Materi', st.text_input("Ketik Materi Esensial:"))
+            
+            st.session_state['temp_cp'] = "" # Kosongkan agar bisa diketik manual di Kartu 3
+            
+        # --- JIKA GURU MEMILIH MAPEL DARI DATABASE ---
+        elif pilihan_mapel != "Pilih...":
+            mapel_terpilih = pilihan_mapel
+            simpan_teks('MAPEL', mapel_terpilih)
+            
+            daftar_elemen = list(bank_kurikulum[fase_terpilih][mapel_terpilih].keys())
+            elemen_terpilih = st.selectbox(f"Elemen ({mapel_terpilih}):", ["Pilih..."] + daftar_elemen)
+            
+            if elemen_terpilih != "Pilih...":
+                simpan_teks('Elemen', elemen_terpilih)
+                
+                # Menarik data CP berdasarkan Elemen yang dipilih
+                list_data_cp = bank_kurikulum[fase_terpilih][mapel_terpilih][elemen_terpilih]
+                daftar_teks_cp = [data["cp"] for data in list_data_cp]
+                
+                cp_terpilih = st.selectbox("Pilih Capaian Pembelajaran (CP):", ["Pilih..."] + daftar_teks_cp)
+                
+                if cp_terpilih != "Pilih...":
+                    # Menyimpan CP ke memori sementara untuk Kartu 3
+                    st.session_state['temp_cp'] = cp_terpilih
+                    
+                    # Menarik data Materi Esensial khusus untuk CP yang dipilih
+                    materi_options = next(data["materi"] for data in list_data_cp if data["cp"] == cp_terpilih)
+                    materi_terpilih = st.selectbox("Materi Esensial:", ["Pilih..."] + materi_options)
+                    simpan_teks('Materi', materi_terpilih)
+                else:
+                    st.session_state['temp_cp'] = ""
+                    simpan_teks('Materi', "")
+            else:
+                st.session_state['temp_cp'] = ""
+                simpan_teks('Elemen', "")
+        else:
+            st.session_state['temp_cp'] = ""
+            simpan_teks('MAPEL', "")
             
         simpan_teks('Judul', st.text_input("Judul Modul:"))
     
     with st.container(border=True): # --- KARTU 3 ---
         st.subheader("🎯 Capaian Pembelajaran & Target SDGs")
-        cp_input = st.text_area("1. Capaian Pembelajaran (CP):", height=120, help="Salin CP dari dokumen standar kurikulum nasional berdasarkan Fase.")
+        
+        # Menarik otomatis teks CP dari Kartu 2 (jika pakai database) atau biarkan kosong (jika manual)
+        teks_cp_otomatis = st.session_state.get('temp_cp', '')
+        cp_input = st.text_area("1. Capaian Pembelajaran (Otomatis Tersedot & Bisa Diedit):", value=teks_cp_otomatis, height=120, help="Salin CP dari standar kurikulum, atau biarkan otomatis terisi jika Anda memilih Mapel dari database.")
         simpan_teks('Capaian_Pembelajaran', cp_input)
         
         opsi_sdgs = [
@@ -143,7 +189,6 @@ with tab1:
         
         tp_sdgs_input = st.text_area("3. Tujuan Pembelajaran (TP) SDGs:", height=100, help="Rumuskan bagaimana materi ini berkontribusi pada target SDGs yang dipilih.")
         simpan_teks('TP_SDGs', tp_sdgs_input)
-
 # ================= TAB 2 =================
 with tab2:
     with st.container(border=True): # --- KARTU 1 ---
