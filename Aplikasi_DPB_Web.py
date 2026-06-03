@@ -9,6 +9,7 @@ import google.generativeai as genai
 from data_kurikulum import bank_kurikulum
 from data_sfd import bank_sfd
 from data_kko import bank_kko
+from data_p3 import bank_p3
 
 st.set_page_config(page_title="DPB Schola Amoris", page_icon="📝", layout="wide")
 
@@ -245,16 +246,45 @@ with tab4:
         
         with col_kiri:
             st.markdown("##### 1. Profil Pelajar Pancasila (P3)")
-            opsi_p3 = ["Pilih...", "Beriman & Bertakwa", "Berkebinekaan Global", "Bergotong Royong", "Mandiri", "Bernalar Kritis", "Kreatif", "Lainnya"]
-            pilihan_p3 = st.selectbox("Dimensi P3:", opsi_p3)
-            simpan_teks('Dimensi', st.text_input("Ketik Dimensi P3:") if pilihan_p3 == "Lainnya" else pilihan_p3)
-            simpan_teks('Elemen', st.text_input("Elemen P3:"))
-            simpan_teks('Sub_elemen', st.text_input("Sub Elemen P3:"))
-            cp_p3 = st.text_area("Capaian P3:")
-            simpan_teks('Capaian_P3', cp_p3)
+            st.info("Pilihan Subelemen & Capaian akan otomatis menyesuaikan Fase yang Anda pilih di Tab 1.")
+            
+            # Sistem Dropdown Bersarang P3
+            fase_terpilih = st.session_state.data_isian.get('Fase', '')
+            daftar_dimensi = list(bank_p3.keys())
+            pilihan_dimensi = st.selectbox("Dimensi P3:", ["Pilih..."] + daftar_dimensi)
+            
+            if pilihan_dimensi != "Pilih...":
+                simpan_teks('Dimensi', pilihan_dimensi)
+                
+                daftar_elemen = list(bank_p3[pilihan_dimensi].keys())
+                pilihan_elemen = st.selectbox("Elemen P3:", ["Pilih..."] + daftar_elemen)
+                
+                if pilihan_elemen != "Pilih...":
+                    simpan_teks('Elemen', pilihan_elemen)
+                    
+                    daftar_sub = list(bank_p3[pilihan_dimensi][pilihan_elemen].keys())
+                    pilihan_sub = st.selectbox("Sub-elemen P3:", ["Pilih..."] + daftar_sub)
+                    
+                    if pilihan_sub != "Pilih...":
+                        simpan_teks('Sub_elemen', pilihan_sub)
+                        
+                        # AI penarik narasi otomatis berdasarkan Fase
+                        if fase_terpilih in ["Fase Fondasi", "Fase A", "Fase B", "Fase C", "Fase D", "Fase E", "Fase F"]:
+                            teks_cp_p3 = bank_p3[pilihan_dimensi][pilihan_elemen][pilihan_sub].get(fase_terpilih, "Data capaian belum tersedia untuk fase ini.")
+                        else:
+                            teks_cp_p3 = "⚠️ Silakan pilih Fase terlebih dahulu di Tab 1 (Identitas)."
+                        
+                        cp_p3 = st.text_area("Capaian P3 (Otomatis Terisi):", value=teks_cp_p3, height=120)
+                        simpan_teks('Capaian_P3', cp_p3)
+            else:
+                simpan_teks('Dimensi', "")
+                simpan_teks('Elemen', "")
+                simpan_teks('Sub_elemen', "")
+                simpan_teks('Capaian_P3', "")
             
             st.divider()
             st.markdown("##### 2. Santo / Santa Pelindung")
+            # ... (Lanjutkan dengan kode Santo/Santa yang sudah ada sebelumnya) ...
             opsi_santo = ["Pilih...", "Santo Fransiskus Asisi", "Santa Clara", "Santa Maria", "Lainnya"]
             pilihan_santo = st.selectbox("Pilih Pelindung:", opsi_santo)
             simpan_teks('Santo_Santa_Pelindung', st.text_input("Ketik Nama Pelindung:") if pilihan_santo == "Lainnya" else pilihan_santo)
