@@ -4,6 +4,11 @@ from docx.shared import Mm
 import io
 import requests  
 import google.generativeai as genai
+import os
+
+# --- IMPOR UNTUK OTAK RAG (VECTOR DATABASE) ---
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
 
 # Impor Database Internal
 from data_kurikulum import bank_kurikulum
@@ -22,14 +27,13 @@ st.divider()
 # --- FITUR PANDUAN / BANTUAN ---
 with st.expander("❓ Bingung cara mengisi? Klik di sini untuk membaca Panduan DPB"):
     st.markdown("""
-    **Selamat datang di Pusat Bantuan Penyusunan DPB Schola Amoris!** 
-    Berikut adalah panduan singkat untuk membantu Anda:
+    **Selamat datang di Pusat Bantuan Penyusunan DPB Schola Amoris!** Berikut adalah panduan singkat untuk membantu Anda:
 
-    *   **Tab 1 (Identitas):** Pastikan Anda memilih **Fase** terlebih dahulu agar daftar Mata Pelajaran otomatis muncul. Anda bisa memilih lebih dari satu Elemen dan Capaian Pembelajaran. Jangan lupa isi kolom *Identifikasi Peserta Didik* berdasarkan hasil asesmen diagnostik Anda.
-    *   **Tab 2 (Lingkungan):** Pilih mitra dan model pedagogis yang paling sesuai dengan karakteristik materi dan peserta didik.
-    *   **Tab 3, 4, & 5 (Aspek Penilaian):** Manfaatkan tombol **✨ Rumuskan (AI)**! Anda tidak perlu memiliki API Key, sistem akan otomatis merumuskan tujuan pembelajaran berdasarkan pilihan Anda.
-    *   **Nilai Ke-SFD-an (Tab 4):** Nilai dan Keutamaan serta Capaian Nilai akan otomatis menyesuaikan jenjang sekolah yang Anda pilih di Tab 1.
-    *   **Tab 6 (Cetak):** Pastikan semua kolom wajib (seperti Nama Guru) sudah terisi agar progres mencapai 100%. Klik tombol **Rakit & Simpan Data** untuk mengunduh file Word (`.docx`).
+    * **Tab 1 (Identitas):** Pastikan Anda memilih **Fase** terlebih dahulu agar daftar Mata Pelajaran otomatis muncul. Anda bisa memilih lebih dari satu Elemen dan Capaian Pembelajaran. Jangan lupa isi kolom *Identifikasi Peserta Didik* berdasarkan hasil asesmen diagnostik Anda.
+    * **Tab 2 (Lingkungan):** Pilih mitra dan model pedagogis yang paling sesuai dengan karakteristik materi dan peserta didik.
+    * **Tab 3, 4, & 5 (Aspek Penilaian):** Manfaatkan tombol **✨ Rumuskan (AI)**! Anda tidak perlu memiliki API Key, sistem akan otomatis merumuskan tujuan pembelajaran berdasarkan pilihan Anda.
+    * **Nilai Ke-SFD-an (Tab 4):** Nilai dan Keutamaan serta Capaian Nilai akan otomatis menyesuaikan jenjang sekolah yang Anda pilih di Tab 1.
+    * **Tab 6 (Cetak):** Pastikan semua kolom wajib (seperti Nama Guru) sudah terisi agar progres mencapai 100%. Klik tombol **Rakit & Simpan Data** untuk mengunduh file Word (`.docx`).
 
     *Jika aplikasi terasa macet atau daftar mapel tidak keluar, silakan refresh (muat ulang) halaman browser Anda.*
     """)
@@ -101,7 +105,25 @@ def fallback_generator(tipe):
         return f"- Persiapan: Peserta didik mengamati panduan atau demonstrasi langkah kerja praktis mengenai {materi}.\n- Unjuk Kerja: Peserta didik melakukan simulasi, praktik, atau penyusunan proyek secara bertahap di bawah bimbingan fasilitator.\n- Gelar Karya: Peserta didik menyempurnakan dan mempresentasikan hasil karya/praktik akhirnya kepada rekan sebaya."
     return "Data berhasil diproses."
 
-# --- FUNGSI AI HYBRID ANTI-ERROR ---
+# --- FUNGSI BARU: PENCARI REFERENSI PDF (RAG) ---
+def ambil_referensi_rag(query):
+    if not os.path.exists("faiss_index"):
+        return "" # Jika folder faiss_index tidak ada, abaikan tanpa error
+    try:
+        # Buka otak referensi kita
+        embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+        vector_db = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
+        
+        # Cari 3 paragraf paling relevan dengan permintaan kita
+        dokumen_cocok = vector_db.similarity_search(query, k=3)
+        referensi_teks = "\n\n".join([doc.page_content for doc in dokumen_cocok])
+        
+        # Instruksi rahasia agar AI patuh pada pedoman sekolah
+        return f"\n\n====================\nBERPEDOMAN PADA BUKU PANDUAN SEKOLAH BERIKUT INI SEBAGAI REFERENSI UTAMAMU:\n{referensi_teks}\n====================\nPastikan jawabanmu mencerminkan atau selaras dengan referensi di atas."
+    except Exception as e:
+        return "" # Jika gagal membaca database, biarkan AI menjawab normal
+
+# --- FUNGSI AI HYBRID ANTI-ERROR (DENGAN RAG) ---
 def panggil_ai(prompt, tipe=""):
     if not api_key_guru:
         st.toast("⚡ Menggunakan Otak Cadangan (Mode Sistem Pakar)", icon="🤖")
@@ -113,10 +135,17 @@ def panggil_ai(prompt, tipe=""):
         mesin_flash = [m for m in mesin_tersedia if 'flash' in m.lower() and 'interactions' not in m.lower()]
         if not mesin_flash: raise Exception("API Key tidak memiliki akses ke model Flash.")
         nama_mesin = next((m for m in mesin_flash if '1.5' in m), mesin_flash[0])
+        
+        # Tambahkan Referensi PDF ke dalam perintah Gemini
+        konteks_sekolah = ambil_referensi_rag(prompt)
+        prompt_plus_pedoman = prompt + konteks_sekolah
+        
         aturan = "\n\nATURAN FORMAT: Gunakan kalimat efektif, hindari UPPERCASE, gunakan list poin biasa tanpa simbol markdown rumit."
         if instruksi_khusus: aturan += f"\nINSTRUKSI KHUSUS GURU: {instruksi_khusus}"
         model = genai.GenerativeModel(nama_mesin)
-        return model.generate_content(prompt + aturan).text
+        
+        # Kirim ke Gemini
+        return model.generate_content(prompt_plus_pedoman + aturan).text
     except Exception as e:
         st.toast(f"⚠️ Gemini Error/Kuota Habis. Beralih otomatis ke Sistem Pakar...", icon="🔄")
         return fallback_generator(tipe)
