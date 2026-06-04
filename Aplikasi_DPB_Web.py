@@ -27,7 +27,7 @@ with st.expander("❓ Bingung cara mengisi? Klik di sini untuk membaca Panduan D
     *   **Tab 1 (Identitas):** Pastikan Anda memilih **Fase** terlebih dahulu agar daftar Mata Pelajaran otomatis muncul. Anda bisa memilih lebih dari satu Elemen dan Capaian Pembelajaran. Jangan lupa isi kolom *Identifikasi Peserta Didik* berdasarkan hasil asesmen diagnostik Anda.
     *   **Tab 2 (Lingkungan):** Pilih mitra dan model pedagogis yang paling sesuai dengan karakteristik materi dan peserta didik.
     *   **Tab 3, 4, & 5 (Aspek Penilaian):** Manfaatkan tombol **✨ Rumuskan (AI)**! Anda hanya perlu menekan tombol tersebut, dan AI akan otomatis membuatkan draf Tujuan Pembelajaran yang KKO-nya sudah dinaikkan levelnya menjadi HOTS (Higher Order Thinking Skills).
-    *   **Nilai Ke-SFD-an (Tab 4):** Nilai dan Keutamaan Santo/Santa Pelindung akan otomatis menyesuaikan jenjang sekolah yang Anda pilih di Tab 1.
+    *   **Nilai Ke-SFD-an (Tab 4):** Nilai dan Keutamaan serta Capaian Nilai akan otomatis menyesuaikan jenjang sekolah yang Anda pilih di Tab 1.
     *   **Tab 6 (Cetak):** Pastikan semua kolom wajib (seperti Nama Guru) sudah terisi agar progres mencapai 100%. Klik tombol **Rakit & Simpan Data** untuk mengunduh file Word (`.docx`).
 
     *Jika aplikasi terasa macet atau daftar mapel tidak keluar, silakan refresh (muat ulang) halaman browser Anda.*
@@ -348,7 +348,7 @@ with tab4:
 
         with col_kanan:
             st.markdown("##### 3. Kearifan Lokal")
-            opsi_kearifan = ["Pilih...", "Belum Bahadat", "Huma Betang", "Handep", "Lainnya"]
+            opsi_kearifan = ["Pilih...", "Waja Sampai Kaputing", "kayuh Baimbai", "Isen Mulang", "Iya Mulik Bengkang Turan", "Dahani Dahanai Tuntung Tulus", "Belum Bahadat", "Huma Betang", "Handep Hapakat", "Lainnya"]
             pilihan_kearifan = st.selectbox("Pilih Kearifan Lokal:", opsi_kearifan)
             kearifan_input = st.text_input("Ketik Kearifan Lokal:") if pilihan_kearifan == "Lainnya" else pilihan_kearifan
             simpan_teks('Kearifan_Lokal', kearifan_input)
