@@ -18,6 +18,21 @@ st.image("banner_schola.png", use_container_width=True)
 st.title("Penyusun DPB Schola Amoris 🎓")
 st.markdown("*Rancangan yang Anda buat akan otomatis tercatat di Katalog Bank Modul Sekolah.*")
 st.divider()
+# --- FITUR PANDUAN / BANTUAN ---
+with st.expander("❓ Bingung cara mengisi? Klik di sini untuk membaca Panduan DPB"):
+    st.markdown("""
+    **Selamat datang di Pusat Bantuan Penyusunan DPB Schola Amoris!** 
+    Berikut adalah panduan singkat untuk membantu Anda:
+
+    *   **Tab 1 (Identitas):** Pastikan Anda memilih **Fase** terlebih dahulu agar daftar Mata Pelajaran otomatis muncul. Anda bisa memilih lebih dari satu Elemen dan Capaian Pembelajaran. Jangan lupa isi kolom *Identifikasi Peserta Didik* berdasarkan hasil asesmen diagnostik Anda.
+    *   **Tab 2 (Lingkungan):** Pilih mitra dan model pedagogis yang paling sesuai dengan karakteristik materi dan peserta didik.
+    *   **Tab 3, 4, & 5 (Aspek Penilaian):** Manfaatkan tombol **✨ Rumuskan (AI)**! Anda hanya perlu menekan tombol tersebut, dan AI akan otomatis membuatkan draf Tujuan Pembelajaran yang KKO-nya sudah dinaikkan levelnya menjadi HOTS (Higher Order Thinking Skills).
+    *   **Nilai Ke-SFD-an (Tab 4):** Nilai dan Keutamaan Santo/Santa Pelindung akan otomatis menyesuaikan jenjang sekolah yang Anda pilih di Tab 1.
+    *   **Tab 6 (Cetak):** Pastikan semua kolom wajib (seperti Nama Guru) sudah terisi agar progres mencapai 100%. Klik tombol **Rakit & Simpan Data** untuk mengunduh file Word (`.docx`).
+
+    *Jika aplikasi terasa macet atau daftar mapel tidak keluar, silakan refresh (muat ulang) halaman browser Anda.*
+    """)
+st.write("") # Spasi kosong
 
 URL_DATABASE = "https://script.google.com/macros/s/AKfycbyi9lnZJplhJDHV9RkkGq8mmILR7zIn7XfNTLN8Qf49XJuyRr8H5LAgr-vlrP6gyDnfjw/exec"
 
