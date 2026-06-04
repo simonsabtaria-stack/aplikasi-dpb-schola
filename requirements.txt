@@ -1,10 +1,10 @@
 streamlit
 docxtpl
-python-docx
 requests
 google-generativeai
 langchain
 langchain-google-genai
+langchain-huggingface
 faiss-cpu
 pypdf
 sentence-transformers
