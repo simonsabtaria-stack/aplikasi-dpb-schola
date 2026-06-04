@@ -99,7 +99,6 @@ with tab1:
         with col4: simpan_teks('Semester', st.selectbox("Semester:", ["Ganjil", "Genap"]))
         with col5: simpan_teks('Alokasi_Waktu', st.text_input("Alokasi Waktu:", help="Contoh: 2 JP (2 x 40 Menit)"))
             
-        col_profil, col_sdgs = st.columns(2
             
         col_profil, col_sdgs = st.columns(2)
         with col_profil:
