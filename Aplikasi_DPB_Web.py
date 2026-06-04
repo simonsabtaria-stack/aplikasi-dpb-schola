@@ -135,7 +135,6 @@ with col_logout:
         st.session_state.username_aktif = None
         inisialisasi_memori() # Hapus semua memori saat keluar
         st.rerun()
-st.divider()
 
 # ==========================================
 # FUNGSI AI AMOR & PERUMUS
