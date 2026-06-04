@@ -3,3 +3,8 @@ docxtpl
 python-docx
 requests
 google-generativeai
+langchain
+langchain-google-genai
+faiss-cpu
+pypdf
+sentence-transformers
