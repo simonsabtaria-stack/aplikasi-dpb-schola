@@ -224,7 +224,6 @@ with st.sidebar:
 # TABS UTAMA
 # ==========================================
 st.markdown("""<style>.stTabs [data-baseweb="tab-list"] { gap: 10px; } .stTabs [data-baseweb="tab"] { background-color: #f1f5f9; border-radius: 8px 8px 0px 0px; padding: 10px 20px; box-shadow: inset 0 -2px 0 0 #cbd5e1; } .stTabs [aria-selected="true"] { background-color: #1e293b; color: #ffffff !important; } .stTextInput input, .stTextArea textarea, .stSelectbox [data-baseweb="select"] { border-radius: 8px !important; } .stButton > button[kind="primary"] { border-radius: 8px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; }</style>""", unsafe_allow_html=True)
-
 # ==========================================
 # PANDUAN PENGGUNAAN
 # ==========================================
