@@ -391,14 +391,14 @@ with tab4:
 
         with col_kanan:
             st.markdown("##### 3. Kearifan Lokal")
-            opsi_kearifan = ["Pilih...", "Belum Bahadat", "Huma Betang", "Handep", "Lainnya"]
+            opsi_kearifan = ["Pilih...", "Waja Sampai Kaputing", "Huma Betang", "Handep Hapakat", "Kayuh Baimbai", "Isen Mulang", "Lainnya"]
             pilihan_kearifan = st.selectbox("Pilih Kearifan Lokal:", opsi_kearifan)
             kearifan_input = st.text_input("Ketik Kearifan Lokal:") if pilihan_kearifan == "Lainnya" else pilihan_kearifan
             simpan_teks('Kearifan_Lokal', kearifan_input)
             
             st.divider()
             st.markdown("##### 4. 7 Kebiasaan Anak Indonesia Hebat")
-            opsi_7kaih = ["Pilih...", "Bermasyarakat", "Jadilah Proaktif", "Mulai dengan Tujuan Akhir", "Dahulukan yang Utama", "Berpikir Menang-Menang", "Sinergi", "Lainnya"]
+            opsi_7kaih = ["Pilih...", "Bangun Pagi", "Beribadah", "Berolahraga", "Makan Sehat dan Bergizi", "Gemar Belajar", "Bermasyarakat", "Tidur Lebih Awal", "Lainnya"]
             pilihan_7kaih = st.selectbox("Pilih 7KAIH:", opsi_7kaih)
             simpan_teks('KAIH', st.text_input("Ketik 7KAIH:") if pilihan_7kaih == "Lainnya" else pilihan_7kaih)
             
