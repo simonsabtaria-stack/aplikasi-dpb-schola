@@ -34,14 +34,12 @@ with st.expander("❓ Bingung cara mengisi? Klik di sini untuk membaca Panduan D
     * **Tab 3, 4, & 5 (Aspek Penilaian):** Manfaatkan tombol **✨ Rumuskan (AI)**! Anda tidak perlu memiliki API Key, sistem akan otomatis merumuskan tujuan pembelajaran berdasarkan pilihan Anda.
     * **Nilai Ke-SFD-an (Tab 4):** Nilai dan Keutamaan serta Capaian Nilai akan otomatis menyesuaikan jenjang sekolah yang Anda pilih di Tab 1.
     * **Tab 6 (Cetak):** Pastikan semua kolom wajib (seperti Nama Guru) sudah terisi agar progres mencapai 100%. Klik tombol **Rakit & Simpan Data** untuk mengunduh file Word (`.docx`).
-
-    *Jika aplikasi terasa macet atau daftar mapel tidak keluar, silakan refresh (muat ulang) halaman browser Anda.*
     """)
-st.write("") # Spasi kosong
+st.write("") 
 
 URL_DATABASE = "https://script.google.com/macros/s/AKfycbyi9lnZJplhJDHV9RkkGq8mmILR7zIn7XfNTLN8Qf49XJuyRr8H5LAgr-vlrP6gyDnfjw/exec"
 
-# --- SIDEBAR MEWAH (DENGAN INDIKATOR HYBRID) ---
+# --- SIDEBAR MEWAH ---
 with st.sidebar:
     st.header("🤖 Pusat Kontrol AI")
     api_key_guru = st.text_input("🔑 Kunci API Gemini:", type="password", help="Dapatkan API dari Google AI Studio. Jika dikosongkan, sistem beralih ke Mode Pakar otomatis.")
@@ -77,11 +75,15 @@ if 'draft_afektif' not in st.session_state: st.session_state.draft_afektif = ""
 if 'draft_tp_kognitif' not in st.session_state: st.session_state.draft_tp_kognitif = ""
 if 'draft_tp_psikomotor' not in st.session_state: st.session_state.draft_tp_psikomotor = ""
 if 'draft_tp_afektif' not in st.session_state: st.session_state.draft_tp_afektif = ""
+# Tambahan Memori untuk Indikator Berjenjang
+if 'draft_ind_kognitif' not in st.session_state: st.session_state.draft_ind_kognitif = ""
+if 'draft_ind_psikomotorik' not in st.session_state: st.session_state.draft_ind_psikomotorik = ""
+if 'draft_ind_afektif' not in st.session_state: st.session_state.draft_ind_afektif = ""
 
 def simpan_teks(kunci, nilai):
     st.session_state.data_isian[kunci] = nilai
 
-# --- FITUR BARU: OTAK CADANGAN (SISTEM PAKAR) ---
+# --- OTAK CADANGAN (SISTEM PAKAR) ---
 def fallback_generator(tipe):
     data = st.session_state.data_isian
     materi = data.get('Materi', 'materi pembelajaran') or 'materi pembelajaran'
@@ -93,14 +95,20 @@ def fallback_generator(tipe):
 
     if tipe == "tp_kog":
         return f"1. Melalui eksplorasi dan diskusi mandiri, peserta didik mampu menguraikan serta menganalisis konsep {materi} secara kritis dan komprehensif.\n2. Peserta didik mampu merancang gagasan faktual terkait {materi} dengan tingkat pemahaman (HOTS) yang selaras dengan tujuan {sdgs}."
+    elif tipe == "ind_kog":
+        return f"- Menjelaskan konsep dasar mengenai {materi} (Pemahaman dasar)\n- Menerapkan prinsip {materi} dalam konteks sederhana (Penerapan)\n- Menganalisis dan mengevaluasi kasus faktual terkait {materi} (Target TP HOTS)"
     elif tipe == "pg_kog":
         return f"- Orientasi: Peserta didik mengamati fenomena pemantik atau masalah faktual terkait {materi}.\n- Eksplorasi: Peserta didik mengumpulkan informasi dan mendiskusikan temuan secara berkelompok.\n- Konfirmasi: Peserta didik menyajikan hasil analisis terkait {materi} di depan kelas untuk dikritisi bersama."
     elif tipe == "tp_afe":
         return f"Melalui keseluruhan proses pembelajaran, peserta didik mampu menginternalisasi dan menunjukkan sikap nyata yang selaras dengan nilai {nilai} ({keutamaan}), mencerminkan karakter mulia ({p3}), serta mempraktikkan semangat {kearifan} dalam interaksi sehari-hari."
+    elif tipe == "ind_afe":
+        return f"- Menerima dan merespon arahan terkait nilai {keutamaan} (A1/A2)\n- Menghargai dan menunjukkan sikap {keutamaan} saat mempelajari {materi} (A3)\n- Menginternalisasi dan menjadikan nilai {keutamaan} serta semangat {kearifan} sebagai karakter harian (Target TP A4/A5)"
     elif tipe == "pg_afe":
         return f"- Refleksi Diri: Peserta didik menuliskan jurnal atau ungkapan singkat mengenai pengalaman mempraktikkan nilai {keutamaan} saat mempelajari {materi}.\n- Aksi Nyata (Empati): Peserta didik membagikan pandangannya dalam forum kelas untuk menunjukkan sikap saling menghargai dan kepedulian terhadap sesama berlandaskan semangat {kearifan}."
     elif tipe == "tp_psi":
         return f"1. Peserta didik terampil mendemonstrasikan unjuk kerja atau prosedur terkait {materi} dengan tingkat presisi dan kelancaran yang sesuai standar.\n2. Peserta didik mampu mengadaptasi dan memodifikasi keterampilan teknis mengenai {materi} untuk menghasilkan performa atau karya yang bermakna."
+    elif tipe == "ind_psi":
+        return f"- Meniru tahapan dasar secara terbimbing terkait {materi} (P1/P2)\n- Mendemonstrasikan keterampilan {materi} secara mandiri dan lancar (P3)\n- Memodifikasi dan menyempurnakan performa/karya {materi} secara kreatif (Target TP P4/P5)"
     elif tipe == "pg_psi":
         return f"- Persiapan: Peserta didik mengamati panduan atau demonstrasi langkah kerja praktis mengenai {materi}.\n- Unjuk Kerja: Peserta didik melakukan simulasi, praktik, atau penyusunan proyek secara bertahap di bawah bimbingan fasilitator.\n- Gelar Karya: Peserta didik menyempurnakan dan mempresentasikan hasil karya/praktik akhirnya kepada rekan sebaya."
     return "Data berhasil diproses."
@@ -110,18 +118,13 @@ def ambil_referensi_rag(query):
     if not os.path.exists("faiss_index"):
         return "" # Jika folder faiss_index tidak ada, abaikan tanpa error
     try:
-        # Buka otak referensi kita
         embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
         vector_db = FAISS.load_local("faiss_index", embeddings, allow_dangerous_deserialization=True)
-        
-        # Cari 3 paragraf paling relevan dengan permintaan kita
         dokumen_cocok = vector_db.similarity_search(query, k=3)
         referensi_teks = "\n\n".join([doc.page_content for doc in dokumen_cocok])
-        
-        # Instruksi rahasia agar AI patuh pada pedoman sekolah
         return f"\n\n====================\nBERPEDOMAN PADA BUKU PANDUAN SEKOLAH BERIKUT INI SEBAGAI REFERENSI UTAMAMU:\n{referensi_teks}\n====================\nPastikan jawabanmu mencerminkan atau selaras dengan referensi di atas."
     except Exception as e:
-        return "" # Jika gagal membaca database, biarkan AI menjawab normal
+        return "" 
 
 # --- FUNGSI AI HYBRID ANTI-ERROR (DENGAN RAG) ---
 def panggil_ai(prompt, tipe=""):
@@ -136,15 +139,12 @@ def panggil_ai(prompt, tipe=""):
         if not mesin_flash: raise Exception("API Key tidak memiliki akses ke model Flash.")
         nama_mesin = next((m for m in mesin_flash if '1.5' in m), mesin_flash[0])
         
-        # Tambahkan Referensi PDF ke dalam perintah Gemini
         konteks_sekolah = ambil_referensi_rag(prompt)
         prompt_plus_pedoman = prompt + konteks_sekolah
         
         aturan = "\n\nATURAN FORMAT: Gunakan kalimat efektif, hindari UPPERCASE, gunakan list poin biasa tanpa simbol markdown rumit."
         if instruksi_khusus: aturan += f"\nINSTRUKSI KHUSUS GURU: {instruksi_khusus}"
         model = genai.GenerativeModel(nama_mesin)
-        
-        # Kirim ke Gemini
         return model.generate_content(prompt_plus_pedoman + aturan).text
     except Exception as e:
         st.toast(f"⚠️ Gemini Error/Kuota Habis. Beralih otomatis ke Sistem Pakar...", icon="🔄")
@@ -306,8 +306,8 @@ with tab3:
             for level, kata in bank_kko["KOGNITIF (C)"].items():
                 st.markdown(f"**{level}**: {kata}")
                 
-        if st.button("📈 Rumuskan TP Kognitif (Otomatis Naik Level KKO)", key="btn_tp_kog", use_container_width=True):
-            with st.spinner("Memproses rumusan..."):
+        if st.button("📈 Rumuskan TP Kognitif (Naik Level)", key="btn_tp_kog", use_container_width=True):
+            with st.spinner("Memproses rumusan TP..."):
                 cp_val = st.session_state.data_isian.get('Capaian_Pembelajaran', '')
                 tp_sdgs_val = st.session_state.data_isian.get('TP_SDGs', '')
                 prompt_tp_kog = f"Baca Capaian Pembelajaran ini: '{cp_val}'. Identifikasi level KKO kognitifnya (C1-C6). Kemudian, buatkan rumusan Tujuan Pembelajaran (TP) Kognitif yang menaikkan KKO-nya 1 atau 2 level lebih tinggi agar lebih menantang (HOTS). Integrasikan dengan semangat TP SDGs: '{tp_sdgs_val}'. Berikan 2 pilihan rumusan singkat."
@@ -316,15 +316,23 @@ with tab3:
         tp_kognitif = st.text_area("TP Kognitif:", value=st.session_state['draft_tp_kognitif'], height=100)
         simpan_teks('TP_KOGNITIF', tp_kognitif)
         
-        indikator_kognitif = st.text_area("Indikator Kognitif:", help="Turunan dari TP Kognitif yang bisa diukur pencapaiannya.")
+        # TOMBOL BARU: Rumuskan Indikator Kognitif
+        if st.button("🪜 Rumuskan Indikator Kognitif (Berjenjang)", key="btn_ind_kog", use_container_width=True):
+            with st.spinner("Membuat indikator berjenjang (scaffolding)..."):
+                tp_val = st.session_state.data_isian.get('TP_KOGNITIF', '')
+                prompt_ind_kog = f"Berdasarkan Tujuan Pembelajaran (TP) Kognitif ini: '{tp_val}', buatlah 3-4 Indikator Pencapaian Kompetensi yang berjenjang. Mulailah indikator pertama dari KKO level rendah (LOTS/MOTS) sebagai fondasi, lalu naik secara bertahap, hingga indikator terakhir menggunakan level KKO yang sama persis dengan TP tersebut (HOTS). Gunakan list poin sederhana."
+                st.session_state['draft_ind_kognitif'] = panggil_ai(prompt_ind_kog, tipe="ind_kog")
+        
+        indikator_kognitif = st.text_area("Indikator Kognitif:", value=st.session_state['draft_ind_kognitif'], height=100, help="Turunan dari TP Kognitif yang bisa diukur pencapaiannya.")
         simpan_teks('Indikator_Kognitif', indikator_kognitif)
         
-        if st.button("✨ Rumuskan Pengalaman Kognitif (AI / Pakar)", key="btn_kog", use_container_width=True):
+        if st.button("✨ Rumuskan Pengalaman Kognitif", key="btn_kog", use_container_width=True):
             with st.spinner("Merancang aktivitas kognitif..."):
                 materi_val = st.session_state.data_isian.get('Materi', '')
                 cp_val = st.session_state.data_isian.get('Capaian_Pembelajaran', '')
-                konteks = f"Materi: {materi_val}\nCP: {cp_val}\n"
-                prompt = f"Berdasarkan {konteks}, buat skenario 'Pengalaman Belajar' (Kegiatan Inti) untuk mencapai indikator: {indikator_kognitif}. Buat aktivitas eksplorasi dalam 3-4 poin praktis."
+                ind_val = st.session_state.data_isian.get('Indikator_Kognitif', '')
+                konteks = f"Materi: {materi_val}\nCP: {cp_val}\nIndikator: {ind_val}"
+                prompt = f"Berdasarkan {konteks}, buat skenario 'Pengalaman Belajar' (Kegiatan Inti) untuk memfasilitasi pencapaian indikator tersebut. Buat aktivitas eksplorasi dalam 3-4 poin praktis."
                 st.session_state.draft_kognitif = panggil_ai(prompt, tipe="pg_kog")
                         
         simpan_teks('Pengalaman_Belajar', st.text_area("Pengalaman Belajar Kognitif:", value=st.session_state.draft_kognitif, height=120))
@@ -462,14 +470,23 @@ with tab4:
 
         tp_afektif = st.text_area("TP Afektif:", value=st.session_state['draft_tp_afektif'], height=120)
         simpan_teks('TP_Afektif', tp_afektif)
-        indikator_afektif = st.text_area("Indikator Afektif:")
+        
+        # TOMBOL BARU: Rumuskan Indikator Afektif
+        if st.button("🪜 Rumuskan Indikator Afektif (Berjenjang)", key="btn_ind_afe", use_container_width=True):
+            with st.spinner("Membuat indikator sikap berjenjang..."):
+                tp_val = st.session_state.data_isian.get('TP_Afektif', '')
+                prompt_ind_afe = f"Berdasarkan Tujuan Pembelajaran (TP) Afektif ini: '{tp_val}', buatlah 3-4 Indikator Pencapaian Sikap yang berjenjang. Mulailah dari KKO afektif level sangat dasar (misal A1/A2 Menerima/Merespon), lalu naik bertahap, hingga indikator terakhir menggunakan level KKO yang sama persis dengan TP tersebut (Internaslisasi Karakter). Gunakan list poin sederhana."
+                st.session_state['draft_ind_afektif'] = panggil_ai(prompt_ind_afe, tipe="ind_afe")
+        
+        indikator_afektif = st.text_area("Indikator Afektif:", value=st.session_state['draft_ind_afektif'], height=100)
         simpan_teks('Indikator_Afektif', indikator_afektif)
         
-        if st.button("✨ Rumuskan Pengalaman Afektif (AI / Pakar)", key="btn_afe", use_container_width=True):
+        if st.button("✨ Rumuskan Pengalaman Afektif", key="btn_afe", use_container_width=True):
             with st.spinner("Merancang aktivitas karakter..."):
                 materi_val = st.session_state.data_isian.get('Materi', '')
-                konteks = f"Materi: {materi_val}\nKognitif: {st.session_state.draft_kognitif}\nPsikomotorik: {st.session_state.draft_psikomotor}\n"
-                prompt = f"Berdasarkan {konteks}, rancang 'Pengalaman Belajar' afektif (sikap/karakter) untuk indikator: {indikator_afektif}. Buat aktivitas reflektif/empati dalam 3-4 poin praktis."
+                ind_val = st.session_state.data_isian.get('Indikator_Afektif', '')
+                konteks = f"Materi: {materi_val}\nKognitif: {st.session_state.draft_kognitif}\nIndikator Afektif: {ind_val}\n"
+                prompt = f"Berdasarkan {konteks}, rancang 'Pengalaman Belajar' afektif (sikap/karakter) untuk memfasilitasi pencapaian indikator tersebut. Buat aktivitas reflektif/empati dalam 3-4 poin praktis yang selaras dengan kegiatan kognitif."
                 st.session_state.draft_afektif = panggil_ai(prompt, tipe="pg_afe")
 
         simpan_teks('Pengalaman_Belajar_Afektif', st.text_area("Pengalaman Belajar Afektif:", value=st.session_state.draft_afektif, height=150))
@@ -485,7 +502,7 @@ with tab5:
             for level, kata in bank_kko["PSIKOMOTORIK (P)"].items():
                 st.markdown(f"**{level}**: {kata}")
 
-        if st.button("📈 Rumuskan TP Psikomotorik (Otomatis Naik Level KKO)", key="btn_tp_psi", use_container_width=True):
+        if st.button("📈 Rumuskan TP Psikomotorik (Naik Level)", key="btn_tp_psi", use_container_width=True):
             with st.spinner("Memproses rumusan psikomotorik..."):
                 cp_val = st.session_state.data_isian.get('Capaian_Pembelajaran', '')
                 tp_sdgs_val = st.session_state.data_isian.get('TP_SDGs', '')
@@ -495,15 +512,22 @@ with tab5:
         tp_psikomotorik = st.text_area("TP Psikomotorik:", value=st.session_state['draft_tp_psikomotor'], height=100)
         simpan_teks('TP_Psikomotorik', tp_psikomotorik)
         
-        indikator_psikomotorik = st.text_area("Indikator Psikomotorik:")
+        # TOMBOL BARU: Rumuskan Indikator Psikomotorik
+        if st.button("🪜 Rumuskan Indikator Psikomotorik (Berjenjang)", key="btn_ind_psi", use_container_width=True):
+            with st.spinner("Membuat indikator keterampilan berjenjang..."):
+                tp_val = st.session_state.data_isian.get('TP_Psikomotorik', '')
+                prompt_ind_psi = f"Berdasarkan Tujuan Pembelajaran (TP) Psikomotorik ini: '{tp_val}', buatlah 3-4 Indikator Pencapaian Keterampilan yang berjenjang. Mulailah dari KKO psikomotorik level dasar (misal P1/P2 Meniru/Manipulasi), lalu naik bertahap, hingga indikator terakhir menggunakan level KKO yang sama persis dengan TP tersebut (HOTS Keterampilan). Gunakan list poin sederhana."
+                st.session_state['draft_ind_psikomotorik'] = panggil_ai(prompt_ind_psi, tipe="ind_psi")
+
+        indikator_psikomotorik = st.text_area("Indikator Psikomotorik:", value=st.session_state['draft_ind_psikomotorik'], height=100)
         simpan_teks('Indikator_Psikomotorik', indikator_psikomotorik)
         
-        if st.button("✨ Rumuskan Pengalaman Psikomotorik (AI / Pakar)", key="btn_psi", use_container_width=True):
+        if st.button("✨ Rumuskan Pengalaman Psikomotorik", key="btn_psi", use_container_width=True):
             with st.spinner("Merancang aktivitas psikomotorik..."):
                 materi_val = st.session_state.data_isian.get('Materi', '')
-                cp_val = st.session_state.data_isian.get('Capaian_Pembelajaran', '')
-                konteks = f"Materi: {materi_val}\nCP: {cp_val}\nKegiatan Kognitif Sebelumnya: {st.session_state.draft_kognitif}\n"
-                prompt = f"Berdasarkan {konteks}, buat skenario unjuk kerja/proyek untuk mencapai indikator psikomotorik: {indikator_psikomotorik}. Tuliskan dalam 3-4 poin praktis."
+                ind_val = st.session_state.data_isian.get('Indikator_Psikomotorik', '')
+                konteks = f"Materi: {materi_val}\nIndikator Keterampilan: {ind_val}\nKegiatan Sebelumnya: {st.session_state.draft_kognitif}\n"
+                prompt = f"Berdasarkan {konteks}, buat skenario unjuk kerja/proyek untuk memfasilitasi pencapaian indikator psikomotorik tersebut. Tuliskan dalam 3-4 poin praktis."
                 st.session_state.draft_psikomotor = panggil_ai(prompt, tipe="pg_psi")
 
         simpan_teks('Pengalaman_Belajar_Psikomotorik', st.text_area("Pengalaman Belajar Psikomotorik:", value=st.session_state.draft_psikomotor, height=120))
