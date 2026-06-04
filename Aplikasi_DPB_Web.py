@@ -61,7 +61,13 @@ def panggil_amor(pertanyaan, api_key):
     
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        
+        # FITUR PERBAIKAN: Pelacak Nama Mesin Otomatis
+        mesin_tersedia = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+        mesin_flash = [m for m in mesin_tersedia if 'flash' in m.lower() and 'interactions' not in m.lower()]
+        if not mesin_flash: return "Maaf, API Key Anda tidak memiliki akses ke mesin percakapan (Flash)."
+        nama_mesin = next((m for m in mesin_flash if '1.5' in m), mesin_flash[0])
+        model = genai.GenerativeModel(nama_mesin)
         
         # Amor mencari jawabannya HANYA di faiss_amor (3 dokumen yayasan)
         embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
@@ -82,7 +88,7 @@ def panggil_amor(pertanyaan, api_key):
         return model.generate_content(prompt_amor).text
     except Exception as e:
         return f"Gangguan teknis. Tolong beritahu pembuatku pesan error ini: {e}"
-
+        
 # --- SIDEBAR MEWAH & AMOR ---
 with st.sidebar:
     st.header("🤖 Pusat Kontrol AI")
