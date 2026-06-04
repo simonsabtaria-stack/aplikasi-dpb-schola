@@ -96,7 +96,7 @@ with tab1:
         col1, col2, col3, col4, col5 = st.columns(5)
         with col1: simpan_teks('Jenjang', st.selectbox("Jenjang:", ["Pilih...", "TK", "SD", "SMP", "SMA/SMK"], help="Pilih jenjang untuk menyesuaikan Capaian Nilai SFD nanti."))
         with col2: simpan_teks('Fase', st.selectbox("Fase:", ["-", "Fase Fondasi", "Fase A", "Fase B", "Fase C", "Fase D", "Fase E", "Fase F"]))
-        with col3: simpan_teks('Kelas', st.text_input("Kelas (Contoh: 1, 2, VII):"))
+        with col3: simpan_teks('Kelas', st.selctbox("Kelas", [ "TK A", "TK B", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "Lainnya"]))
         with col4: simpan_teks('Semester', st.selectbox("Semester:", ["Ganjil", "Genap"]))
         with col5: simpan_teks('Alokasi_Waktu', st.text_input("Alokasi Waktu:", help="Contoh: 2 JP (2 x 40 Menit)"))
             
@@ -340,7 +340,7 @@ with tab4:
             
             st.divider()
             st.markdown("##### 4. 7 Kebiasaan Anak Indonesia Hebat")
-            opsi_7kaih = ["Pilih...", "Bermasyarakat", "Jadilah Proaktif", "Mulai dengan Tujuan Akhir", "Dahulukan yang Utama", "Berpikir Menang-Menang", "Sinergi", "Lainnya"]
+            opsi_7kaih = ["Pilih...", "Bangun Pagi", "Beribadah", "Berolahraga", "Makan Sehat dan Bergizi", "Gemar Belajar", "Bermasyarakat", "Tidur Lebih Awal"]
             pilihan_7kaih = st.selectbox("Pilih 7KAIH:", opsi_7kaih)
             simpan_teks('KAIH', st.text_input("Ketik 7KAIH:") if pilihan_7kaih == "Lainnya" else pilihan_7kaih)
             
