@@ -226,6 +226,18 @@ with st.sidebar:
 st.markdown("""<style>.stTabs [data-baseweb="tab-list"] { gap: 10px; } .stTabs [data-baseweb="tab"] { background-color: #f1f5f9; border-radius: 8px 8px 0px 0px; padding: 10px 20px; box-shadow: inset 0 -2px 0 0 #cbd5e1; } .stTabs [aria-selected="true"] { background-color: #1e293b; color: #ffffff !important; } .stTextInput input, .stTextArea textarea, .stSelectbox [data-baseweb="select"] { border-radius: 8px !important; } .stButton > button[kind="primary"] { border-radius: 8px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; }</style>""", unsafe_allow_html=True)
 
 # ==========================================
+# PANDUAN PENGGUNAAN
+# ==========================================
+with st.expander("📖 Panduan Singkat Penyusunan DPB (Klik untuk membuka)"):
+    st.markdown("""
+    **Selamat datang di asisten penyusun DPB! Berikut adalah langkah mudah penggunaannya:**
+    1. **Isi Data Dasar (Tab 1 & 2):** Mulailah dengan melengkapi identitas Anda, memilih mata pelajaran, dan memasukkan Capaian Pembelajaran (CP).
+    2. **Gunakan Keajaiban AI (Tab 3, 4, 5):** Di setiap tab aspek (Kognitif, Afektif, Psikomotorik), klik tombol biru **'Rumuskan...'**. AI akan otomatis menyusun Tujuan Pembelajaran, Indikator, dan Pengalaman Belajar untuk Anda. Anda bebas mengedit teks hasilnya jika ada yang kurang pas.
+    3. **Cetak & Unduh (Tab 6):** Periksa kembali seluruh isian Anda. Jika sudah mantap, lengkapi bagian apresiasi/media, lalu klik tombol **'Rakit & Simpan Data'** untuk mengunduh file Microsoft Word siap cetak.
+    
+    💡 *Tips: Biasakan menekan tombol **'☁️ Simpan Draf ke Awan'** di menu sebelah kiri setiap kali Anda selesai mengisi satu Tab agar pekerjaan Anda aman.*""")
+    
+# ==========================================
 # KETERANGAN PROGRES PEMBUATAN DPB
 # ==========================================
 kunci_wajib = ['Nama_Guru', 'MAPEL', 'Materi', 'Capaian_Pembelajaran', 'TP_KOGNITIF', 'TP_Psikomotorik', 'TP_Afektif']
@@ -237,7 +249,6 @@ st.progress(persentase)
 
 # --- LETAKKAN KODE DI ATAS TEPAT SEBELUM BARIS INI ---
 
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🏃 5. Psikomotorik", "🖨️ 6. Pratinjau & Cetak"])
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🏃 5. Psikomotorik", "🖨️ 6. Pratinjau & Cetak"])
 
 with tab1:
