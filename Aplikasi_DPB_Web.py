@@ -92,11 +92,14 @@ with tab1:
         st.subheader("A. Identitas Guru & Jenjang")
         simpan_teks('Nama_Guru', st.text_input("Nama Guru Penyusun (Wajib diisi):", help="Ketikkan nama lengkap beserta gelar untuk dicetak di modul."))
         
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3, col4, col5 = st.columns(5)
         with col1: simpan_teks('Jenjang', st.selectbox("Jenjang:", ["Pilih...", "TK", "SD", "SMP", "SMA/SMK"], help="Pilih jenjang untuk menyesuaikan Capaian Nilai SFD nanti."))
         with col2: simpan_teks('Fase', st.selectbox("Fase:", ["-", "Fase Fondasi", "Fase A", "Fase B", "Fase C", "Fase D", "Fase E", "Fase F"]))
         with col3: simpan_teks('Kelas', st.text_input("Kelas (Contoh: 1, 2, VII):"))
         with col4: simpan_teks('Semester', st.selectbox("Semester:", ["Ganjil", "Genap"]))
+        with col5: simpan_teks('Alokasi_Waktu', st.text_input("Alokasi Waktu:", help="Contoh: 2 JP (2 x 40 Menit)"))
+            
+        col_profil, col_sdgs = st.columns(2
             
         col_profil, col_sdgs = st.columns(2)
         with col_profil:
