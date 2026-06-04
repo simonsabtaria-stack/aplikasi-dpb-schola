@@ -345,7 +345,7 @@ with tab4:
                 pilihan_elemen = st.selectbox("Elemen P3:", ["Pilih..."] + daftar_elemen)
                 
                 if pilihan_elemen != "Pilih...":
-                    simpan_teks('Elemen', pilihan_elemen)
+                    simpan_teks('Elemen_P3', pilihan_elemen)
                     
                     daftar_sub = list(bank_p3[pilihan_dimensi][pilihan_elemen].keys())
                     pilihan_sub = st.selectbox("Sub-elemen P3:", ["Pilih..."] + daftar_sub)
