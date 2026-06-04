@@ -81,7 +81,7 @@ def panggil_amor(pertanyaan, api_key):
         """
         return model.generate_content(prompt_amor).text
     except Exception as e:
-        return f"Maaf, Amor sedang mengalami gangguan teknis (Sinyal/Kuota habis). 😔"
+        return f"Gangguan teknis. Tolong beritahu pembuatku pesan error ini: {e}"
 
 # --- SIDEBAR MEWAH & AMOR ---
 with st.sidebar:
