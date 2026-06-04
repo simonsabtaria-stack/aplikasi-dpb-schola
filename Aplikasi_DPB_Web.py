@@ -225,6 +225,19 @@ with st.sidebar:
 # ==========================================
 st.markdown("""<style>.stTabs [data-baseweb="tab-list"] { gap: 10px; } .stTabs [data-baseweb="tab"] { background-color: #f1f5f9; border-radius: 8px 8px 0px 0px; padding: 10px 20px; box-shadow: inset 0 -2px 0 0 #cbd5e1; } .stTabs [aria-selected="true"] { background-color: #1e293b; color: #ffffff !important; } .stTextInput input, .stTextArea textarea, .stSelectbox [data-baseweb="select"] { border-radius: 8px !important; } .stButton > button[kind="primary"] { border-radius: 8px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; }</style>""", unsafe_allow_html=True)
 
+# ==========================================
+# KETERANGAN PROGRES PEMBUATAN DPB
+# ==========================================
+kunci_wajib = ['Nama_Guru', 'MAPEL', 'Materi', 'Capaian_Pembelajaran', 'TP_KOGNITIF', 'TP_Psikomotorik', 'TP_Afektif']
+terisi = sum(1 for k in kunci_wajib if st.session_state.data_isian.get(k) and str(st.session_state.data_isian.get(k)).strip() != "")
+persentase = int((terisi / len(kunci_wajib)) * 100)
+
+st.markdown(f"**Progres Kelengkapan DPB: {persentase}%**")
+st.progress(persentase)
+
+# --- LETAKKAN KODE DI ATAS TEPAT SEBELUM BARIS INI ---
+
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🏃 5. Psikomotorik", "🖨️ 6. Pratinjau & Cetak"])
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🏃 5. Psikomotorik", "🖨️ 6. Pratinjau & Cetak"])
 
 with tab1:
