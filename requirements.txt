@@ -1,12 +1,10 @@
 streamlit
+pandas
 docxtpl
-requests
-google-generativeai
-langchain
-langchain-community
-langchain-google-genai
-langchain-huggingface
+docx
+langchain_huggingface
+langchain_community
 faiss-cpu
-pypdf
 sentence-transformers
+google-generativeai
 supabase
