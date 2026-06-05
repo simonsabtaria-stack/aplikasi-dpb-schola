@@ -424,24 +424,46 @@ with tab4:
 
     with st.container(border=True):
         jenjang = st.session_state.data_isian.get('Jenjang', '')
-        c_n, c_k = st.columns(2)
+        
+        c_n, c_k, c_sub = st.columns(3)
         ops_sfd = ["Pilih..."] + list(bank_sfd.keys())
-        with c_n: pil_nilai = st.selectbox("1. Pilih Nilai Ke-SFD-an:", ops_sfd, index=get_idx(ops_sfd, st.session_state.data_isian.get('Nilai')))
+        
+        with c_n: pil_nilai = st.selectbox("1. Pilih Nilai:", ops_sfd, index=get_idx(ops_sfd, st.session_state.data_isian.get('Nilai')))
+        
         if pil_nilai != "Pilih...":
             simpan_teks('Nilai', pil_nilai)
             ops_keut = ["Pilih..."] + list(bank_sfd[pil_nilai].keys())
+            
             with c_k: pil_keut = st.selectbox("2. Pilih Keutamaan:", ops_keut, index=get_idx(ops_keut, st.session_state.data_isian.get('Keutamaan')))
+            
             if pil_keut != "Pilih...":
                 simpan_teks('Keutamaan', pil_keut)
-                cn_teks = bank_sfd[pil_nilai][pil_keut].get(jenjang, "Data tidak ditemukan.")
+                ops_sub = ["Pilih..."] + list(bank_sfd[pil_nilai][pil_keut].keys())
                 
-                kunci_pelacak_sfd = f"{pil_keut}_{jenjang}"
-                if st.session_state.get('lacak_sfd') != kunci_pelacak_sfd:
-                    st.session_state.data_isian['Capaian_Nilai'] = cn_teks
-                    st.session_state['lacak_sfd'] = kunci_pelacak_sfd
+                with c_sub: pil_sub = st.selectbox("3. Pilih Sikap:", ops_sub, index=get_idx(ops_sub, st.session_state.data_isian.get('Sub_Keutamaan')))
                 
-                simpan_teks('Capaian_Nilai', st.text_area("3. Capaian Nilai:", value=st.session_state.data_isian.get('Capaian_Nilai', ''), height=120))
-        else: simpan_teks('Nilai', ""); simpan_teks('Keutamaan', ""); simpan_teks('Capaian_Nilai', "")
+                if pil_sub != "Pilih...":
+                    simpan_teks('Sub_Keutamaan', pil_sub)
+                    
+                    if jenjang in ["TK", "SD", "SMP"]: 
+                        cn_teks = bank_sfd[pil_nilai][pil_keut][pil_sub].get(jenjang, "Data tidak ditemukan di jenjang ini.")
+                    elif jenjang == "SMA/SMK": 
+                        cn_teks = "Capaian Nilai (CN) SMA masih dirumuskan."
+                    else: 
+                        cn_teks = "Pilih Jenjang di Tab 1 terlebih dahulu."
+                    
+                    kunci_pelacak_sfd = f"{pil_sub}_{jenjang}"
+                    if st.session_state.get('lacak_sfd') != kunci_pelacak_sfd:
+                        st.session_state.data_isian['Capaian_Nilai'] = cn_teks
+                        st.session_state['lacak_sfd'] = kunci_pelacak_sfd
+                    
+                    simpan_teks('Capaian_Nilai', st.text_area("4. Capaian Nilai:", value=st.session_state.data_isian.get('Capaian_Nilai', ''), height=120))
+                else:
+                    simpan_teks('Sub_Keutamaan', ""); simpan_teks('Capaian_Nilai', "")
+            else:
+                simpan_teks('Keutamaan', ""); simpan_teks('Sub_Keutamaan', ""); simpan_teks('Capaian_Nilai', "")
+        else:
+            simpan_teks('Nilai', ""); simpan_teks('Keutamaan', ""); simpan_teks('Sub_Keutamaan', ""); simpan_teks('Capaian_Nilai', "")
 
     with st.container(border=True): 
         st.subheader("❤️ C. Rencana Afektif")
