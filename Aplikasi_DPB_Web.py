@@ -161,6 +161,9 @@ with col_logout:
         inisialisasi_memori() 
         st.rerun()
 
+# ==========================================
+# FUNGSI AI AMOR & PERUMUS
+# ==========================================
 def panggil_amor(pertanyaan, api_key):
     if not api_key: return "Mohon maaf Bapak/Ibu Guru, Amor butuh Kunci API Gemini untuk bisa membantu. 🙏"
     if not os.path.exists("faiss_amor"): return "Maaf Bapak/Ibu, otak referensi Amor belum diunggah. 😔"
@@ -199,14 +202,26 @@ def ambil_referensi_rag(query):
     except: return "" 
 
 def panggil_ai(prompt, tipe=""):
-    if not api_key_guru: return fallback_generator(tipe)
+    if not api_key_guru: 
+        st.warning("⚠️ Kunci API Gemini belum dimasukkan di Pusat Kontrol AI (Sidebar)!")
+        return fallback_generator(tipe)
     try:
         genai.configure(api_key=api_key_guru)
-        m_list = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-        m_name = next((m for m in m_list if 'flash' in m.lower() and '1.5' in m), m_list[0])
-        return genai.GenerativeModel(m_name).generate_content(prompt + ambil_referensi_rag(prompt) + "\nATURAN: Gunakan list poin, hindari kapital semua.").text
-    except: return fallback_generator(tipe)
+        # Langsung menggunakan model yang paling stabil dan cepat
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        referensi = ambil_referensi_rag(prompt)
+        prompt_lengkap = prompt + referensi + "\nATURAN: Gunakan list poin, hindari kapital semua."
+        
+        respon = model.generate_content(prompt_lengkap)
+        return respon.text
+    except Exception as e: 
+        # Menampilkan pesan error di layar agar masalah sebenarnya terlihat
+        st.error(f"⚠️ AI Gagal Merumuskan. Detail Error: {e}")
+        return fallback_generator(tipe)
 
+# ==========================================
+# SIDEBAR
+# ==========================================
 with st.sidebar:
     st.success(f"👤 Aktif sebagai: **{st.session_state.username_aktif}**")
     if st.button("☁️ Simpan Draf ke Awan", type="primary", use_container_width=True):
