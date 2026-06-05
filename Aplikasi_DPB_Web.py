@@ -207,8 +207,12 @@ def panggil_ai(prompt, tipe=""):
         return fallback_generator(tipe)
     try:
         genai.configure(api_key=api_key_guru)
-        # Langsung menggunakan model yang paling stabil dan cepat
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        # --- MESIN PENCARI MODEL OTOMATIS (ANTI-ERROR 404) ---
+        m_list = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+        m_name = next((m for m in m_list if 'flash' in m.lower() and '1.5' in m), m_list[0])
+        
+        model = genai.GenerativeModel(m_name)
         referensi = ambil_referensi_rag(prompt)
         prompt_lengkap = prompt + referensi + "\nATURAN: Gunakan list poin, hindari kapital semua."
         
