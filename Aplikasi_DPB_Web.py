@@ -19,6 +19,30 @@ from data_kko import bank_kko
 from data_p3 import bank_p3
 from data_dpl import bank_dpl
 
+# Menyiapkan Brankas SDGs (Bisa ditimpa dengan file data_sdgs.py nanti)
+try:
+    from data_sdgs import bank_sdgs
+except ImportError:
+    bank_sdgs = {
+        "1. Tanpa Kemiskinan": "Peserta didik mampu memahami penyebab kemiskinan dan menunjukkan kepedulian melalui aksi nyata berbagi dengan sesama.",
+        "2. Tanpa Kelaparan": "Peserta didik mampu mengidentifikasi pentingnya gizi seimbang dan ketahanan pangan di lingkungan sekitar.",
+        "3. Kehidupan Sehat dan Sejahtera": "Peserta didik mampu mempromosikan dan menerapkan gaya hidup sehat baik secara fisik maupun mental.",
+        "4. Pendidikan Berkualitas": "Peserta didik mampu menunjukkan komitmen terhadap pembelajaran sepanjang hayat dan mendukung pendidikan inklusif.",
+        "5. Kesetaraan Gender": "Peserta didik mampu menerapkan prinsip kesetaraan gender dan saling menghargai tanpa diskriminasi dalam pergaulan.",
+        "6. Air Bersih dan Sanitasi Layak": "Peserta didik mampu mengkampanyekan dan mempraktikkan kebiasaan menjaga kebersihan air dan sanitasi lingkungan.",
+        "7. Energi Bersih dan Terjangkau": "Peserta didik mampu menganalisis pentingnya penghematan energi dan mendukung penggunaan energi ramah lingkungan.",
+        "8. Pekerjaan Layak dan Pertumbuhan Ekonomi": "Peserta didik mampu menumbuhkan jiwa kewirausahaan, etos kerja, dan menghargai nilai ekonomi dari sebuah karya.",
+        "9. Industri, Inovasi dan Infrastruktur": "Peserta didik mampu memanfaatkan teknologi informasi dan merancang inovasi sederhana yang bermanfaat bagi komunitas.",
+        "10. Berkurangnya Kesenjangan": "Peserta didik mampu menunjukkan empati, solidaritas, dan mengurangi sikap eksklusivitas di lingkungan sekolah.",
+        "11. Kota dan Permukiman yang Berkelanjutan": "Peserta didik mampu merancang dan menjaga lingkungan yang aman, inklusif, dan berkelanjutan di sekitarnya.",
+        "12. Konsumsi dan Produksi yang Bertanggung Jawab": "Peserta didik mampu mengelola sampah (reduce, reuse, recycle) dan mempraktikkan gaya konsumsi yang bertanggung jawab.",
+        "13. Penanganan Perubahan Iklim": "Peserta didik mampu mengambil aksi nyata secara sadar untuk mitigasi perubahan iklim di tingkat sekolah/rumah.",
+        "14. Ekosistem Lautan": "Peserta didik mampu menunjukkan kesadaran pelestarian ekosistem perairan dan meminimalisir penggunaan plastik sekali pakai.",
+        "15. Ekosistem Daratan": "Peserta didik mampu menjaga keanekaragaman hayati darat dengan merawat tanaman dan lingkungan sekitar.",
+        "16. Perdamaian, Keadilan dan Kelembagaan yang Tangguh": "Peserta didik mampu menjadi agen perdamaian, menyelesaikan konflik tanpa kekerasan, dan menjunjung keadilan.",
+        "17. Kemitraan untuk Mencapai Tujuan": "Peserta didik mampu berkolaborasi dan bergotong-royong dengan berbagai pihak untuk mencapai tujuan bersama."
+    }
+
 st.set_page_config(page_title="DPB Schola Amoris", page_icon="📝", layout="wide")
 
 # ==========================================
@@ -251,7 +275,7 @@ st.progress(persentase)
 # ==========================================
 # TABS UTAMA (DESAIN LAYOUT MIRIP WORD)
 # ==========================================
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🏃 5. Psikomotorik", "🖨️ 6. Perayaan Belajar & Cetak", "📚 7. Perpustakaan"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🏃 5. Psikomotorik", "🖨️ 6. Pratinjau & Cetak", "📚 7. Perpustakaan"])
 
 # --- TAB 1: IDENTIFIKASI ---
 with tab1:
@@ -314,9 +338,26 @@ with tab1:
         with col_cp2:
             opsi_dpl = ["Pilih..."] + list(bank_dpl.keys())
             simpan_teks('Dimensi_Lulusan', st.selectbox("Dimensi Profil Lulusan:", opsi_dpl, index=get_idx(opsi_dpl, st.session_state.data_isian.get('Dimensi_Lulusan'))))
-            opsi_sdgs = ["Pilih...", "1. Tanpa Kemiskinan", "2. Tanpa Kelaparan", "3. Kehidupan Sehat dan Sejahtera", "4. Pendidikan Berkualitas", "5. Kesetaraan Gender", "6. Air Bersih dan Sanitasi Layak", "7. Energi Bersih dan Terjangkau", "8. Pekerjaan Layak dan Pertumbuhan Ekonomi", "9. Industri, Inovasi dan Infrastruktur", "10. Berkurangnya Kesenjangan", "11. Kota dan Permukiman yang Berkelanjutan", "12. Konsumsi dan Produksi yang Bertanggung Jawab", "13. Penanganan Perubahan Iklim", "14. Ekosistem Lautan", "15. Ekosistem Daratan", "16. Perdamaian, Keadilan dan Kelembagaan yang Tangguh", "17. Kemitraan untuk Mencapai Tujuan"]
-            simpan_teks('Capaian_SDGs', st.selectbox("Capaian SDGs:", opsi_sdgs, index=get_idx(opsi_sdgs, st.session_state.data_isian.get('Capaian_SDGs'))))
-            simpan_teks('TP_SDGs', st.text_input("TP SDGs:", value=st.session_state.data_isian.get('TP_SDGs', '')))
+            
+            # --- MESIN AUTO-FILL TP SDGs ---
+            opsi_sdgs = ["Pilih..."] + list(bank_sdgs.keys())
+            pil_sdgs = st.selectbox("Capaian SDGs:", opsi_sdgs, index=get_idx(opsi_sdgs, st.session_state.data_isian.get('Capaian_SDGs')))
+            
+            if pil_sdgs != "Pilih...":
+                simpan_teks('Capaian_SDGs', pil_sdgs)
+                tp_sdgs_teks = bank_sdgs.get(pil_sdgs, "Data TP SDGs belum tersedia.")
+                
+                kunci_pelacak_sdgs = f"{pil_sdgs}"
+                if st.session_state.get('lacak_sdgs') != kunci_pelacak_sdgs:
+                    st.session_state.data_isian['TP_SDGs'] = tp_sdgs_teks
+                    st.session_state['lacak_sdgs'] = kunci_pelacak_sdgs
+                    
+                simpan_teks('TP_SDGs', st.text_area("TP SDGs:", value=st.session_state.data_isian.get('TP_SDGs', ''), height=85))
+            else:
+                simpan_teks('Capaian_SDGs', "")
+                simpan_teks('TP_SDGs', "")
+            # --------------------------------
+            
             foto_sdgs = st.file_uploader("Upload Logo SDGs", type=['png', 'jpg', 'jpeg'])
 
 # --- TAB 2: LINGKUNGAN ---
@@ -359,7 +400,9 @@ with tab3:
             st.markdown("**TP KOGNITIF**")
             if st.button("📈 Rumuskan", key="btn_tp_kog"):
                 with st.spinner("Memproses..."):
-                    st.session_state.data_isian['TP_KOGNITIF'] = panggil_ai(f"Baca CP: '{st.session_state.data_isian.get('Capaian_Pembelajaran', '')}'. Rumuskan TP Kognitif HOTS. Integrasikan SDGs: '{st.session_state.data_isian.get('TP_SDGs', '')}'.", "tp_kog")
+                    # PROMPT BARU: Kawinkan CP Umum + TP SDGs
+                    prompt_kognitif = f"Mata Pelajaran: {st.session_state.data_isian.get('MAPEL', '')}.\nBaca CP Umum: '{st.session_state.data_isian.get('Capaian_Pembelajaran', '')}'.\nRumuskan TP Kognitif (HOTS) yang menajamkan CP Umum tersebut, dan WAJIB mengintegrasikan narasi TP SDGs berikut: '{st.session_state.data_isian.get('TP_SDGs', '')}'."
+                    st.session_state.data_isian['TP_KOGNITIF'] = panggil_ai(prompt_kognitif, "tp_kog")
             simpan_teks('TP_KOGNITIF', st.text_area("Isi TP:", value=st.session_state.data_isian.get('TP_KOGNITIF', ''), height=200, label_visibility="collapsed", key="ta_tp_kog"))
             
         with col_tk2:
@@ -486,7 +529,13 @@ with tab4:
             st.markdown("**TP AFEKTIF**")
             if st.button("📈 Rumuskan", key="btn_tp_afe"):
                 with st.spinner("Memproses..."):
-                    st.session_state.data_isian['TP_Afektif'] = panggil_ai("Rumuskan TP Afektif.", "tp_afe")
+                    # PROMPT BARU: Kawinkan CP Umum + Karakter + TP SDGs
+                    s = st.session_state.data_isian.get('Capaian_Nilai', '')
+                    p = st.session_state.data_isian.get('Nilai_Keutamaan', '')
+                    p3 = st.session_state.data_isian.get('Capaian_P3', '')
+                    k = st.session_state.data_isian.get('Kearifan_Lokal', '')
+                    prompt_afektif = f"Mata Pelajaran: {st.session_state.data_isian.get('MAPEL', '')}.\nBaca CP Umum: '{st.session_state.data_isian.get('Capaian_Pembelajaran', '')}'.\nElemen Karakter: P3 ({p3}), Nilai SFD ({s}), Kearifan ({k}).\nRumuskan TP Afektif yang selaras dengan CP Umum, dan WAJIB mengintegrasikan narasi TP SDGs berikut: '{st.session_state.data_isian.get('TP_SDGs', '')}'."
+                    st.session_state.data_isian['TP_Afektif'] = panggil_ai(prompt_afektif, "tp_afe")
             simpan_teks('TP_Afektif', st.text_area("Isi TP:", value=st.session_state.data_isian.get('TP_Afektif', ''), height=150, label_visibility="collapsed", key="ta_tp_afe"))
         with col_ta2:
             st.markdown("**INDIKATOR AFEKTIF**")
@@ -515,7 +564,9 @@ with tab5:
             st.markdown("**TP PSIKOMOTORIK**")
             if st.button("📈 Rumuskan", key="btn_tp_psi"):
                 with st.spinner("Memproses..."):
-                    st.session_state.data_isian['TP_Psikomotorik'] = panggil_ai("Rumuskan TP Psikomotorik.", "tp_psi")
+                    # PROMPT BARU: Kawinkan CP Umum + TP SDGs
+                    prompt_psiko = f"Mata Pelajaran: {st.session_state.data_isian.get('MAPEL', '')}.\nBaca CP Umum: '{st.session_state.data_isian.get('Capaian_Pembelajaran', '')}'.\nRumuskan TP Psikomotorik (keterampilan/unjuk kerja) yang selaras dengan CP Umum, dan WAJIB mengintegrasikan narasi TP SDGs berikut: '{st.session_state.data_isian.get('TP_SDGs', '')}'."
+                    st.session_state.data_isian['TP_Psikomotorik'] = panggil_ai(prompt_psiko, "tp_psi")
             simpan_teks('TP_Psikomotorik', st.text_area("Isi TP:", value=st.session_state.data_isian.get('TP_Psikomotorik', ''), height=150, label_visibility="collapsed", key="ta_tp_psi"))
         with col_tp2:
             st.markdown("**INDIKATOR PSIKOMOTORIK**")
