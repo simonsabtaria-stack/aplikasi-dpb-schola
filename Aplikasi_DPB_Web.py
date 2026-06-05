@@ -1,5 +1,5 @@
 import streamlit as st
-import pandas as pd # Tambahan untuk merapikan tabel perpustakaan
+import pandas as pd
 from docxtpl import DocxTemplate, InlineImage
 from docx.shared import Mm
 import io
@@ -62,6 +62,9 @@ inisialisasi_memori()
 
 def simpan_teks(kunci, nilai):
     st.session_state.data_isian[kunci] = nilai
+
+def get_idx(options, val, default=0): 
+    return options.index(val) if val in options else default
 
 # ==========================================
 # 💾 FUNGSI DATABASE (SIMPAN & MUAT DRAF)
@@ -217,7 +220,7 @@ with st.sidebar:
         st.rerun() 
 
 # ==========================================
-# TABS UTAMA (DITAMBAH PERPUSTAKAAN)
+# TABS UTAMA (7 TAB)
 # ==========================================
 st.markdown("""<style>.stTabs [data-baseweb="tab-list"] { gap: 10px; } .stTabs [data-baseweb="tab"] { background-color: #f1f5f9; border-radius: 8px 8px 0px 0px; padding: 10px 20px; box-shadow: inset 0 -2px 0 0 #cbd5e1; } .stTabs [aria-selected="true"] { background-color: #1e293b; color: #ffffff !important; } .stTextInput input, .stTextArea textarea, .stSelectbox [data-baseweb="select"] { border-radius: 8px !important; } .stButton > button[kind="primary"] { border-radius: 8px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; }</style>""", unsafe_allow_html=True)
 
@@ -237,7 +240,6 @@ persentase = int((terisi / len(kunci_wajib)) * 100)
 st.markdown(f"**Progres Kelengkapan DPB: {persentase}%**")
 st.progress(persentase)
 
-# --- TAB DITAMBAH MENJADI 7 ---
 tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🏃 5. Psikomotorik", "🖨️ 6. Pratinjau & Cetak", "📚 7. Perpustakaan"])
 
 with tab1:
@@ -245,8 +247,6 @@ with tab1:
         st.subheader("A. Identitas Guru & Jenjang")
         simpan_teks('Nama_Guru', st.text_input("Nama Guru Penyusun (Wajib diisi):", value=st.session_state.data_isian.get('Nama_Guru', st.session_state.username_aktif), disabled=True))
         col1, col2, col3, col4, col5 = st.columns(5)
-        
-        def get_idx(options, val, default=0): return options.index(val) if val in options else default
         
         opsi_jenjang = ["Pilih...", "TK", "SD", "SMP", "SMA/SMK"]
         with col1: simpan_teks('Jenjang', st.selectbox("Jenjang:", opsi_jenjang, index=get_idx(opsi_jenjang, st.session_state.data_isian.get('Jenjang'))))
@@ -376,7 +376,13 @@ with tab4:
                     if pil_sub != "Pilih...":
                         simpan_teks('Sub_elemen', pil_sub)
                         cp_p3_teks = bank_p3[pil_dim][pil_el][pil_sub].get(fase, "Data belum tersedia.") if fase in ["Fase Fondasi", "Fase A", "Fase B", "Fase C", "Fase D", "Fase E", "Fase F"] else "Pilih Fase di Tab 1."
-                        simpan_teks('Capaian_P3', st.text_area("Capaian P3:", value=st.session_state.data_isian.get('Capaian_P3', cp_p3_teks), height=120))
+                        
+                        kunci_pelacak_p3 = f"{pil_sub}_{fase}"
+                        if st.session_state.get('lacak_p3') != kunci_pelacak_p3:
+                            st.session_state.data_isian['Capaian_P3'] = cp_p3_teks
+                            st.session_state['lacak_p3'] = kunci_pelacak_p3
+                            
+                        simpan_teks('Capaian_P3', st.text_area("Capaian P3:", value=st.session_state.data_isian.get('Capaian_P3', ''), height=120))
                     else: simpan_teks('Sub_elemen', ""); simpan_teks('Capaian_P3', "")
                 else: simpan_teks('Elemen_P3', ""); simpan_teks('Sub_elemen', ""); simpan_teks('Capaian_P3', "")
             else: simpan_teks('Dimensi', ""); simpan_teks('Elemen_P3', ""); simpan_teks('Sub_elemen', ""); simpan_teks('Capaian_P3', "")
@@ -406,7 +412,13 @@ with tab4:
                 if pil_sub_dpl != "Pilih...":
                     simpan_teks('Sub_Dimensi', pil_sub_dpl)
                     komp_teks = bank_dpl[profil_lulus][pil_sub_dpl].get(fase, "Data belum tersedia.") if fase in ["Fase Fondasi", "Fase A", "Fase B", "Fase C", "Fase D", "Fase E", "Fase F"] else "Pilih Fase di Tab 1."
-                    simpan_teks('Kompetensi', st.text_area("Kompetensi Lulusan:", value=st.session_state.data_isian.get('Kompetensi', komp_teks), height=120))
+                    
+                    kunci_pelacak_dpl = f"{pil_sub_dpl}_{fase}"
+                    if st.session_state.get('lacak_dpl') != kunci_pelacak_dpl:
+                        st.session_state.data_isian['Kompetensi'] = komp_teks
+                        st.session_state['lacak_dpl'] = kunci_pelacak_dpl
+                        
+                    simpan_teks('Kompetensi', st.text_area("Kompetensi Lulusan:", value=st.session_state.data_isian.get('Kompetensi', ''), height=120))
                 else: simpan_teks('Sub_Dimensi', ""); simpan_teks('Kompetensi', "")
             else: simpan_teks('Sub_Dimensi', ""); simpan_teks('Kompetensi', "")
 
@@ -424,7 +436,13 @@ with tab4:
                 if jenjang in ["TK", "SD", "SMP"]: cn_teks = bank_sfd[pil_nilai][pil_keut].get(jenjang, "Data tidak ditemukan.")
                 elif jenjang == "SMA/SMK": cn_teks = "Capaian Nilai (CN) SMA masih dirumuskan."
                 else: cn_teks = "Pilih Jenjang di Tab 1."
-                simpan_teks('Capaian_Nilai', st.text_area("3. Capaian Nilai:", value=st.session_state.data_isian.get('Capaian_Nilai', cn_teks), height=120))
+                
+                kunci_pelacak_sfd = f"{pil_keut}_{jenjang}"
+                if st.session_state.get('lacak_sfd') != kunci_pelacak_sfd:
+                    st.session_state.data_isian['Capaian_Nilai'] = cn_teks
+                    st.session_state['lacak_sfd'] = kunci_pelacak_sfd
+                
+                simpan_teks('Capaian_Nilai', st.text_area("3. Capaian Nilai:", value=st.session_state.data_isian.get('Capaian_Nilai', ''), height=120))
         else: simpan_teks('Nilai', ""); simpan_teks('Keutamaan', ""); simpan_teks('Capaian_Nilai', "")
 
     with st.container(border=True): 
