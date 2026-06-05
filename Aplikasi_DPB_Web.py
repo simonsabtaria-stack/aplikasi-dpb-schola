@@ -24,23 +24,23 @@ try:
     from data_sdgs import bank_sdgs
 except ImportError:
     bank_sdgs = {
-        "1. Tanpa Kemiskinan": "Peserta didik mampu memahami penyebab kemiskinan dan menunjukkan kepedulian melalui aksi nyata berbagi dengan sesama.",
-        "2. Tanpa Kelaparan": "Peserta didik mampu mengidentifikasi pentingnya gizi seimbang dan ketahanan pangan di lingkungan sekitar.",
-        "3. Kehidupan Sehat dan Sejahtera": "Peserta didik mampu mempromosikan dan menerapkan gaya hidup sehat baik secara fisik maupun mental.",
-        "4. Pendidikan Berkualitas": "Peserta didik mampu menunjukkan komitmen terhadap pembelajaran sepanjang hayat dan mendukung pendidikan inklusif.",
-        "5. Kesetaraan Gender": "Peserta didik mampu menerapkan prinsip kesetaraan gender dan saling menghargai tanpa diskriminasi dalam pergaulan.",
-        "6. Air Bersih dan Sanitasi Layak": "Peserta didik mampu mengkampanyekan dan mempraktikkan kebiasaan menjaga kebersihan air dan sanitasi lingkungan.",
-        "7. Energi Bersih dan Terjangkau": "Peserta didik mampu menganalisis pentingnya penghematan energi dan mendukung penggunaan energi ramah lingkungan.",
-        "8. Pekerjaan Layak dan Pertumbuhan Ekonomi": "Peserta didik mampu menumbuhkan jiwa kewirausahaan, etos kerja, dan menghargai nilai ekonomi dari sebuah karya.",
-        "9. Industri, Inovasi dan Infrastruktur": "Peserta didik mampu memanfaatkan teknologi informasi dan merancang inovasi sederhana yang bermanfaat bagi komunitas.",
-        "10. Berkurangnya Kesenjangan": "Peserta didik mampu menunjukkan empati, solidaritas, dan mengurangi sikap eksklusivitas di lingkungan sekolah.",
-        "11. Kota dan Permukiman yang Berkelanjutan": "Peserta didik mampu merancang dan menjaga lingkungan yang aman, inklusif, dan berkelanjutan di sekitarnya.",
-        "12. Konsumsi dan Produksi yang Bertanggung Jawab": "Peserta didik mampu mengelola sampah (reduce, reuse, recycle) dan mempraktikkan gaya konsumsi yang bertanggung jawab.",
-        "13. Penanganan Perubahan Iklim": "Peserta didik mampu mengambil aksi nyata secara sadar untuk mitigasi perubahan iklim di tingkat sekolah/rumah.",
-        "14. Ekosistem Lautan": "Peserta didik mampu menunjukkan kesadaran pelestarian ekosistem perairan dan meminimalisir penggunaan plastik sekali pakai.",
-        "15. Ekosistem Daratan": "Peserta didik mampu menjaga keanekaragaman hayati darat dengan merawat tanaman dan lingkungan sekitar.",
-        "16. Perdamaian, Keadilan dan Kelembagaan yang Tangguh": "Peserta didik mampu menjadi agen perdamaian, menyelesaikan konflik tanpa kekerasan, dan menjunjung keadilan.",
-        "17. Kemitraan untuk Mencapai Tujuan": "Peserta didik mampu berkolaborasi dan bergotong-royong dengan berbagai pihak untuk mencapai tujuan bersama."
+        "1. Tanpa Kemiskinan": "Mengakhiri segala bentuk kemiskinan di mana pun.",
+        "2. Tanpa Kelaparan": "Mengakhiri kelaparan, mencapai ketahanan pangan dan memperbaiki gizi dan mendorong pertanian berkelanjutan.",
+        "3. Kehidupan Sehat dan Sejahtera": "Menjamin kehidupan yang sehat dan meningkatkan kesejahteraan bagi semua orang di segala usia.",
+        "4. Pendidikan Berkualitas": "Menjamin pendidikan berkualitas yang inklusif dan adil serta mendorong kesempatan belajar seumur hidup bagi semua.",
+        "5. Kesetaraan Gender": "Mencapai kesetaraan gender dan memberdayakan seluruh perempuan dan anak perempuan.",
+        "6. Air Bersih dan Sanitasi Layak": "Menjamin ketersediaan dan pengelolaan air dan sanitasi berkelanjutan untuk semua.",
+        "7. Energi Bersih dan Terjangkau": "Pastikan akses terhadap energi yang terjangkau, andal, berkelanjutan, dan bersih untuk semua.",
+        "8. Pekerjaan Layak dan Pertumbuhan Ekonomi": "Mendorong pertumbuhan ekonomi yang berkelanjutan, inklusif dan berkelanjutan, lapangan kerja penuh dan produktif serta pekerjaan yang layak untuk semua.",
+        "9. Industri, Inovasi dan Infrastruktur": "Membangun infrastruktur yang berketahanan, mendorong industrialisasi yang inklusif dan berkelanjutan, serta mendorong inovasi.",
+        "10. Berkurangnya Kesenjangan": "Mengurangi ketimpangan di dalam dan di luar wilayah antar negara.",
+        "11. Kota dan Permukiman yang Berkelanjutan": "Membangun kota dan pemukiman manusia yang inklusif, aman, berketahanan dan berkelanjutan.",
+        "12. Konsumsi dan Produksi yang Bertanggung Jawab": "Memastikan pola konsumsi dan produksi yang berkelanjutan.",
+        "13. Penanganan Perubahan Iklim": "Mengambil tindakan segera untuk memerangi perubahan iklim dan dampaknya.",
+        "14. Ekosistem Lautan": "Melestarikan dan memanfaatkan sumber daya samudera, lautan, dan kelautan secara berkelanjutan untuk pembangunan berkelanjutan.",
+        "15. Ekosistem Daratan": "Melindungi, memulihkan dan mendorong pemanfaatan ekosistem darat secara berkelanjutan, mengelola hutan secara berkelanjutan, memerangi penggurunan, dan menghentikan dan membalikkan degradasi lahan serta menghentikan hilangnya keanekaragaman hayati.",
+        "16. Perdamaian, Keadilan dan Kelembagaan yang Tangguh": "Mempromosikan masyarakat yang damai dan inklusif untuk pembangunan berkelanjutan, memberikan akses terhadap keadilan bagi semua dan membangun Institusi yang efektif, akuntabel dan inklusif di semua tingkatan.",
+        "17. Kemitraan untuk Mencapai Tujuan": "Memperkuat sarana implementasi dan merevitalisasi kemitraan global untuk pembangunan berkelanjutan."
     }
 
 st.set_page_config(page_title="DPB Schola Amoris", page_icon="📝", layout="wide")
@@ -232,7 +232,7 @@ with st.sidebar:
         st.rerun() 
 
 # ==========================================
-# BUKU CONTEKAN
+# BUKU CONTEKAN & PANDUAN (DI ATAS TAB)
 # ==========================================
 st.markdown("""<style>.stTabs [data-baseweb="tab-list"] { gap: 10px; } .stTabs [data-baseweb="tab"] { background-color: #f1f5f9; border-radius: 8px 8px 0px 0px; padding: 10px 20px; box-shadow: inset 0 -2px 0 0 #cbd5e1; } .stTabs [aria-selected="true"] { background-color: #1e293b; color: #ffffff !important; }</style>""", unsafe_allow_html=True)
 
@@ -600,6 +600,32 @@ with tab5:
             st.write("\n\n")
             simpan_teks('Asesmen_Formatif_Psikomotorik', st.text_area("Formatif:", value=st.session_state.data_isian.get('Asesmen_Formatif_Psikomotorik', ''), height=65, key="ta_form_psi"))
             simpan_teks('Asesmen_Sumatif_Psikomotorik', st.text_area("Sumatif:", value=st.session_state.data_isian.get('Asesmen_Sumatif_Psikomotorik', ''), height=65, key="ta_sum_psi"))
+
+# --- TAB 6: PERAYAAN BELAJAR & CETAK ---
+with tab6:
+    with st.container(border=True): 
+        st.markdown("### PERAYAAN BELAJAR (MEREFLEKSI)")
+        simpan_teks('Membagikan_Pengalaman_Belajar', st.text_area("MEMBAGIKAN PENGALAMAN BELAJAR:", value=st.session_state.data_isian.get('Membagikan_Pengalaman_Belajar', '')))
+        simpan_teks('Refleksi_Perkembangan_Kompetensi', st.text_area("REFLEKSI PERKEMBANGAN KOMPETENSI:", value=st.session_state.data_isian.get('Refleksi_Perkembangan_Kompetensi', '')))
+        simpan_teks('Apresiasi', st.text_area("APRESIASI:", value=st.session_state.data_isian.get('Apresiasi', '')))
+        simpan_teks('Media_Pembelajaran', st.text_area("MEDIA PEMBELAJARAN:", value=st.session_state.data_isian.get('Media_Pembelajaran', '')))
+    
+    with st.container(border=True): 
+        st.subheader("🖨️ Rakit Dokumen & Simpan")
+        if st.button("Rakit & Simpan Data", type="primary", use_container_width=True):
+            if not st.session_state.data_isian.get('Nama_Guru'): st.error("❌ Nama Guru kosong!")
+            else:
+                with st.spinner('Memproses dokumen...'):
+                    try:
+                        doc = DocxTemplate("Template_DPB_Schola Amoris.docx")
+                        if foto_sdgs is not None: st.session_state.data_isian['Gambar_SGDs'] = InlineImage(doc, foto_sdgs, width=Mm(30))
+                        doc.render(st.session_state.data_isian)
+                        bio = io.BytesIO()
+                        doc.save(bio)
+                        simpan_draft_ke_awan() 
+                        st.success("🎉 Berhasil! Dokumen siap diunduh.")
+                        st.download_button(label="📥 Download File DPB", data=bio.getvalue(), file_name=f"DPB_{st.session_state.data_isian.get('MAPEL', 'Mapel')}.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
+                    except Exception as e: st.error(f"Terjadi kesalahan perakitan Word: {e}")
 
 # --- TAB 7: PERPUSTAKAAN ---
 with tab7:
