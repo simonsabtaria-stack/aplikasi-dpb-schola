@@ -220,7 +220,7 @@ with st.sidebar:
         st.rerun() 
 
 # ==========================================
-# TABS UTAMA (SEKARANG 8 TAB)
+# BAGIAN ATAS: PANDUAN & CONTEKAN KKO
 # ==========================================
 st.markdown("""<style>.stTabs [data-baseweb="tab-list"] { gap: 10px; } .stTabs [data-baseweb="tab"] { background-color: #f1f5f9; border-radius: 8px 8px 0px 0px; padding: 10px 20px; box-shadow: inset 0 -2px 0 0 #cbd5e1; } .stTabs [aria-selected="true"] { background-color: #1e293b; color: #ffffff !important; } .stTextInput input, .stTextArea textarea, .stSelectbox [data-baseweb="select"] { border-radius: 8px !important; } .stButton > button[kind="primary"] { border-radius: 8px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; }</style>""", unsafe_allow_html=True)
 
@@ -231,8 +231,48 @@ with st.expander("📖 Panduan Singkat Penyusunan DPB (Klik untuk membuka)"):
     2. **Gunakan Keajaiban AI (Tab 3, 4, 5):** Klik tombol biru **'Rumuskan...'**.
     3. **Cetak & Unduh (Tab 6):** Rakit dokumen menjadi Word.
     4. **Perpustakaan (Tab 7):** Cari referensi dan buku pelajaran.
-    5. **Kamus KKO (Tab 8):** Buka contekan Kata Kerja Operasional & Sintaks.
     """)
+
+# --- FITUR BUKU CONTEKAN DI ATAS TAB ---
+with st.expander("📖 Buka Kamus KKO & Sintaks (Buku Contekan)"):
+    st.write("Gunakan referensi di bawah ini saat menyusun Tujuan Pembelajaran (TP) secara manual.")
+    
+    kategori_contekan = st.radio(
+        "Pilih Referensi yang Ingin Dilihat:", 
+        ["🧠 KKO Kognitif", "❤️ KKO Afektif", "🏃 KKO Psikomotorik", "🧩 Sintaks Pembelajaran"], 
+        horizontal=True
+    )
+    
+    st.divider()
+    
+    if kategori_contekan == "🧠 KKO Kognitif":
+        if "Kognitif" in bank_kko:
+            for level, kata in bank_kko["Kognitif"].items():
+                with st.expander(f"**{level}**"):
+                    st.write(", ".join(kata))
+        else:
+            st.info("Data KKO Kognitif belum diisi di database Anda.")
+            
+    elif kategori_contekan == "❤️ KKO Afektif":
+        if "Afektif" in bank_kko:
+            for level, kata in bank_kko["Afektif"].items():
+                with st.expander(f"**{level}**"):
+                    st.write(", ".join(kata))
+        else:
+            st.info("Data KKO Afektif belum diisi di database Anda.")
+            
+    elif kategori_contekan == "🏃 KKO Psikomotorik":
+        if "Psikomotorik" in bank_kko:
+            for level, kata in bank_kko["Psikomotorik"].items():
+                with st.expander(f"**{level}**"):
+                    st.write(", ".join(kata))
+        else:
+            st.info("Data KKO Psikomotorik belum diisi di database Anda.")
+            
+    elif kategori_contekan == "🧩 Sintaks Pembelajaran":
+        for model, sintaks in kamus_sintaks.items():
+            with st.expander(f"**{model}**"):
+                st.text(sintaks)
     
 kunci_wajib = ['Nama_Guru', 'MAPEL', 'Materi', 'Capaian_Pembelajaran', 'TP_KOGNITIF', 'TP_Psikomotorik', 'TP_Afektif']
 terisi = sum(1 for k in kunci_wajib if st.session_state.data_isian.get(k) and str(st.session_state.data_isian.get(k)).strip() != "")
@@ -241,8 +281,10 @@ persentase = int((terisi / len(kunci_wajib)) * 100)
 st.markdown(f"**Progres Kelengkapan DPB: {persentase}%**")
 st.progress(persentase)
 
-# --- MENAMBAHKAN TAB KE-8 ---
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🏃 5. Psikomotorik", "🖨️ 6. Pratinjau & Cetak", "📚 7. Perpustakaan", "📖 8. Kamus KKO"])
+# ==========================================
+# TABS UTAMA (KEMBALI KE 7 TAB)
+# ==========================================
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🏃 5. Psikomotorik", "🖨️ 6. Pratinjau & Cetak", "📚 7. Perpustakaan"])
 
 with tab1:
     with st.container(border=True):
@@ -427,10 +469,10 @@ with tab4:
     with st.container(border=True):
         jenjang = st.session_state.data_isian.get('Jenjang', '')
         
-        c_n, c_k, c_sub = st.columns(3)
+        c_n, c_k = st.columns(2)
         ops_sfd = ["Pilih..."] + list(bank_sfd.keys())
         
-        with c_n: pil_nilai = st.selectbox("1. Pilih Nilai:", ops_sfd, index=get_idx(ops_sfd, st.session_state.data_isian.get('Nilai')))
+        with c_n: pil_nilai = st.selectbox("1. Pilih Nilai Ke-SFD-an:", ops_sfd, index=get_idx(ops_sfd, st.session_state.data_isian.get('Nilai')))
         
         if pil_nilai != "Pilih...":
             simpan_teks('Nilai', pil_nilai)
@@ -440,32 +482,40 @@ with tab4:
             
             if pil_keut != "Pilih...":
                 simpan_teks('Keutamaan', pil_keut)
-                ops_sub = ["Pilih..."] + list(bank_sfd[pil_nilai][pil_keut].keys())
                 
-                with c_sub: pil_sub = st.selectbox("3. Pilih Sikap:", ops_sub, index=get_idx(ops_sub, st.session_state.data_isian.get('Sub_Keutamaan')))
+                # --- MESIN PENYARING KHUSUS 'CN' ---
+                if jenjang in ["TK", "SD", "SMP"]: 
+                    teks_cn_saja = ""
+                    for sikap, isi_jenjang in bank_sfd[pil_nilai][pil_keut].items():
+                        if jenjang in isi_jenjang:
+                            teks = isi_jenjang[jenjang]
+                            # Kita hanya mengambil teks yang mengandung penanda "CN:"
+                            if "CN:" in teks:
+                                # Menghapus awalan "CN: " agar narasi bersih saat dicetak
+                                teks_cn_saja = teks.replace("CN: ", "").strip()
+                                break # Berhenti mencari karena CN sudah ditemukan
+                    
+                    if teks_cn_saja:
+                        cn_teks = teks_cn_saja
+                    else:
+                        cn_teks = "Data CN tidak ditemukan di jenjang ini."
+                        
+                elif jenjang == "SMA/SMK": 
+                    cn_teks = "Capaian Nilai (CN) SMA masih dirumuskan."
+                else: 
+                    cn_teks = "Pilih Jenjang di Tab 1 terlebih dahulu."
                 
-                if pil_sub != "Pilih...":
-                    simpan_teks('Sub_Keutamaan', pil_sub)
-                    
-                    if jenjang in ["TK", "SD", "SMP"]: 
-                        cn_teks = bank_sfd[pil_nilai][pil_keut][pil_sub].get(jenjang, "Data tidak ditemukan di jenjang ini.")
-                    elif jenjang == "SMA/SMK": 
-                        cn_teks = "Capaian Nilai (CN) SMA masih dirumuskan."
-                    else: 
-                        cn_teks = "Pilih Jenjang di Tab 1 terlebih dahulu."
-                    
-                    kunci_pelacak_sfd = f"{pil_sub}_{jenjang}"
-                    if st.session_state.get('lacak_sfd') != kunci_pelacak_sfd:
-                        st.session_state.data_isian['Capaian_Nilai'] = cn_teks
-                        st.session_state['lacak_sfd'] = kunci_pelacak_sfd
-                    
-                    simpan_teks('Capaian_Nilai', st.text_area("4. Capaian Nilai:", value=st.session_state.data_isian.get('Capaian_Nilai', ''), height=120))
-                else:
-                    simpan_teks('Sub_Keutamaan', ""); simpan_teks('Capaian_Nilai', "")
+                kunci_pelacak_sfd = f"{pil_keut}_{jenjang}"
+                if st.session_state.get('lacak_sfd') != kunci_pelacak_sfd:
+                    st.session_state.data_isian['Capaian_Nilai'] = cn_teks
+                    st.session_state['lacak_sfd'] = kunci_pelacak_sfd
+                
+                simpan_teks('Capaian_Nilai', st.text_area("3. Capaian Nilai:", value=st.session_state.data_isian.get('Capaian_Nilai', ''), height=150))
+                
             else:
-                simpan_teks('Keutamaan', ""); simpan_teks('Sub_Keutamaan', ""); simpan_teks('Capaian_Nilai', "")
+                simpan_teks('Keutamaan', ""); simpan_teks('Capaian_Nilai', "")
         else:
-            simpan_teks('Nilai', ""); simpan_teks('Keutamaan', ""); simpan_teks('Sub_Keutamaan', ""); simpan_teks('Capaian_Nilai', "")
+            simpan_teks('Nilai', ""); simpan_teks('Keutamaan', ""); simpan_teks('Capaian_Nilai', "")
 
     with st.container(border=True): 
         st.subheader("❤️ C. Rencana Afektif")
@@ -594,51 +644,3 @@ with tab7:
                         st.rerun() 
                     except Exception as e:
                         st.error(f"❌ Gagal menyimpan buku: {e}")
-
-# ==========================================
-# 📖 TAB 8: KAMUS KKO & SINTAKS (CONTEKAN)
-# ==========================================
-with tab8:
-    st.subheader("📖 Buku Contekan Guru")
-    st.write("Gunakan tab ini sebagai pusat referensi untuk menyusun Tujuan Pembelajaran dan pengalaman belajar.")
-    
-    kategori_contekan = st.radio(
-        "Pilih Referensi yang Ingin Dilihat:", 
-        ["🧠 KKO Kognitif", "❤️ KKO Afektif", "🏃 KKO Psikomotorik", "🧩 Sintaks Pembelajaran"], 
-        horizontal=True
-    )
-    
-    st.divider()
-    
-    if kategori_contekan == "🧠 KKO Kognitif":
-        st.markdown("#### Kata Kerja Operasional - Ranah Kognitif (Taksonomi Bloom)")
-        if "Kognitif" in bank_kko:
-            for level, kata in bank_kko["Kognitif"].items():
-                with st.expander(f"**{level}**"):
-                    st.write(", ".join(kata))
-        else:
-            st.info("Data KKO Kognitif belum diisi di database Anda.")
-            
-    elif kategori_contekan == "❤️ KKO Afektif":
-        st.markdown("#### Kata Kerja Operasional - Ranah Afektif (Sikap)")
-        if "Afektif" in bank_kko:
-            for level, kata in bank_kko["Afektif"].items():
-                with st.expander(f"**{level}**"):
-                    st.write(", ".join(kata))
-        else:
-            st.info("Data KKO Afektif belum diisi di database Anda.")
-            
-    elif kategori_contekan == "🏃 KKO Psikomotorik":
-        st.markdown("#### Kata Kerja Operasional - Ranah Psikomotorik (Keterampilan)")
-        if "Psikomotorik" in bank_kko:
-            for level, kata in bank_kko["Psikomotorik"].items():
-                with st.expander(f"**{level}**"):
-                    st.write(", ".join(kata))
-        else:
-            st.info("Data KKO Psikomotorik belum diisi di database Anda.")
-            
-    elif kategori_contekan == "🧩 Sintaks Pembelajaran":
-        st.markdown("#### Referensi Sintaks Model Pembelajaran")
-        for model, sintaks in kamus_sintaks.items():
-            with st.expander(f"**{model}**"):
-                st.text(sintaks)
