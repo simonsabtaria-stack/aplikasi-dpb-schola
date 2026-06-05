@@ -220,7 +220,7 @@ with st.sidebar:
         st.rerun() 
 
 # ==========================================
-# TABS UTAMA (7 TAB)
+# TABS UTAMA (SEKARANG 8 TAB)
 # ==========================================
 st.markdown("""<style>.stTabs [data-baseweb="tab-list"] { gap: 10px; } .stTabs [data-baseweb="tab"] { background-color: #f1f5f9; border-radius: 8px 8px 0px 0px; padding: 10px 20px; box-shadow: inset 0 -2px 0 0 #cbd5e1; } .stTabs [aria-selected="true"] { background-color: #1e293b; color: #ffffff !important; } .stTextInput input, .stTextArea textarea, .stSelectbox [data-baseweb="select"] { border-radius: 8px !important; } .stButton > button[kind="primary"] { border-radius: 8px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; }</style>""", unsafe_allow_html=True)
 
@@ -231,6 +231,7 @@ with st.expander("📖 Panduan Singkat Penyusunan DPB (Klik untuk membuka)"):
     2. **Gunakan Keajaiban AI (Tab 3, 4, 5):** Klik tombol biru **'Rumuskan...'**.
     3. **Cetak & Unduh (Tab 6):** Rakit dokumen menjadi Word.
     4. **Perpustakaan (Tab 7):** Cari referensi dan buku pelajaran.
+    5. **Kamus KKO (Tab 8):** Buka contekan Kata Kerja Operasional & Sintaks.
     """)
     
 kunci_wajib = ['Nama_Guru', 'MAPEL', 'Materi', 'Capaian_Pembelajaran', 'TP_KOGNITIF', 'TP_Psikomotorik', 'TP_Afektif']
@@ -240,7 +241,8 @@ persentase = int((terisi / len(kunci_wajib)) * 100)
 st.markdown(f"**Progres Kelengkapan DPB: {persentase}%**")
 st.progress(persentase)
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🏃 5. Psikomotorik", "🖨️ 6. Pratinjau & Cetak", "📚 7. Perpustakaan"])
+# --- MENAMBAHKAN TAB KE-8 ---
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(["📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🏃 5. Psikomotorik", "🖨️ 6. Pratinjau & Cetak", "📚 7. Perpustakaan", "📖 8. Kamus KKO"])
 
 with tab1:
     with st.container(border=True):
@@ -592,3 +594,51 @@ with tab7:
                         st.rerun() 
                     except Exception as e:
                         st.error(f"❌ Gagal menyimpan buku: {e}")
+
+# ==========================================
+# 📖 TAB 8: KAMUS KKO & SINTAKS (CONTEKAN)
+# ==========================================
+with tab8:
+    st.subheader("📖 Buku Contekan Guru")
+    st.write("Gunakan tab ini sebagai pusat referensi untuk menyusun Tujuan Pembelajaran dan pengalaman belajar.")
+    
+    kategori_contekan = st.radio(
+        "Pilih Referensi yang Ingin Dilihat:", 
+        ["🧠 KKO Kognitif", "❤️ KKO Afektif", "🏃 KKO Psikomotorik", "🧩 Sintaks Pembelajaran"], 
+        horizontal=True
+    )
+    
+    st.divider()
+    
+    if kategori_contekan == "🧠 KKO Kognitif":
+        st.markdown("#### Kata Kerja Operasional - Ranah Kognitif (Taksonomi Bloom)")
+        if "Kognitif" in bank_kko:
+            for level, kata in bank_kko["Kognitif"].items():
+                with st.expander(f"**{level}**"):
+                    st.write(", ".join(kata))
+        else:
+            st.info("Data KKO Kognitif belum diisi di database Anda.")
+            
+    elif kategori_contekan == "❤️ KKO Afektif":
+        st.markdown("#### Kata Kerja Operasional - Ranah Afektif (Sikap)")
+        if "Afektif" in bank_kko:
+            for level, kata in bank_kko["Afektif"].items():
+                with st.expander(f"**{level}**"):
+                    st.write(", ".join(kata))
+        else:
+            st.info("Data KKO Afektif belum diisi di database Anda.")
+            
+    elif kategori_contekan == "🏃 KKO Psikomotorik":
+        st.markdown("#### Kata Kerja Operasional - Ranah Psikomotorik (Keterampilan)")
+        if "Psikomotorik" in bank_kko:
+            for level, kata in bank_kko["Psikomotorik"].items():
+                with st.expander(f"**{level}**"):
+                    st.write(", ".join(kata))
+        else:
+            st.info("Data KKO Psikomotorik belum diisi di database Anda.")
+            
+    elif kategori_contekan == "🧩 Sintaks Pembelajaran":
+        st.markdown("#### Referensi Sintaks Model Pembelajaran")
+        for model, sintaks in kamus_sintaks.items():
+            with st.expander(f"**{model}**"):
+                st.text(sintaks)
