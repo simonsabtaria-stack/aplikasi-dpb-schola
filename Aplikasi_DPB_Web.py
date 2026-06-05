@@ -433,9 +433,7 @@ with tab4:
             with c_k: pil_keut = st.selectbox("2. Pilih Keutamaan:", ops_keut, index=get_idx(ops_keut, st.session_state.data_isian.get('Keutamaan')))
             if pil_keut != "Pilih...":
                 simpan_teks('Keutamaan', pil_keut)
-                if jenjang in ["TK", "SD", "SMP"]: cn_teks = bank_sfd[pil_nilai][pil_keut].get(jenjang, "Data tidak ditemukan.")
-                elif jenjang == "SMA/SMK": cn_teks = "Capaian Nilai (CN) SMA masih dirumuskan."
-                else: cn_teks = "Pilih Jenjang di Tab 1."
+                cn_teks = bank_sfd[pil_nilai][pil_keut].get(fase, "Data tidak ditemukan.")
                 
                 kunci_pelacak_sfd = f"{pil_keut}_{jenjang}"
                 if st.session_state.get('lacak_sfd') != kunci_pelacak_sfd:
