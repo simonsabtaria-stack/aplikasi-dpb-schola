@@ -400,23 +400,28 @@ with tab3:
             st.markdown("**TP KOGNITIF**")
             if st.button("📈 Rumuskan", key="btn_tp_kog"):
                 with st.spinner("Memproses..."):
-                    # PROMPT BARU: Kawinkan CP Umum + TP SDGs
                     prompt_kognitif = f"Mata Pelajaran: {st.session_state.data_isian.get('MAPEL', '')}.\nBaca CP Umum: '{st.session_state.data_isian.get('Capaian_Pembelajaran', '')}'.\nRumuskan TP Kognitif (HOTS) yang menajamkan CP Umum tersebut, dan WAJIB mengintegrasikan narasi TP SDGs berikut: '{st.session_state.data_isian.get('TP_SDGs', '')}'."
-                    st.session_state.data_isian['TP_KOGNITIF'] = panggil_ai(prompt_kognitif, "tp_kog")
+                    hasil_ai = panggil_ai(prompt_kognitif, "tp_kog")
+                    st.session_state.data_isian['TP_KOGNITIF'] = hasil_ai
+                    st.session_state['ta_tp_kog'] = hasil_ai # PENAWAR JEBAKAN MEMORI
             simpan_teks('TP_KOGNITIF', st.text_area("Isi TP:", value=st.session_state.data_isian.get('TP_KOGNITIF', ''), height=200, label_visibility="collapsed", key="ta_tp_kog"))
             
         with col_tk2:
             st.markdown("**INDIKATOR KOGNITIF**")
             if st.button("🪜 Rumuskan", key="btn_ind_kog"):
                 with st.spinner("Memproses..."):
-                    st.session_state.data_isian['Indikator_Kognitif'] = panggil_ai(f"Dari TP Kognitif: '{st.session_state.data_isian.get('TP_KOGNITIF', '')}', buat 3-4 Indikator.", "ind_kog")
+                    hasil_ai = panggil_ai(f"Dari TP Kognitif: '{st.session_state.data_isian.get('TP_KOGNITIF', '')}', buat 3-4 Indikator.", "ind_kog")
+                    st.session_state.data_isian['Indikator_Kognitif'] = hasil_ai
+                    st.session_state['ta_ind_kog'] = hasil_ai
             simpan_teks('Indikator_Kognitif', st.text_area("Isi Indikator:", value=st.session_state.data_isian.get('Indikator_Kognitif', ''), height=200, label_visibility="collapsed", key="ta_ind_kog"))
             
         with col_tk3:
             st.markdown("**PENGALAMAN BELAJAR**")
             if st.button("✨ Rumuskan", key="btn_kog"):
                 with st.spinner("Memproses..."):
-                    st.session_state.data_isian['Pengalaman_Belajar'] = panggil_ai(f"Materi: {st.session_state.data_isian.get('Materi', '')}\nSintaks:\n{st.session_state.data_isian.get('Urutan_Sintkas', '')}\nIndikator: {st.session_state.data_isian.get('Indikator_Kognitif', '')}", "pg_kog")
+                    hasil_ai = panggil_ai(f"Materi: {st.session_state.data_isian.get('Materi', '')}\nSintaks:\n{st.session_state.data_isian.get('Urutan_Sintkas', '')}\nIndikator: {st.session_state.data_isian.get('Indikator_Kognitif', '')}", "pg_kog")
+                    st.session_state.data_isian['Pengalaman_Belajar'] = hasil_ai
+                    st.session_state['ta_peng_kog'] = hasil_ai
             simpan_teks('Pengalaman_Belajar', st.text_area("Isi Pengalaman:", value=st.session_state.data_isian.get('Pengalaman_Belajar', ''), height=200, label_visibility="collapsed", key="ta_peng_kog"))
             
         with col_tk4:
@@ -529,25 +534,30 @@ with tab4:
             st.markdown("**TP AFEKTIF**")
             if st.button("📈 Rumuskan", key="btn_tp_afe"):
                 with st.spinner("Memproses..."):
-                    # PROMPT BARU: Kawinkan CP Umum + Karakter + TP SDGs
                     s = st.session_state.data_isian.get('Capaian_Nilai', '')
                     p = st.session_state.data_isian.get('Nilai_Keutamaan', '')
                     p3 = st.session_state.data_isian.get('Capaian_P3', '')
                     k = st.session_state.data_isian.get('Kearifan_Lokal', '')
                     prompt_afektif = f"Mata Pelajaran: {st.session_state.data_isian.get('MAPEL', '')}.\nBaca CP Umum: '{st.session_state.data_isian.get('Capaian_Pembelajaran', '')}'.\nElemen Karakter: P3 ({p3}), Nilai SFD ({s}), Kearifan ({k}).\nRumuskan TP Afektif yang selaras dengan CP Umum, dan WAJIB mengintegrasikan narasi TP SDGs berikut: '{st.session_state.data_isian.get('TP_SDGs', '')}'."
-                    st.session_state.data_isian['TP_Afektif'] = panggil_ai(prompt_afektif, "tp_afe")
+                    hasil_ai = panggil_ai(prompt_afektif, "tp_afe")
+                    st.session_state.data_isian['TP_Afektif'] = hasil_ai
+                    st.session_state['ta_tp_afe'] = hasil_ai
             simpan_teks('TP_Afektif', st.text_area("Isi TP:", value=st.session_state.data_isian.get('TP_Afektif', ''), height=150, label_visibility="collapsed", key="ta_tp_afe"))
         with col_ta2:
             st.markdown("**INDIKATOR AFEKTIF**")
             if st.button("🪜 Rumuskan", key="btn_ind_afe"):
                 with st.spinner("Memproses..."):
-                    st.session_state.data_isian['Indikator_Afektif'] = panggil_ai("Rumuskan Indikator Afektif.", "ind_afe")
+                    hasil_ai = panggil_ai(f"Dari TP Afektif: '{st.session_state.data_isian.get('TP_Afektif', '')}', buat 3-4 Indikator berjenjang.", "ind_afe")
+                    st.session_state.data_isian['Indikator_Afektif'] = hasil_ai
+                    st.session_state['ta_ind_afe'] = hasil_ai
             simpan_teks('Indikator_Afektif', st.text_area("Isi Indikator:", value=st.session_state.data_isian.get('Indikator_Afektif', ''), height=150, label_visibility="collapsed", key="ta_ind_afe"))
         with col_ta3:
             st.markdown("**PENGALAMAN BELAJAR**")
             if st.button("✨ Rumuskan", key="btn_afe"):
                 with st.spinner("Memproses..."):
-                    st.session_state.data_isian['Pengalaman_Belajar_Afektif'] = panggil_ai("Rumuskan Pengalaman Afektif.", "pg_afe")
+                    hasil_ai = panggil_ai(f"Materi: {st.session_state.data_isian.get('Materi', '')}\nIndikator Afektif: {st.session_state.data_isian.get('Indikator_Afektif', '')}\nRancang Pengalaman Belajar afektif.", "pg_afe")
+                    st.session_state.data_isian['Pengalaman_Belajar_Afektif'] = hasil_ai
+                    st.session_state['ta_peng_afe'] = hasil_ai
             simpan_teks('Pengalaman_Belajar_Afektif', st.text_area("Isi Pengalaman:", value=st.session_state.data_isian.get('Pengalaman_Belajar_Afektif', ''), height=150, label_visibility="collapsed", key="ta_peng_afe"))
         with col_ta4:
             st.markdown("**ASESMEN**")
@@ -564,53 +574,32 @@ with tab5:
             st.markdown("**TP PSIKOMOTORIK**")
             if st.button("📈 Rumuskan", key="btn_tp_psi"):
                 with st.spinner("Memproses..."):
-                    # PROMPT BARU: Kawinkan CP Umum + TP SDGs
                     prompt_psiko = f"Mata Pelajaran: {st.session_state.data_isian.get('MAPEL', '')}.\nBaca CP Umum: '{st.session_state.data_isian.get('Capaian_Pembelajaran', '')}'.\nRumuskan TP Psikomotorik (keterampilan/unjuk kerja) yang selaras dengan CP Umum, dan WAJIB mengintegrasikan narasi TP SDGs berikut: '{st.session_state.data_isian.get('TP_SDGs', '')}'."
-                    st.session_state.data_isian['TP_Psikomotorik'] = panggil_ai(prompt_psiko, "tp_psi")
+                    hasil_ai = panggil_ai(prompt_psiko, "tp_psi")
+                    st.session_state.data_isian['TP_Psikomotorik'] = hasil_ai
+                    st.session_state['ta_tp_psi'] = hasil_ai
             simpan_teks('TP_Psikomotorik', st.text_area("Isi TP:", value=st.session_state.data_isian.get('TP_Psikomotorik', ''), height=150, label_visibility="collapsed", key="ta_tp_psi"))
         with col_tp2:
             st.markdown("**INDIKATOR PSIKOMOTORIK**")
             if st.button("🪜 Rumuskan", key="btn_ind_psi"):
                 with st.spinner("Memproses..."):
-                    st.session_state.data_isian['Indikator_Psikomotorik'] = panggil_ai("Rumuskan Indikator Psikomotorik.", "ind_psi")
+                    hasil_ai = panggil_ai(f"Dari TP Psikomotorik: '{st.session_state.data_isian.get('TP_Psikomotorik', '')}', buat 3-4 Indikator berjenjang.", "ind_psi")
+                    st.session_state.data_isian['Indikator_Psikomotorik'] = hasil_ai
+                    st.session_state['ta_ind_psi'] = hasil_ai
             simpan_teks('Indikator_Psikomotorik', st.text_area("Isi Indikator:", value=st.session_state.data_isian.get('Indikator_Psikomotorik', ''), height=150, label_visibility="collapsed", key="ta_ind_psi"))
         with col_tp3:
             st.markdown("**PENGALAMAN BELAJAR**")
             if st.button("✨ Rumuskan", key="btn_psi"):
                 with st.spinner("Memproses..."):
-                    st.session_state.data_isian['Pengalaman_Belajar_Psikomotorik'] = panggil_ai("Rumuskan Pengalaman Psi.", "pg_psi")
+                    hasil_ai = panggil_ai(f"Materi: {st.session_state.data_isian.get('Materi', '')}\nIndikator: {st.session_state.data_isian.get('Indikator_Psikomotorik', '')}\nBuat skenario unjuk kerja/proyek.", "pg_psi")
+                    st.session_state.data_isian['Pengalaman_Belajar_Psikomotorik'] = hasil_ai
+                    st.session_state['ta_peng_psi'] = hasil_ai
             simpan_teks('Pengalaman_Belajar_Psikomotorik', st.text_area("Isi Pengalaman:", value=st.session_state.data_isian.get('Pengalaman_Belajar_Psikomotorik', ''), height=150, label_visibility="collapsed", key="ta_peng_psi"))
         with col_tp4:
             st.markdown("**ASESMEN**")
             st.write("\n\n")
             simpan_teks('Asesmen_Formatif_Psikomotorik', st.text_area("Formatif:", value=st.session_state.data_isian.get('Asesmen_Formatif_Psikomotorik', ''), height=65, key="ta_form_psi"))
             simpan_teks('Asesmen_Sumatif_Psikomotorik', st.text_area("Sumatif:", value=st.session_state.data_isian.get('Asesmen_Sumatif_Psikomotorik', ''), height=65, key="ta_sum_psi"))
-
-# --- TAB 6: PERAYAAN BELAJAR & CETAK ---
-with tab6:
-    with st.container(border=True): 
-        st.markdown("### PERAYAAN BELAJAR (MEREFLEKSI)")
-        simpan_teks('Membagikan_Pengalaman_Belajar', st.text_area("MEMBAGIKAN PENGALAMAN BELAJAR:", value=st.session_state.data_isian.get('Membagikan_Pengalaman_Belajar', '')))
-        simpan_teks('Refleksi_Perkembangan_Kompetensi', st.text_area("REFLEKSI PERKEMBANGAN KOMPETENSI:", value=st.session_state.data_isian.get('Refleksi_Perkembangan_Kompetensi', '')))
-        simpan_teks('Apresiasi', st.text_area("APRESIASI:", value=st.session_state.data_isian.get('Apresiasi', '')))
-        simpan_teks('Media_Pembelajaran', st.text_area("MEDIA PEMBELAJARAN:", value=st.session_state.data_isian.get('Media_Pembelajaran', '')))
-    
-    with st.container(border=True): 
-        st.subheader("🖨️ Rakit Dokumen & Simpan")
-        if st.button("Rakit & Simpan Data", type="primary", use_container_width=True):
-            if not st.session_state.data_isian.get('Nama_Guru'): st.error("❌ Nama Guru kosong!")
-            else:
-                with st.spinner('Memproses dokumen...'):
-                    try:
-                        doc = DocxTemplate("Template_DPB_Schola Amoris.docx")
-                        if foto_sdgs is not None: st.session_state.data_isian['Gambar_SGDs'] = InlineImage(doc, foto_sdgs, width=Mm(30))
-                        doc.render(st.session_state.data_isian)
-                        bio = io.BytesIO()
-                        doc.save(bio)
-                        simpan_draft_ke_awan() 
-                        st.success("🎉 Berhasil! Dokumen siap diunduh.")
-                        st.download_button(label="📥 Download File DPB", data=bio.getvalue(), file_name=f"DPB_{st.session_state.data_isian.get('MAPEL', 'Mapel')}.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
-                    except Exception as e: st.error(f"Terjadi kesalahan perakitan Word: {e}")
 
 # --- TAB 7: PERPUSTAKAAN ---
 with tab7:
