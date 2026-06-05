@@ -25,8 +25,9 @@ URL_DATABASE_SHEET = "https://script.google.com/macros/s/AKfycbyi9lnZJplhJDHV9Rk
 # ==========================================
 # 🔐 PENGATURAN BRANKAS SUPABASE (ISI DI SINI)
 # ==========================================
-SUPABASE_URL = "https://yblxuksszfubyfpnywwg.supabase.co"
-SUPABASE_KEY = "sb_publishable_lZgTirSMV0P3QwFtKMjc1Q_wP-SWroz"
+url = st.secrets["SUPABASE_URL"]
+key = st.secrets["SUPABASE_KEY"]
+supabase = create_client(url, key)
 
 # Inisialisasi Koneksi Supabase
 try:
