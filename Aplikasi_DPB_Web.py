@@ -360,28 +360,28 @@ with tab3:
             if st.button("📈 Rumuskan", key="btn_tp_kog"):
                 with st.spinner("Memproses..."):
                     st.session_state.data_isian['TP_KOGNITIF'] = panggil_ai(f"Baca CP: '{st.session_state.data_isian.get('Capaian_Pembelajaran', '')}'. Rumuskan TP Kognitif HOTS. Integrasikan SDGs: '{st.session_state.data_isian.get('TP_SDGs', '')}'.", "tp_kog")
-            simpan_teks('TP_KOGNITIF', st.text_area("Isi TP:", value=st.session_state.data_isian.get('TP_KOGNITIF', ''), height=200, label_visibility="collapsed"))
+            simpan_teks('TP_KOGNITIF', st.text_area("Isi TP:", value=st.session_state.data_isian.get('TP_KOGNITIF', ''), height=200, label_visibility="collapsed", key="ta_tp_kog"))
             
         with col_tk2:
             st.markdown("**INDIKATOR KOGNITIF**")
             if st.button("🪜 Rumuskan", key="btn_ind_kog"):
                 with st.spinner("Memproses..."):
                     st.session_state.data_isian['Indikator_Kognitif'] = panggil_ai(f"Dari TP Kognitif: '{st.session_state.data_isian.get('TP_KOGNITIF', '')}', buat 3-4 Indikator.", "ind_kog")
-            simpan_teks('Indikator_Kognitif', st.text_area("Isi Indikator:", value=st.session_state.data_isian.get('Indikator_Kognitif', ''), height=200, label_visibility="collapsed"))
+            simpan_teks('Indikator_Kognitif', st.text_area("Isi Indikator:", value=st.session_state.data_isian.get('Indikator_Kognitif', ''), height=200, label_visibility="collapsed", key="ta_ind_kog"))
             
         with col_tk3:
             st.markdown("**PENGALAMAN BELAJAR**")
             if st.button("✨ Rumuskan", key="btn_kog"):
                 with st.spinner("Memproses..."):
                     st.session_state.data_isian['Pengalaman_Belajar'] = panggil_ai(f"Materi: {st.session_state.data_isian.get('Materi', '')}\nSintaks:\n{st.session_state.data_isian.get('Urutan_Sintkas', '')}\nIndikator: {st.session_state.data_isian.get('Indikator_Kognitif', '')}", "pg_kog")
-            simpan_teks('Pengalaman_Belajar', st.text_area("Isi Pengalaman:", value=st.session_state.data_isian.get('Pengalaman_Belajar', ''), height=200, label_visibility="collapsed"))
+            simpan_teks('Pengalaman_Belajar', st.text_area("Isi Pengalaman:", value=st.session_state.data_isian.get('Pengalaman_Belajar', ''), height=200, label_visibility="collapsed", key="ta_peng_kog"))
             
         with col_tk4:
             st.markdown("**ASESMEN**")
             st.write("\n")
             st.write("\n")
-            simpan_teks('Asesmen_Formatif', st.text_area("Formatif:", value=st.session_state.data_isian.get('Asesmen_Formatif', ''), height=85))
-            simpan_teks('Asesmen_Sumatif', st.text_area("Sumatif:", value=st.session_state.data_isian.get('Asesmen_Sumatif', ''), height=85))
+            simpan_teks('Asesmen_Formatif', st.text_area("Formatif:", value=st.session_state.data_isian.get('Asesmen_Formatif', ''), height=85, key="ta_form_kog"))
+            simpan_teks('Asesmen_Sumatif', st.text_area("Sumatif:", value=st.session_state.data_isian.get('Asesmen_Sumatif', ''), height=85, key="ta_sum_kog"))
 
 # --- TAB 4: AFEKTIF (MODEL TABEL) ---
 with tab4:
@@ -487,24 +487,24 @@ with tab4:
             if st.button("📈 Rumuskan", key="btn_tp_afe"):
                 with st.spinner("Memproses..."):
                     st.session_state.data_isian['TP_Afektif'] = panggil_ai("Rumuskan TP Afektif.", "tp_afe")
-            simpan_teks('TP_Afektif', st.text_area("Isi TP:", value=st.session_state.data_isian.get('TP_Afektif', ''), height=150, label_visibility="collapsed"))
+            simpan_teks('TP_Afektif', st.text_area("Isi TP:", value=st.session_state.data_isian.get('TP_Afektif', ''), height=150, label_visibility="collapsed", key="ta_tp_afe"))
         with col_ta2:
             st.markdown("**INDIKATOR AFEKTIF**")
             if st.button("🪜 Rumuskan", key="btn_ind_afe"):
                 with st.spinner("Memproses..."):
                     st.session_state.data_isian['Indikator_Afektif'] = panggil_ai("Rumuskan Indikator Afektif.", "ind_afe")
-            simpan_teks('Indikator_Afektif', st.text_area("Isi Indikator:", value=st.session_state.data_isian.get('Indikator_Afektif', ''), height=150, label_visibility="collapsed"))
+            simpan_teks('Indikator_Afektif', st.text_area("Isi Indikator:", value=st.session_state.data_isian.get('Indikator_Afektif', ''), height=150, label_visibility="collapsed", key="ta_ind_afe"))
         with col_ta3:
             st.markdown("**PENGALAMAN BELAJAR**")
             if st.button("✨ Rumuskan", key="btn_afe"):
                 with st.spinner("Memproses..."):
                     st.session_state.data_isian['Pengalaman_Belajar_Afektif'] = panggil_ai("Rumuskan Pengalaman Afektif.", "pg_afe")
-            simpan_teks('Pengalaman_Belajar_Afektif', st.text_area("Isi Pengalaman:", value=st.session_state.data_isian.get('Pengalaman_Belajar_Afektif', ''), height=150, label_visibility="collapsed"))
+            simpan_teks('Pengalaman_Belajar_Afektif', st.text_area("Isi Pengalaman:", value=st.session_state.data_isian.get('Pengalaman_Belajar_Afektif', ''), height=150, label_visibility="collapsed", key="ta_peng_afe"))
         with col_ta4:
             st.markdown("**ASESMEN**")
             st.write("\n\n")
-            simpan_teks('Formatif', st.text_area("Formatif:", value=st.session_state.data_isian.get('Formatif', ''), height=65))
-            simpan_teks('Sumatif', st.text_area("Sumatif:", value=st.session_state.data_isian.get('Sumatif', ''), height=65))
+            simpan_teks('Formatif', st.text_area("Formatif:", value=st.session_state.data_isian.get('Formatif', ''), height=65, key="ta_form_afe"))
+            simpan_teks('Sumatif', st.text_area("Sumatif:", value=st.session_state.data_isian.get('Sumatif', ''), height=65, key="ta_sum_afe"))
 
 # --- TAB 5: PSIKOMOTORIK (MODEL TABEL) ---
 with tab5:
@@ -516,24 +516,24 @@ with tab5:
             if st.button("📈 Rumuskan", key="btn_tp_psi"):
                 with st.spinner("Memproses..."):
                     st.session_state.data_isian['TP_Psikomotorik'] = panggil_ai("Rumuskan TP Psikomotorik.", "tp_psi")
-            simpan_teks('TP_Psikomotorik', st.text_area("Isi TP:", value=st.session_state.data_isian.get('TP_Psikomotorik', ''), height=150, label_visibility="collapsed"))
+            simpan_teks('TP_Psikomotorik', st.text_area("Isi TP:", value=st.session_state.data_isian.get('TP_Psikomotorik', ''), height=150, label_visibility="collapsed", key="ta_tp_psi"))
         with col_tp2:
             st.markdown("**INDIKATOR PSIKOMOTORIK**")
             if st.button("🪜 Rumuskan", key="btn_ind_psi"):
                 with st.spinner("Memproses..."):
                     st.session_state.data_isian['Indikator_Psikomotorik'] = panggil_ai("Rumuskan Indikator Psikomotorik.", "ind_psi")
-            simpan_teks('Indikator_Psikomotorik', st.text_area("Isi Indikator:", value=st.session_state.data_isian.get('Indikator_Psikomotorik', ''), height=150, label_visibility="collapsed"))
+            simpan_teks('Indikator_Psikomotorik', st.text_area("Isi Indikator:", value=st.session_state.data_isian.get('Indikator_Psikomotorik', ''), height=150, label_visibility="collapsed", key="ta_ind_psi"))
         with col_tp3:
             st.markdown("**PENGALAMAN BELAJAR**")
             if st.button("✨ Rumuskan", key="btn_psi"):
                 with st.spinner("Memproses..."):
                     st.session_state.data_isian['Pengalaman_Belajar_Psikomotorik'] = panggil_ai("Rumuskan Pengalaman Psi.", "pg_psi")
-            simpan_teks('Pengalaman_Belajar_Psikomotorik', st.text_area("Isi Pengalaman:", value=st.session_state.data_isian.get('Pengalaman_Belajar_Psikomotorik', ''), height=150, label_visibility="collapsed"))
+            simpan_teks('Pengalaman_Belajar_Psikomotorik', st.text_area("Isi Pengalaman:", value=st.session_state.data_isian.get('Pengalaman_Belajar_Psikomotorik', ''), height=150, label_visibility="collapsed", key="ta_peng_psi"))
         with col_tp4:
             st.markdown("**ASESMEN**")
             st.write("\n\n")
-            simpan_teks('Asesmen_Formatif_Psikomotorik', st.text_area("Formatif:", value=st.session_state.data_isian.get('Asesmen_Formatif_Psikomotorik', ''), height=65))
-            simpan_teks('Asesmen_Sumatif_Psikomotorik', st.text_area("Sumatif:", value=st.session_state.data_isian.get('Asesmen_Sumatif_Psikomotorik', ''), height=65))
+            simpan_teks('Asesmen_Formatif_Psikomotorik', st.text_area("Formatif:", value=st.session_state.data_isian.get('Asesmen_Formatif_Psikomotorik', ''), height=65, key="ta_form_psi"))
+            simpan_teks('Asesmen_Sumatif_Psikomotorik', st.text_area("Sumatif:", value=st.session_state.data_isian.get('Asesmen_Sumatif_Psikomotorik', ''), height=65, key="ta_sum_psi"))
 
 # --- TAB 6: PERAYAAN BELAJAR & CETAK ---
 with tab6:
