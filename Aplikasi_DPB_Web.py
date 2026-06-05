@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd # Tambahan untuk merapikan tabel perpustakaan
 from docxtpl import DocxTemplate, InlineImage
 from docx.shared import Mm
 import io
@@ -20,20 +21,16 @@ from data_dpl import bank_dpl
 
 st.set_page_config(page_title="DPB Schola Amoris", page_icon="📝", layout="wide")
 
-URL_DATABASE_SHEET = "https://script.google.com/macros/s/AKfycbyi9lnZJplhJDHV9RkkGq8mmILR7zIn7XfNTLN8Qf49XJuyRr8H5LAgr-vlrP6gyDnfjw/exec"
-
 # ==========================================
-# 🔐 PENGATURAN BRANKAS SUPABASE (ISI DI SINI)
+# 🔐 PENGATURAN BRANKAS SUPABASE
 # ==========================================
-url = st.secrets["SUPABASE_URL"]
-key = st.secrets["SUPABASE_KEY"]
-supabase = create_client(url, key)
-
-# Inisialisasi Koneksi Supabase
 try:
-    supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-except Exception:
+    url = st.secrets["SUPABASE_URL"]
+    key = st.secrets["SUPABASE_KEY"]
+    supabase: Client = create_client(url, key)
+except Exception as e:
     supabase = None
+    st.error("Koneksi Supabase belum diatur di Secrets Streamlit.")
 
 # ==========================================
 # KAMUS & INISIALISASI MEMORI
@@ -67,22 +64,18 @@ def simpan_teks(kunci, nilai):
     st.session_state.data_isian[kunci] = nilai
 
 # ==========================================
-# 💾 FUNGSI DATABASE (SIMPAN & MUAT)
+# 💾 FUNGSI DATABASE (SIMPAN & MUAT DRAF)
 # ==========================================
 def simpan_draft_ke_awan():
     if supabase is None:
         st.error("Koneksi Supabase belum diatur!")
         return
-    # Buang gambar dari dictionary agar bisa jadi format JSON
     data_bersih = {k: v for k, v in st.session_state.data_isian.items() if k != 'Gambar_SGDs'}
     try:
-        # Cek apakah user sudah punya draf sebelumnya
         cek = supabase.table("draft_guru").select("*").eq("username", st.session_state.username_aktif).execute()
         if len(cek.data) > 0:
-            # Update draf lama
             supabase.table("draft_guru").update({"data_isian": data_bersih}).eq("username", st.session_state.username_aktif).execute()
         else:
-            # Buat draf baru
             supabase.table("draft_guru").insert({"username": st.session_state.username_aktif, "data_isian": data_bersih}).execute()
         st.toast(f"Draf berhasil disimpan ke Brankas Awan, {st.session_state.username_aktif}! ☁️", icon="✅")
     except Exception as e:
@@ -94,7 +87,6 @@ def muat_draft_dari_awan(user):
         cek = supabase.table("draft_guru").select("data_isian").eq("username", user).execute()
         if len(cek.data) > 0:
             st.session_state.data_isian = cek.data[0]['data_isian']
-            # Sinkronisasi nama guru otomatis
             st.session_state.data_isian['Nama_Guru'] = user
             st.toast("Berhasil memuat pekerjaan Anda sebelumnya!", icon="📥")
         else:
@@ -107,7 +99,10 @@ def muat_draft_dari_awan(user):
 # 🚪 HALAMAN LOGIN
 # ==========================================
 if st.session_state.username_aktif is None:
-    st.image("banner_schola.png", use_container_width=True)
+    try:
+        st.image("banner_schola.png", use_container_width=True)
+    except:
+        pass
     st.markdown("<h1 style='text-align: center;'>Pintu Gerbang Penyusun DPB 🎓</h1>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1,2,1])
@@ -123,10 +118,13 @@ if st.session_state.username_aktif is None:
                     st.session_state.username_aktif = input_nama.strip()
                     muat_draft_dari_awan(st.session_state.username_aktif)
                     st.rerun()
-    st.stop() # Hentikan kode di sini jika belum login
+    st.stop() 
 
 # JIKA SUDAH LOGIN, TAMPILKAN APLIKASI UTAMA
-st.image("banner_schola.png", use_container_width=True)
+try:
+    st.image("banner_schola.png", use_container_width=True)
+except:
+    pass
 col_title, col_logout = st.columns([4,1])
 with col_title:
     st.title("Penyusun DPB Schola Amoris 🎓")
@@ -134,7 +132,7 @@ with col_title:
 with col_logout:
     if st.button("🚪 Keluar (Logout)"):
         st.session_state.username_aktif = None
-        inisialisasi_memori() # Hapus semua memori saat keluar
+        inisialisasi_memori() 
         st.rerun()
 
 # ==========================================
@@ -157,7 +155,6 @@ def panggil_amor(pertanyaan, api_key):
     except Exception as e: return f"Waduh, sepertinya ada gangguan teknis. (Error: {e}) 🛠️"
 
 def fallback_generator(tipe):
-    # (Kode fallback disingkat untuk keterbacaan, fungsinya sama persis)
     m = st.session_state.data_isian.get('Materi', 'materi')
     if tipe == "tp_kog": return f"Melalui eksplorasi mandiri, peserta didik mampu menguraikan konsep {m} secara kritis."
     elif tipe == "ind_kog": return f"- Menjelaskan konsep dasar {m}\n- Menganalisis kasus terkait {m}"
@@ -193,7 +190,6 @@ def panggil_ai(prompt, tipe=""):
 with st.sidebar:
     st.success(f"👤 Aktif sebagai: **{st.session_state.username_aktif}**")
     
-    # TOMBOL CLOUD SAVE DITARUH PALING ATAS AGAR GURU SERING INGAT
     if st.button("☁️ Simpan Draf ke Awan", type="primary", use_container_width=True):
         with st.spinner("Menyimpan..."):
             simpan_draft_ke_awan()
@@ -221,24 +217,19 @@ with st.sidebar:
         st.rerun() 
 
 # ==========================================
-# TABS UTAMA
+# TABS UTAMA (DITAMBAH PERPUSTAKAAN)
 # ==========================================
 st.markdown("""<style>.stTabs [data-baseweb="tab-list"] { gap: 10px; } .stTabs [data-baseweb="tab"] { background-color: #f1f5f9; border-radius: 8px 8px 0px 0px; padding: 10px 20px; box-shadow: inset 0 -2px 0 0 #cbd5e1; } .stTabs [aria-selected="true"] { background-color: #1e293b; color: #ffffff !important; } .stTextInput input, .stTextArea textarea, .stSelectbox [data-baseweb="select"] { border-radius: 8px !important; } .stButton > button[kind="primary"] { border-radius: 8px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; }</style>""", unsafe_allow_html=True)
-# ==========================================
-# PANDUAN PENGGUNAAN
-# ==========================================
+
 with st.expander("📖 Panduan Singkat Penyusunan DPB (Klik untuk membuka)"):
     st.markdown("""
     **Selamat datang di asisten penyusun DPB! Berikut adalah langkah mudah penggunaannya:**
-    1. **Isi Data Dasar (Tab 1 & 2):** Mulailah dengan melengkapi identitas Anda, memilih mata pelajaran, dan memasukkan Capaian Pembelajaran (CP).
-    2. **Gunakan Keajaiban AI (Tab 3, 4, 5):** Di setiap tab aspek (Kognitif, Afektif, Psikomotorik), klik tombol biru **'Rumuskan...'**. AI akan otomatis menyusun Tujuan Pembelajaran, Indikator, dan Pengalaman Belajar untuk Anda. Anda bebas mengedit teks hasilnya jika ada yang kurang pas.
-    3. **Cetak & Unduh (Tab 6):** Periksa kembali seluruh isian Anda. Jika sudah mantap, lengkapi bagian apresiasi/media, lalu klik tombol **'Rakit & Simpan Data'** untuk mengunduh file Microsoft Word siap cetak.
+    1. **Isi Data Dasar (Tab 1 & 2):** Mulailah dengan melengkapi identitas Anda.
+    2. **Gunakan Keajaiban AI (Tab 3, 4, 5):** Klik tombol biru **'Rumuskan...'**.
+    3. **Cetak & Unduh (Tab 6):** Rakit dokumen menjadi Word.
+    4. **Perpustakaan (Tab 7):** Cari referensi dan buku pelajaran.
+    """)
     
-    💡 *Tips: Biasakan menekan tombol **'☁️ Simpan Draf ke Awan'** di menu sebelah kiri setiap kali Anda selesai mengisi satu Tab agar pekerjaan Anda aman.*""")
-    
-# ==========================================
-# KETERANGAN PROGRES PEMBUATAN DPB
-# ==========================================
 kunci_wajib = ['Nama_Guru', 'MAPEL', 'Materi', 'Capaian_Pembelajaran', 'TP_KOGNITIF', 'TP_Psikomotorik', 'TP_Afektif']
 terisi = sum(1 for k in kunci_wajib if st.session_state.data_isian.get(k) and str(st.session_state.data_isian.get(k)).strip() != "")
 persentase = int((terisi / len(kunci_wajib)) * 100)
@@ -246,17 +237,15 @@ persentase = int((terisi / len(kunci_wajib)) * 100)
 st.markdown(f"**Progres Kelengkapan DPB: {persentase}%**")
 st.progress(persentase)
 
-# --- LETAKKAN KODE DI ATAS TEPAT SEBELUM BARIS INI ---
-
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🏃 5. Psikomotorik", "🖨️ 6. Pratinjau & Cetak"])
+# --- TAB DITAMBAH MENJADI 7 ---
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🏃 5. Psikomotorik", "🖨️ 6. Pratinjau & Cetak", "📚 7. Perpustakaan"])
 
 with tab1:
     with st.container(border=True):
         st.subheader("A. Identitas Guru & Jenjang")
-        simpan_teks('Nama_Guru', st.text_input("Nama Guru Penyusun (Wajib diisi):", value=st.session_state.data_isian.get('Nama_Guru', st.session_state.username_aktif), disabled=True, help="Nama disesuaikan otomatis dengan akun login."))
+        simpan_teks('Nama_Guru', st.text_input("Nama Guru Penyusun (Wajib diisi):", value=st.session_state.data_isian.get('Nama_Guru', st.session_state.username_aktif), disabled=True))
         col1, col2, col3, col4, col5 = st.columns(5)
         
-        # Helper untuk index combobox
         def get_idx(options, val, default=0): return options.index(val) if val in options else default
         
         opsi_jenjang = ["Pilih...", "TK", "SD", "SMP", "SMA/SMK"]
@@ -501,9 +490,67 @@ with tab6:
                         bio = io.BytesIO()
                         doc.save(bio)
                         
-                        # Auto-Save Draft saat merakit
                         simpan_draft_ke_awan() 
                         
                         st.success("🎉 Berhasil! Dokumen siap diunduh.")
                         st.download_button(label="📥 Download File DPB", data=bio.getvalue(), file_name=f"DPB_{st.session_state.data_isian.get('MAPEL', 'Mapel')}.docx", mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document", use_container_width=True)
                     except Exception as e: st.error(f"Terjadi kesalahan perakitan Word: {e}")
+
+# ==========================================
+# 📚 TAB 7: PERPUSTAKAAN DIGITAL
+# ==========================================
+with tab7:
+    st.subheader("📚 Perpustakaan Digital Schola Amoris")
+    st.write("Temukan dan kelola referensi buku, modul, serta bahan ajar di sini.")
+
+    try:
+        if supabase is not None:
+            respon_buku = supabase.table("koleksi_buku").select("*").execute()
+            data_buku = respon_buku.data
+
+            if data_buku:
+                df_buku = pd.DataFrame(data_buku)
+                st.dataframe(
+                    df_buku[["judul_buku", "kategori", "fase_kelas", "link_unduh"]],
+                    column_config={
+                        "judul_buku": "Judul Buku",
+                        "kategori": "Kategori",
+                        "fase_kelas": "Target Kelas",
+                        "link_unduh": st.column_config.LinkColumn("Tautan Unduh / Baca")
+                    },
+                    hide_index=True,
+                    use_container_width=True
+                )
+            else:
+                st.info("📭 Perpustakaan saat ini masih kosong.")
+        else:
+            st.error("Koneksi ke brankas Supabase terputus. Pastikan konfigurasi rahasia sudah benar.")
+    except Exception as e:
+        st.error(f"Gagal memuat katalog buku: {e}")
+
+    st.divider()
+    
+    with st.expander("➕ Tambah Buku Baru (Khusus Guru/Admin)"):
+        st.write("Punya referensi baru? Masukkan ke perpustakaan!")
+        baru_judul = st.text_input("Judul Buku/Materi:")
+        baru_kategori = st.selectbox("Kategori:", ["Buku Teks Utama", "Modul Ajar", "Buku Cerita Digital", "LKPD", "Referensi Guru"])
+        baru_fase = st.selectbox("Target Fase/Kelas:", ["Umum", "Fase Fondasi", "Fase A", "Fase B", "Fase C", "Fase D", "Fase E", "Fase F"])
+        baru_link = st.text_input("Link Unduh (Google Drive / Tautan PDF):")
+        
+        if st.button("💾 Simpan Buku ke Perpustakaan", type="primary"):
+            if baru_judul == "" or baru_link == "":
+                st.warning("⚠️ Judul Buku dan Link Unduh wajib diisi!")
+            else:
+                with st.spinner("Menyimpan ke rak..."):
+                    try:
+                        data_buku_baru = {
+                            "judul_buku": baru_judul,
+                            "kategori": baru_kategori,
+                            "fase_kelas": baru_fase,
+                            "link_unduh": baru_link
+                        }
+                        supabase.table("koleksi_buku").insert(data_buku_baru).execute()
+                        st.success("✅ Buku berhasil ditambahkan ke perpustakaan!")
+                        st.rerun() 
+                    except Exception as e:
+                        st.error(f"❌ Gagal menyimpan buku: {e}")
