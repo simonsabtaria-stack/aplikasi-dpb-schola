@@ -423,7 +423,7 @@ with tab4:
             else: simpan_teks('Sub_Dimensi', ""); simpan_teks('Kompetensi', "")
 
     with st.container(border=True):
-        jenjang = st.session_state.data_isian.get('Fase', '')
+        jenjang = st.session_state.data_isian.get('Jenjang', '')
         c_n, c_k = st.columns(2)
         ops_sfd = ["Pilih..."] + list(bank_sfd.keys())
         with c_n: pil_nilai = st.selectbox("1. Pilih Nilai Ke-SFD-an:", ops_sfd, index=get_idx(ops_sfd, st.session_state.data_isian.get('Nilai')))
@@ -433,7 +433,7 @@ with tab4:
             with c_k: pil_keut = st.selectbox("2. Pilih Keutamaan:", ops_keut, index=get_idx(ops_keut, st.session_state.data_isian.get('Keutamaan')))
             if pil_keut != "Pilih...":
                 simpan_teks('Keutamaan', pil_keut)
-                cn_teks = bank_sfd[pil_nilai][pil_keut].get(fase, "Data tidak ditemukan.")
+                cn_teks = bank_sfd[pil_nilai][pil_keut].get(Jenjang, "Data tidak ditemukan.")
                 
                 kunci_pelacak_sfd = f"{pil_keut}_{jenjang}"
                 if st.session_state.get('lacak_sfd') != kunci_pelacak_sfd:
