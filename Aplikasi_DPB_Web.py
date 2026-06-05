@@ -251,7 +251,7 @@ st.progress(persentase)
 # ==========================================
 # TABS UTAMA (DESAIN LAYOUT MIRIP WORD)
 # ==========================================
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🏃 5. Psikomotorik", "🖨️ 6. Pratinjau & Cetak", "📚 7. Perpustakaan"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🏃 5. Psikomotorik", "🖨️ 6. Perayaan Belajar & Cetak", "📚 7. Perpustakaan"])
 
 # --- TAB 1: IDENTIFIKASI ---
 with tab1:
