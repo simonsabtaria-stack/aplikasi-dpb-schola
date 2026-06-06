@@ -419,8 +419,7 @@ with tab3:
                     
                     prompt = f"Materi: {st.session_state.data_isian.get('Materi', '')}\nIndikator: {st.session_state.data_isian.get('Indikator_Kognitif', '')}\nModel Pedagogis: {pedagogi}\nSintaks Model: {sintaks_peda}\nRancang Pengalaman Belajar Kognitif dengan MENGINTEGRASIKAN Sintaks Model Pedagogis tersebut ke dalam TEPAT 3 tahap Sintaks Amoris. Gunakan '|||' sebagai pemisah.\nATURAN MUTLAK: DILARANG MENGGUNAKAN KATA SUBJEK (Peserta Didik/Siswa/Guru). Langsung awali poin dengan kata kerja desain instruksional (Contoh: 'Membaca...', 'Mengamati...', 'Menganalisis...'). HANYA KELUARKAN 3 BAGIAN DIPISAHKAN '|||' TANPA TEKS LAIN."
                     hasil_ai = panggil_ai(prompt, "pg_kog")
-                    hasil_ai = hasil_ai.replace("```text", "").replace("
-```", "").strip()
+                    hasil_ai = hasil_ai.replace("```text", "").replace("```", "").strip()
                     parts = hasil_ai.split("|||")
                     if len(parts) >= 3:
                         st.session_state.data_isian['Apersepsi_Kog'] = parts[0].strip()
