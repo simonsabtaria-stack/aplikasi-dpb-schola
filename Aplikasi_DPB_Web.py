@@ -21,7 +21,7 @@ from data_dpl import bank_dpl
 # --- DATABASE KKO ANTI-KOSONG ---
 try:
     from data_kko import bank_kko
-    if not bank_kko.get("Kognitif"): raise Exception
+    if not bank_kko.get("KOGNITIF"): raise Exception
 except:
     bank_kko = {
         "Kognitif": {"C1 (Mengingat)": ["Menyebutkan", "Menjelaskan", "Mengidentifikasi", "Mendaftar", "Menandai"], "C2 (Memahami)": ["Menerangkan", "Meringkas", "Mengartikan", "Mengklasifikasikan", "Mencontohkan"], "C3 (Mengaplikasikan)": ["Melaksanakan", "Menentukan", "Menggunakan", "Menghitung", "Menerapkan"], "C4 (Menganalisis)": ["Menganalisis", "Membandingkan", "Membedakan", "Mendiagnosis", "Menguji"], "C5 (Mengevaluasi)": ["Mengevaluasi", "Menilai", "Mempertahankan", "Memilih", "Memutuskan"], "C6 (Mencipta)": ["Merancang", "Membangun", "Menciptakan", "Merumuskan", "Menyusun"]},
