@@ -242,7 +242,7 @@ with st.expander("📖 Buka Kamus KKO & Sintaks (Buku Contekan)"):
     kategori_contekan = st.radio("Pilih Referensi:", ["🧠 KKO Kognitif", "❤️ KKO Afektif", "🏃 KKO Psikomotorik", "🧩 Sintaks Pembelajaran"], horizontal=True)
     st.divider()
     if kategori_contekan == "🧠 KKO Kognitif":
-        for level, kata in bank_kko["kognitif (K)"].items():
+        for level, kata in bank_kko["kognitif (C)"].items():
             with st.expander(f"**{level}**"): st.write(", ".join(kata))
     elif kategori_contekan == "❤️ KKO Afektif":
         for level, kata in bank_kko["afektif (A)"].items():
