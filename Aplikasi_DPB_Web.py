@@ -238,18 +238,31 @@ with st.sidebar:
 # ==========================================
 st.markdown("""<style>.stTabs [data-baseweb="tab-list"] { gap: 10px; } .stTabs [data-baseweb="tab"] { background-color: #f1f5f9; border-radius: 8px 8px 0px 0px; padding: 10px 20px; box-shadow: inset 0 -2px 0 0 #cbd5e1; } .stTabs [aria-selected="true"] { background-color: #1e293b; color: #ffffff !important; }</style>""", unsafe_allow_html=True)
 
+# ==========================================
+# BUKU CONTEKAN & PANDUAN (DI ATAS TAB)
+# ==========================================
+st.markdown("""<style>.stTabs [data-baseweb="tab-list"] { gap: 10px; } .stTabs [data-baseweb="tab"] { background-color: #f1f5f9; border-radius: 8px 8px 0px 0px; padding: 10px 20px; box-shadow: inset 0 -2px 0 0 #cbd5e1; } .stTabs [aria-selected="true"] { background-color: #1e293b; color: #ffffff !important; }</style>""", unsafe_allow_html=True)
+
 with st.expander("📖 Buka Kamus KKO & Sintaks (Buku Contekan)"):
     kategori_contekan = st.radio("Pilih Referensi:", ["🧠 KKO Kognitif", "❤️ KKO Afektif", "🏃 KKO Psikomotorik", "🧩 Sintaks Pembelajaran"], horizontal=True)
     st.divider()
-    if kategori_contekan == "🧠 KKO Kognitif":
+    
+    if kategori_contekan == "🧠 KKO Kognitif" and "kognitif (C)" in bank_kko:
         for level, kata in bank_kko["kognitif (C)"].items():
-            with st.expander(f"**{level}**"): st.write(", ".join(kata))
-    elif kategori_contekan == "❤️ KKO Afektif":
+            # Pendeteksi otomatis: jika bentuknya list digabung, jika teks biasa biarkan saja
+            tampilan = ", ".join(kata) if isinstance(kata, list) else kata
+            with st.expander(f"**{level}**"): st.write(tampilan)
+            
+    elif kategori_contekan == "❤️ KKO Afektif" and "afektif (A)" in bank_kko:
         for level, kata in bank_kko["afektif (A)"].items():
-            with st.expander(f"**{level}**"): st.write(", ".join(kata))
-    elif kategori_contekan == "🏃 KKO Psikomotorik":
+            tampilan = ", ".join(kata) if isinstance(kata, list) else kata
+            with st.expander(f"**{level}**"): st.write(tampilan)
+            
+    elif kategori_contekan == "🏃 KKO Psikomotorik" and "psikomotorik (P)" in bank_kko:
         for level, kata in bank_kko["psikomotorik (P)"].items():
-            with st.expander(f"**{level}**"): st.write(", ".join(kata))
+            tampilan = ", ".join(kata) if isinstance(kata, list) else kata
+            with st.expander(f"**{level}**"): st.write(tampilan)
+            
     elif kategori_contekan == "🧩 Sintaks Pembelajaran":
         for model, sintaks in kamus_sintaks.items():
             with st.expander(f"**{model}**"): st.text(sintaks)
