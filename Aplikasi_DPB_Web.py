@@ -241,20 +241,20 @@ st.markdown("""<style>.stTabs [data-baseweb="tab-list"] { gap: 10px; } .stTabs [
 with st.expander("📖 Buka Kamus KKO & Sintaks (Buku Contekan)"):
     kategori_contekan = st.radio("Pilih Referensi:", ["🧠 KKO Kognitif", "❤️ KKO Afektif", "🏃 KKO Psikomotorik", "🧩 Sintaks Pembelajaran"], horizontal=True)
     st.divider()
-    if kategori_contekan == "🧠 KKO KKOGNITIF":
-        for level, kata in bank_kko["KOGNITIF"].items():
+    if kategori_contekan == "🧠 KKO Kognitif":
+        for level, kata in bank_kko["Kognitif"].items():
             with st.expander(f"**{level}**"): st.write(", ".join(kata))
-    elif kategori_contekan == "❤️ KKO AFEKTIF":
-        for level, kata in bank_kko["AFEKTIF"].items():
+    elif kategori_contekan == "❤️ KKO Afektif":
+        for level, kata in bank_kko["Afektif"].items():
             with st.expander(f"**{level}**"): st.write(", ".join(kata))
-    elif kategori_contekan == "🏃 KKO PSIKOMOTORIK":
-        for level, kata in bank_kko["PSIKOMOTORIK"].items():
+    elif kategori_contekan == "🏃 KKO Psikomotorik":
+        for level, kata in bank_kko["Psikomotorik"].items():
             with st.expander(f"**{level}**"): st.write(", ".join(kata))
     elif kategori_contekan == "🧩 Sintaks Pembelajaran":
         for model, sintaks in kamus_sintaks.items():
             with st.expander(f"**{model}**"): st.text(sintaks)
 
-kunci_wajib = ['Nama_Guru', 'MAPEL', 'Materi', 'Capaian_Pembelajaran', 'TP_KOGNITIF', 'TP_Psikomotorik', 'TP_Afektif']
+kunci_wajib = ['Nama_Guru', 'MAPEL', 'Materi', 'Capaian_Pembelajaran', 'TP_Kognitif', 'TP_Psikomotorik', 'TP_Afektif']
 terisi = sum(1 for k in kunci_wajib if st.session_state.data_isian.get(k) and str(st.session_state.data_isian.get(k)).strip() != "")
 st.markdown(f"**Progres Kelengkapan DPB: {int((terisi / len(kunci_wajib)) * 100)}%**")
 st.progress(int((terisi / len(kunci_wajib)) * 100))
