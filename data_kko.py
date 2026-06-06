@@ -2,7 +2,7 @@
 # Database Kata Kerja Operasional (KKO) Taksonomi Bloom Revisi
 
 bank_kko = {
-    "Kognitif (C)": {
+    "kognitif (C)": {
         "C1 (Mengingat)": "Menemukenali, Mengingat kembali, Membaca, Menyebutkan, Melafalkan, Menuliskan, Menghafal, Menyusun daftar, Menggarisbawahi, Menjodohkan, Memilih, Memberi definisi, Menyatakan, Mengutip, Mengurutkan, Menggambar, Membilang, Mendaftar, Menunjukkan, Memberi label, Memberi indeks, Memasangkan, Menamai, Menandai, Meniru, Mencatat, Mengulang, Mereproduksi, Meninjau, Mentabulasi, Memberi kode, Menelusuri.",
         "C2 (Memahami)": "Menjelaskan, Mengartikan, Menginterpretasikan, Menceritakan, Menampilkan, Memberi contoh, Merangkum, Menyimpulkan, Membandingkan, Mengklasifikasikan, Menunjukkan, Menguraikan, Membedakan, Menyadur, Meramalkan, Memperkirakan, Menerangkan, Menggantikan, Menafsirkan, Menerima pendapat, Mengkategorikan, Mencirikan, Merinci, Mengasosiasikan, Menghitung, Mengkontraskan, Menjalin, Mendiskusikan, Mencontohkan, Mengemukakan, Mempolakan, Memperluas, Menjabarkan, Menggali, Mengubah, Mempertahankan.",
         "C3 (Menerapkan)": "Melaksanakan, Mengimplementasikan, Menggunakan, Mengonsepkan, Menentukan, Memproseskan, Mendemonstrasikan, Menghitung, Menghubungkan, Melakukan, Membuktikan, Menghasilkan, Memperagakan, Melengkapi, Menyesuaikan, Menemukan, Menugaskan, Mengurutkan, Mengkalkulasi, Memodifikasi, Mencegah, Menggambarkan, Menilai, Melatih, Mengadaptasi, Menyelidiki, Mempersoalkan, Mentransfer, Memproduksi, Memproses, Menyusun, Memecahkan.",
@@ -10,14 +10,14 @@ bank_kko = {
         "C5 (Mengevaluasi)": "Mengecek, Mengkritik, Membuktikan, Mempertahankan, Memvalidasi, Mendukung, Memproyeksikan, Memperbandingkan, Menyimpulkan, Menilai, Mengevaluasi, Memberi saran, Memberi argumentasi, Merekomendasi, Memutuskan, Mengumpulkan, Memprediksi, Memperjelas, Menafsirkan, Merangkum, Mengetes, Menimbang, Mengukur, Mendiagnosis, Memfokuskan.",
         "C6 (Menciptakan)": "Membangun, Merencanakan, Memproduksi, Mengkombinasikan, Merancang, Merekonstruksi, Membuat, Menciptakan, Mengabstraksi, Mengkategorikan, Mengarang, Mendesain, Menyusun kembali, Merangkaikan, Membuat pola, Menganimasi, Mengkreasikan, Mengoreksi, Memadukan, Mendikte, Membentuk, Meningkatkan, Menanggulangi, Menggeneralisasi, Menggabungkan, Mereparasi, Menyiapkan, Mengkode, Memfasilitasi, Mengkonstruksi, Merumuskan."
     },
-    "Afektif (A)": {
+    "afektif (A)": {
         "A1 (Menerima)": "Menanyakan, Memilih, Mengikuti, Menjawab, Melanjutkan, Memberi, Menyatakan, Menempatkan, Menganut, Mematuhi, Meminati.",
         "A2 (Merespon)": "Melaksanakan, Membantu, Menawarkan diri, Menyambut, Menolong, Mendatangi, Melaporkan, Menyumbangkan, Menyesuaikan diri, Mengundang, Berlatih, Menampilkan, Membawakan, Mendiskusikan, Menyatakan setuju, Mempraktekkan, Menyenangi, Mengompromikan, Mendukung, Menilai, Memprakarsai, Merembuk.",
         "A3 (Menghargai)": "Menunjukkan, Melaksanakan, Menyatakan pendapat, Mengambil prakarsa, Mengikuti, Memilih, Ikut serta, Menggabungkan diri, Membimbing, Membenarkan, Menolak, Mengajak, Mengasumsikan, Meyakini, Meyakinkan, Memperjelas, Membentuk-pendapat, Menekankan, Mempengaruhi, Mengimani.",
         "A4 (Mengorganisasikan)": "Merumuskan, Berpegang pada, Mengintegrasikan, Menghubungkan, Mengaitkan, Menyusun, Mengubah, Melengkapi, Menyempurnakan, Mengusulkan, Menyesuaikan, Mengatur, Memperbandingkan, Mempertahankan, Memodifikasi, Mengorganisasi, Mengkoordinir, Merangkai, Menata, Membangun, Memadukan, Mengelola, Mengkualifikasi, Menegosiasi.",
         "A5 (Karakterisasi)": "Bertindak, Menyatakan, Memperhatikan, Melayani, Membuktikan, Menunjukkan, Bertahan, Mempertimbangkan, Mempersoalkan, Membiasakan, Mengubah perilaku, Berakhlak mulia, Memecahkan."
     },
-    "Psikomotorik (P)": {
+    "psikomotorik (P)": {
         "P1 (Meniru)": "Menyalin, Mengikuti, Mereplikasi, Mengulangi, Mematuhi, Membedakan, Mempersiapkan, Menirukan, Menunjukkan, Mengaktifkan, Menyesuaikan, Menggabungkan, Mengatur, Mengumpulkan, Menimbang, Memperkecil, Mengubah.",
         "P2 (Manipulasi)": "Membuat kembali, Membangun, Melakukan, Melaksanakan, Menerapkan, Mengawali, Bereaksi, Mempersiapkan, Memprakarsai, Menanggapi, Mempertunjukkan, Menggunakan, Memposisikan, Mengoreksi, Mendemonstrasikan, Merancang, Melatih, Memperbaiki, Memanipulasi, Mereparasi.",
         "P3 (Presisi)": "Menunjukkan, Melengkapi, Menyempurnakan, Mengkalibrasi, Mengendalikan, Mempraktekkan, Memainkan, Mengerjakan, Membuat, Mencoba, Membongkar, Menerapkan, Mengalihkan, Menggantikan, Memutar, Mengirim, Memproduksi, Mencampur, Mengemas, Menyajikan.",
