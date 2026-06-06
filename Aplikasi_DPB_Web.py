@@ -238,18 +238,12 @@ with st.sidebar:
 # ==========================================
 st.markdown("""<style>.stTabs [data-baseweb="tab-list"] { gap: 10px; } .stTabs [data-baseweb="tab"] { background-color: #f1f5f9; border-radius: 8px 8px 0px 0px; padding: 10px 20px; box-shadow: inset 0 -2px 0 0 #cbd5e1; } .stTabs [aria-selected="true"] { background-color: #1e293b; color: #ffffff !important; }</style>""", unsafe_allow_html=True)
 
-# ==========================================
-# BUKU CONTEKAN & PANDUAN (DI ATAS TAB)
-# ==========================================
-st.markdown("""<style>.stTabs [data-baseweb="tab-list"] { gap: 10px; } .stTabs [data-baseweb="tab"] { background-color: #f1f5f9; border-radius: 8px 8px 0px 0px; padding: 10px 20px; box-shadow: inset 0 -2px 0 0 #cbd5e1; } .stTabs [aria-selected="true"] { background-color: #1e293b; color: #ffffff !important; }</style>""", unsafe_allow_html=True)
-
 with st.expander("📖 Buka Kamus KKO & Sintaks (Buku Contekan)"):
     kategori_contekan = st.radio("Pilih Referensi:", ["🧠 KKO Kognitif", "❤️ KKO Afektif", "🏃 KKO Psikomotorik", "🧩 Sintaks Pembelajaran"], horizontal=True)
     st.divider()
     
     if kategori_contekan == "🧠 KKO Kognitif" and "kognitif (C)" in bank_kko:
         for level, kata in bank_kko["kognitif (C)"].items():
-            # Pendeteksi otomatis: jika bentuknya list digabung, jika teks biasa biarkan saja
             tampilan = ", ".join(kata) if isinstance(kata, list) else kata
             with st.expander(f"**{level}**"): st.write(tampilan)
             
@@ -364,14 +358,19 @@ with tab2:
             val_m = st.session_state.data_isian.get('Kemitraan_Pembelajaran', '')
             pil_mitra = st.selectbox("Kemitraan Pembelajaran:", ops_m, index=get_idx(ops_m, val_m) if val_m in ops_m else (len(ops_m)-1 if val_m else 0))
             simpan_teks('Kemitraan_Pembelajaran', st.text_input("Ketik Kemitraan:", value=val_m if pil_mitra == "Lainnya" else "") if pil_mitra == "Lainnya" else pil_mitra)
+        
+        # --- PEMBARUAN: OTOMATISASI SINTAKS PEDAGOGIS ---
         with col_peda:
             ops_p = ["Pilih...", "Problem Based Learning (PBL)", "Project Based Learning (PjBL)", "Inquiry/Discovery Learning", "Teaching at the Right Level (TaRL)", "Cooperative Learning", "Lainnya"]
             val_p = st.session_state.data_isian.get('Praktik_Pedagogis', '')
             pil_peda = st.selectbox("Praktik Pedagogis:", ops_p, index=get_idx(ops_p, val_p) if val_p in ops_p else (len(ops_p)-1 if val_p else 0))
             simpan_teks('Praktik_Pedagogis', st.text_input("Ketik Model:", value=val_p if pil_peda == "Lainnya" else "") if pil_peda == "Lainnya" else pil_peda)
             
-        sintaks_default = st.session_state.data_isian.get('Urutan_Sintkas', kamus_sintaks.get(pil_peda, ""))
-        simpan_teks('Urutan_Sintkas', st.text_area("Urutan Sintaks Pembelajaran:", value=sintaks_default, height=120))
+            if st.session_state.get('lacak_peda_terakhir') != pil_peda:
+                st.session_state.data_isian['Urutan_Sintkas'] = kamus_sintaks.get(pil_peda, "")
+                st.session_state['lacak_peda_terakhir'] = pil_peda
+            
+            simpan_teks('Urutan_Sintkas', st.text_area("Urutan Sintaks Pembelajaran:", value=st.session_state.data_isian.get('Urutan_Sintkas', ''), height=120))
 
     with st.container(border=True):
         st.markdown("### LINGKUNGAN PEMBELAJARAN")
@@ -414,9 +413,14 @@ with tab3:
             st.markdown("**3. PENGALAMAN BELAJAR**")
             if st.button("✨ Rumuskan Sintaks", key="btn_kog"):
                 with st.spinner("Memproses..."):
-                    prompt = f"Materi: {st.session_state.data_isian.get('Materi', '')}\nIndikator: {st.session_state.data_isian.get('Indikator_Kognitif', '')}\nRancang Pengalaman Belajar Kognitif ke dalam TEPAT 3 tahap Sintaks Amoris. Gunakan '|||' sebagai pemisah.\nATURAN MUTLAK: DILARANG MENGGUNAKAN KATA SUBJEK (Peserta Didik/Siswa/Guru). Langsung awali poin dengan kata kerja desain instruksional (Contoh: 'Membaca...', 'Mengamati...', 'Menganalisis...'). HANYA KELUARKAN 3 BAGIAN DIPISAHKAN '|||' TANPA TEKS LAIN."
+                    # --- PEMBARUAN: Menyuntikkan Praktik Pedagogis ---
+                    pedagogi = st.session_state.data_isian.get('Praktik_Pedagogis', '')
+                    sintaks_peda = st.session_state.data_isian.get('Urutan_Sintkas', '')
+                    
+                    prompt = f"Materi: {st.session_state.data_isian.get('Materi', '')}\nIndikator: {st.session_state.data_isian.get('Indikator_Kognitif', '')}\nModel Pedagogis: {pedagogi}\nSintaks Model: {sintaks_peda}\nRancang Pengalaman Belajar Kognitif dengan MENGINTEGRASIKAN Sintaks Model Pedagogis tersebut ke dalam TEPAT 3 tahap Sintaks Amoris. Gunakan '|||' sebagai pemisah.\nATURAN MUTLAK: DILARANG MENGGUNAKAN KATA SUBJEK (Peserta Didik/Siswa/Guru). Langsung awali poin dengan kata kerja desain instruksional (Contoh: 'Membaca...', 'Mengamati...', 'Menganalisis...'). HANYA KELUARKAN 3 BAGIAN DIPISAHKAN '|||' TANPA TEKS LAIN."
                     hasil_ai = panggil_ai(prompt, "pg_kog")
-                    hasil_ai = hasil_ai.replace("```text", "").replace("```", "").strip()
+                    hasil_ai = hasil_ai.replace("```text", "").replace("
+```", "").strip()
                     parts = hasil_ai.split("|||")
                     if len(parts) >= 3:
                         st.session_state.data_isian['Apersepsi_Kog'] = parts[0].strip()
@@ -544,7 +548,12 @@ with tab4:
                     p = st.session_state.data_isian.get('Nilai_Keutamaan', '')
                     p3 = st.session_state.data_isian.get('Capaian_P3', '')
                     k = st.session_state.data_isian.get('Kearifan_Lokal', '')
-                    prompt = f"Mata Pelajaran: {st.session_state.data_isian.get('MAPEL', '')}.\nSintesiskan elemen berikut mnjd TEPAT 1 (satu) kalimat TP Afektif utuh:\nP3: {p3}\nDPL: {st.session_state.data_isian.get('Kompetensi', '')}\n7KAIH: {st.session_state.data_isian.get('KAIH', '')}\nSanto/a: {p}\nKearifan: {k}\nSFD: {s}.\nATURAN MUTLAK: Kalimat TP WAJIB diawali langsung dengan Kata Kerja Operasional (KKO) yang relevan tanpa subjek."
+                    
+                    # --- PEMBARUAN: Tambah Variabel CP dan SDGs ---
+                    cp_umum = st.session_state.data_isian.get('Capaian_Pembelajaran', '')
+                    sdgs = st.session_state.data_isian.get('TP_SDGs', '')
+                    
+                    prompt = f"Mata Pelajaran: {st.session_state.data_isian.get('MAPEL', '')}.\nSintesiskan elemen berikut menjadi TEPAT 1 (satu) kalimat TP Afektif utuh yang selaras dengan CP Umum '{cp_umum}' dan WAJIB mengintegrasikan narasi TP SDGs '{sdgs}':\nP3: {p3}\nDPL: {st.session_state.data_isian.get('Kompetensi', '')}\n7KAIH: {st.session_state.data_isian.get('KAIH', '')}\nSanto/a: {p}\nKearifan: {k}\nSFD: {s}.\nATURAN MUTLAK: Kalimat TP WAJIB diawali langsung dengan Kata Kerja Operasional (KKO) yang relevan tanpa subjek."
                     hasil_ai = panggil_ai(prompt, "tp_afe")
                     st.session_state.data_isian['TP_Afektif'] = hasil_ai
                     st.session_state['ta_tp_afe'] = hasil_ai
@@ -564,7 +573,11 @@ with tab4:
             st.markdown("**3. PENGALAMAN BELAJAR**")
             if st.button("✨ Rumuskan Sintaks", key="btn_afe"):
                 with st.spinner("Memproses..."):
-                    prompt = f"Materi: {st.session_state.data_isian.get('Materi', '')}\nIndikator Afektif: {st.session_state.data_isian.get('Indikator_Afektif', '')}\nRancang Pengalaman Belajar Afektif ke dalam TEPAT 3 tahap Sintaks Amoris. Gunakan '|||' sebagai pemisah.\nATURAN MUTLAK: DILARANG MENGGUNAKAN KATA SUBJEK (Peserta Didik/Siswa/Guru). Langsung awali poin dengan kata kerja desain instruksional.\nFormat Wajib Output:\n<Aktivitas Apersepsi>\n|||\n<Aktivitas Mengidentifikasi Konteks>\n|||\n<Aktivitas Olah Pikir,Rasa,Raga>"
+                    # --- PEMBARUAN: Menyuntikkan Praktik Pedagogis ---
+                    pedagogi = st.session_state.data_isian.get('Praktik_Pedagogis', '')
+                    sintaks_peda = st.session_state.data_isian.get('Urutan_Sintkas', '')
+                    
+                    prompt = f"Materi: {st.session_state.data_isian.get('Materi', '')}\nIndikator Afektif: {st.session_state.data_isian.get('Indikator_Afektif', '')}\nModel Pedagogis: {pedagogi}\nSintaks Model: {sintaks_peda}\nRancang Pengalaman Belajar Afektif dengan MENGINTEGRASIKAN Sintaks Model Pedagogis tersebut ke dalam TEPAT 3 tahap Sintaks Amoris. Gunakan '|||' sebagai pemisah.\nATURAN MUTLAK: DILARANG MENGGUNAKAN KATA SUBJEK (Peserta Didik/Siswa/Guru). Langsung awali poin dengan kata kerja desain instruksional.\nFormat Wajib Output:\n<Aktivitas Apersepsi>\n|||\n<Aktivitas Mengidentifikasi Konteks>\n|||\n<Aktivitas Olah Pikir,Rasa,Raga>"
                     hasil_ai = panggil_ai(prompt, "pg_afe")
                     hasil_ai = hasil_ai.replace("```text", "").replace("```", "").strip()
                     parts = hasil_ai.split("|||")
@@ -620,9 +633,14 @@ with tab5:
             st.markdown("**3. PENGALAMAN BELAJAR**")
             if st.button("✨ Rumuskan Sintaks", key="btn_psi"):
                 with st.spinner("Memproses..."):
-                    prompt = f"Materi: {st.session_state.data_isian.get('Materi', '')}\nIndikator Psikomotorik: {st.session_state.data_isian.get('Indikator_Psikomotorik', '')}\nRancang Pengalaman Belajar (Unjuk kerja) ke dalam TEPAT 3 tahap Sintaks Amoris. Gunakan '|||' sebagai pemisah.\nATURAN MUTLAK: DILARANG MENGGUNAKAN KATA SUBJEK (Peserta Didik/Siswa/Guru). Langsung awali poin dengan kata kerja desain instruksional.\nFormat Wajib Output:\n<Aktivitas Apersepsi>\n|||\n<Aktivitas Mengidentifikasi Konteks>\n|||\n<Aktivitas Olah Pikir,Rasa,Raga>"
+                    # --- PEMBARUAN: Menyuntikkan Praktik Pedagogis ---
+                    pedagogi = st.session_state.data_isian.get('Praktik_Pedagogis', '')
+                    sintaks_peda = st.session_state.data_isian.get('Urutan_Sintkas', '')
+                    
+                    prompt = f"Materi: {st.session_state.data_isian.get('Materi', '')}\nIndikator Psikomotorik: {st.session_state.data_isian.get('Indikator_Psikomotorik', '')}\nModel Pedagogis: {pedagogi}\nSintaks Model: {sintaks_peda}\nRancang Pengalaman Belajar (Unjuk kerja) dengan MENGINTEGRASIKAN Sintaks Model Pedagogis tersebut ke dalam TEPAT 3 tahap Sintaks Amoris. Gunakan '|||' sebagai pemisah.\nATURAN MUTLAK: DILARANG MENGGUNAKAN KATA SUBJEK (Peserta Didik/Siswa/Guru). Langsung awali poin dengan kata kerja desain instruksional.\nFormat Wajib Output:\n<Aktivitas Apersepsi>\n|||\n<Aktivitas Mengidentifikasi Konteks>\n|||\n<Aktivitas Olah Pikir,Rasa,Raga>"
                     hasil_ai = panggil_ai(prompt, "pg_psi")
-                    hasil_ai = hasil_ai.replace("```text", "").replace("```", "").strip()
+                    hasil_ai = hasil_ai.replace("```text", "").replace("
+```", "").strip()
                     parts = hasil_ai.split("|||")
                     if len(parts) >= 3:
                         st.session_state.data_isian['Apersepsi_Psi'] = parts[0].strip()
