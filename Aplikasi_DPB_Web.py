@@ -619,8 +619,7 @@ with tab5:
                 with st.spinner("Memproses..."):
                     prompt = f"Materi: {st.session_state.data_isian.get('Materi', '')}\nIndikator Psikomotorik: {st.session_state.data_isian.get('Indikator_Psikomotorik', '')}\nRancang Pengalaman Belajar (Unjuk kerja) ke dalam TEPAT 3 tahap Sintaks Amoris. Gunakan '|||' sebagai pemisah.\nATURAN MUTLAK: DILARANG MENGGUNAKAN KATA SUBJEK (Peserta Didik/Siswa/Guru). Langsung awali poin dengan kata kerja desain instruksional.\nFormat Wajib Output:\n<Aktivitas Apersepsi>\n|||\n<Aktivitas Mengidentifikasi Konteks>\n|||\n<Aktivitas Olah Pikir,Rasa,Raga>"
                     hasil_ai = panggil_ai(prompt, "pg_psi")
-                    hasil_ai = hasil_ai.replace("```text", "").replace("
-```", "").strip()
+                    hasil_ai = hasil_ai.replace("```text", "").replace("```", "").strip()
                     parts = hasil_ai.split("|||")
                     if len(parts) >= 3:
                         st.session_state.data_isian['Apersepsi_Psi'] = parts[0].strip()
