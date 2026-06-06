@@ -91,7 +91,7 @@ def simpan_draft_ke_awan():
     if supabase is None:
         st.error("Koneksi Supabase belum diatur!")
         return
-    # Sinkronisasi 3 Kolom Pengalaman agar format template Word tetap aman
+    # Sinkronisasi 3 Kolom Pengalaman agar format template Word tetap aman (Backward Compatibility)
     st.session_state.data_isian['Pengalaman_Belajar'] = f"APERSEPSI:\n{st.session_state.data_isian.get('Apersepsi_Kog', '')}\n\nMENGIDENTIFIKASI KONTEKS:\n{st.session_state.data_isian.get('Konteks_Kog', '')}\n\nOLAH PIKIR, RASA, RAGA:\n{st.session_state.data_isian.get('Olah_Kog', '')}"
     st.session_state.data_isian['Pengalaman_Belajar_Afektif'] = f"APERSEPSI:\n{st.session_state.data_isian.get('Apersepsi_Afe', '')}\n\nMENGIDENTIFIKASI KONTEKS:\n{st.session_state.data_isian.get('Konteks_Afe', '')}\n\nOLAH PIKIR, RASA, RAGA:\n{st.session_state.data_isian.get('Olah_Afe', '')}"
     st.session_state.data_isian['Pengalaman_Belajar_Psikomotorik'] = f"APERSEPSI:\n{st.session_state.data_isian.get('Apersepsi_Psi', '')}\n\nMENGIDENTIFIKASI KONTEKS:\n{st.session_state.data_isian.get('Konteks_Psi', '')}\n\nOLAH PIKIR, RASA, RAGA:\n{st.session_state.data_isian.get('Olah_Psi', '')}"
@@ -252,13 +252,13 @@ st.markdown("""<style>.stTabs [data-baseweb="tab-list"] { gap: 10px; } .stTabs [
 with st.expander("📖 Buka Kamus KKO & Sintaks (Buku Contekan)"):
     kategori_contekan = st.radio("Pilih Referensi:", ["🧠 KKO Kognitif", "❤️ KKO Afektif", "🏃 KKO Psikomotorik", "🧩 Sintaks Pembelajaran"], horizontal=True)
     st.divider()
-    if kategori_contekan == "🧠 KKO Kognitif":
+    if kategori_contekan == "🧠 KKO Kognitif" and "Kognitif" in bank_kko:
         for level, kata in bank_kko["Kognitif"].items():
             with st.expander(f"**{level}**"): st.write(", ".join(kata))
-    elif kategori_contekan == "❤️ KKO Afektif":
+    elif kategori_contekan == "❤️ KKO Afektif" and "Afektif" in bank_kko:
         for level, kata in bank_kko["Afektif"].items():
             with st.expander(f"**{level}**"): st.write(", ".join(kata))
-    elif kategori_contekan == "🏃 KKO Psikomotorik":
+    elif kategori_contekan == "🏃 KKO Psikomotorik" and "Psikomotorik" in bank_kko:
         for level, kata in bank_kko["Psikomotorik"].items():
             with st.expander(f"**{level}**"): st.write(", ".join(kata))
     elif kategori_contekan == "🧩 Sintaks Pembelajaran":
@@ -273,7 +273,7 @@ st.progress(int((terisi / len(kunci_wajib)) * 100))
 # ==========================================
 # TABS UTAMA (DESAIN LAYOUT MIRIP WORD)
 # ==========================================
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🏃 5. Psikomotorik", "🖨️ 6. Pratinjau & Cetak", "📚 7. Perpustakaan"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["📋 1. Identitas", "🏫 2. Lingkungan", "🧠 3. Kognitif", "❤️ 4. Afektif", "🏃 5. Psikomotorik", "🖨️ 6. Peryaan Belajar & Cetak", "📚 7. Perpustakaan"])
 
 # --- TAB 1: IDENTIFIKASI ---
 with tab1:
@@ -420,9 +420,9 @@ with tab3:
                     else:
                         st.session_state.data_isian['Apersepsi_Kog'] = hasil_ai
             
-            simpan_teks('Apersepsi_Kog', st.text_area("1. APERSEPSI", value=st.session_state.data_isian.get('Apersepsi_Kog', ''), height=65))
-            simpan_teks('Konteks_Kog', st.text_area("2. MENGIDENTIFIKASI KONTEKS", value=st.session_state.data_isian.get('Konteks_Kog', ''), height=65))
-            simpan_teks('Olah_Kog', st.text_area("3. OLAH PIKIR, RASA, RAGA", value=st.session_state.data_isian.get('Olah_Kog', ''), height=65))
+            simpan_teks('Apersepsi_Kog', st.text_area("1. APERSEPSI", value=st.session_state.data_isian.get('Apersepsi_Kog', ''), height=65, key="ta_apersepsi_kog"))
+            simpan_teks('Konteks_Kog', st.text_area("2. MENGIDENTIFIKASI KONTEKS", value=st.session_state.data_isian.get('Konteks_Kog', ''), height=65, key="ta_konteks_kog"))
+            simpan_teks('Olah_Kog', st.text_area("3. OLAH PIKIR, RASA, RAGA", value=st.session_state.data_isian.get('Olah_Kog', ''), height=65, key="ta_olah_kog"))
             
         with col_tk4:
             st.markdown("**4. ASESMEN**")
@@ -561,9 +561,9 @@ with tab4:
                         st.session_state.data_isian['Olah_Afe'] = parts[2].strip()
                     else: st.session_state.data_isian['Apersepsi_Afe'] = hasil_ai
             
-            simpan_teks('Apersepsi_Afe', st.text_area("1. APERSEPSI", value=st.session_state.data_isian.get('Apersepsi_Afe', ''), height=65))
-            simpan_teks('Konteks_Afe', st.text_area("2. MENGIDENTIFIKASI KONTEKS", value=st.session_state.data_isian.get('Konteks_Afe', ''), height=65))
-            simpan_teks('Olah_Afe', st.text_area("3. OLAH PIKIR, RASA, RAGA", value=st.session_state.data_isian.get('Olah_Afe', ''), height=65))
+            simpan_teks('Apersepsi_Afe', st.text_area("1. APERSEPSI", value=st.session_state.data_isian.get('Apersepsi_Afe', ''), height=65, key="ta_apersepsi_afe"))
+            simpan_teks('Konteks_Afe', st.text_area("2. MENGIDENTIFIKASI KONTEKS", value=st.session_state.data_isian.get('Konteks_Afe', ''), height=65, key="ta_konteks_afe"))
+            simpan_teks('Olah_Afe', st.text_area("3. OLAH PIKIR, RASA, RAGA", value=st.session_state.data_isian.get('Olah_Afe', ''), height=65, key="ta_olah_afe"))
             
         with col_ta4:
             st.markdown("**4. ASESMEN**")
@@ -608,9 +608,9 @@ with tab5:
                         st.session_state.data_isian['Olah_Psi'] = parts[2].strip()
                     else: st.session_state.data_isian['Apersepsi_Psi'] = hasil_ai
             
-            simpan_teks('Apersepsi_Psi', st.text_area("1. APERSEPSI", value=st.session_state.data_isian.get('Apersepsi_Psi', ''), height=65))
-            simpan_teks('Konteks_Psi', st.text_area("2. MENGIDENTIFIKASI KONTEKS", value=st.session_state.data_isian.get('Konteks_Psi', ''), height=65))
-            simpan_teks('Olah_Psi', st.text_area("3. OLAH PIKIR, RASA, RAGA", value=st.session_state.data_isian.get('Olah_Psi', ''), height=65))
+            simpan_teks('Apersepsi_Psi', st.text_area("1. APERSEPSI", value=st.session_state.data_isian.get('Apersepsi_Psi', ''), height=65, key="ta_apersepsi_psi"))
+            simpan_teks('Konteks_Psi', st.text_area("2. MENGIDENTIFIKASI KONTEKS", value=st.session_state.data_isian.get('Konteks_Psi', ''), height=65, key="ta_konteks_psi"))
+            simpan_teks('Olah_Psi', st.text_area("3. OLAH PIKIR, RASA, RAGA", value=st.session_state.data_isian.get('Olah_Psi', ''), height=65, key="ta_olah_psi"))
             
         with col_tp4:
             st.markdown("**4. ASESMEN**")
