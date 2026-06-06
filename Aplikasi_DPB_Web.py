@@ -17,6 +17,7 @@ from data_kurikulum import bank_kurikulum
 from data_sfd import bank_sfd
 from data_p3 import bank_p3
 from data_dpl import bank_dpl
+from data_kko import bank_kko
 
 # --- DATABASE KKO ANTI-KOSONG ---
 try:
