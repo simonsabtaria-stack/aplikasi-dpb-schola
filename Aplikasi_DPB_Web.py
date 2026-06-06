@@ -241,13 +241,13 @@ st.markdown("""<style>.stTabs [data-baseweb="tab-list"] { gap: 10px; } .stTabs [
 with st.expander("📖 Buka Kamus KKO & Sintaks (Buku Contekan)"):
     kategori_contekan = st.radio("Pilih Referensi:", ["🧠 KKO Kognitif", "❤️ KKO Afektif", "🏃 KKO Psikomotorik", "🧩 Sintaks Pembelajaran"], horizontal=True)
     st.divider()
-    if kategori_contekan == "🧠 KKO Kognitif":
+    if kategori_contekan == "🧠 KKO KKOGNITIF":
         for level, kata in bank_kko["KOGNITIF"].items():
             with st.expander(f"**{level}**"): st.write(", ".join(kata))
-    elif kategori_contekan == "❤️ KKO Afektif":
+    elif kategori_contekan == "❤️ KKO AFEKTIF":
         for level, kata in bank_kko["AFEKTIF"].items():
             with st.expander(f"**{level}**"): st.write(", ".join(kata))
-    elif kategori_contekan == "🏃 KKO Psikomotorik":
+    elif kategori_contekan == "🏃 KKO PSIKOMOTORIK":
         for level, kata in bank_kko["PSIKOMOTORIK"].items():
             with st.expander(f"**{level}**"): st.write(", ".join(kata))
     elif kategori_contekan == "🧩 Sintaks Pembelajaran":
