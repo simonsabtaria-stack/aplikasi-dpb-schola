@@ -21,12 +21,12 @@ from data_dpl import bank_dpl
 # --- DATABASE KKO ANTI-KOSONG ---
 try:
     from data_kko import bank_kko
-    if not bank_kko.get("Kognitif"): raise Exception
+    if not bank_kko.get("kognitif (C)"): raise Exception
 except:
     bank_kko = {
-        "Kognitif": {"C1 (Mengingat)": ["Menyebutkan", "Menjelaskan", "Mengidentifikasi", "Mendaftar", "Menandai"], "C2 (Memahami)": ["Menerangkan", "Meringkas", "Mengartikan", "Mengklasifikasikan", "Mencontohkan"], "C3 (Mengaplikasikan)": ["Melaksanakan", "Menentukan", "Menggunakan", "Menghitung", "Menerapkan"], "C4 (Menganalisis)": ["Menganalisis", "Membandingkan", "Membedakan", "Mendiagnosis", "Menguji"], "C5 (Mengevaluasi)": ["Mengevaluasi", "Menilai", "Mempertahankan", "Memilih", "Memutuskan"], "C6 (Mencipta)": ["Merancang", "Membangun", "Menciptakan", "Merumuskan", "Menyusun"]},
-        "Afektif": {"A1 (Menerima)": ["Mendengarkan", "Memperhatikan", "Menerima", "Mengenali"], "A2 (Merespon)": ["Merespon", "Menjawab", "Berpartisipasi", "Membantu"], "A3 (Menilai/Menghargai)": ["Meyakini", "Menghargai", "Mengundang", "Mengusulkan"], "A4 (Mengorganisasikan)": ["Mensintesis", "Mengintegrasikan", "Membangun", "Membentuk"], "A5 (Karakterisasi)": ["Bertindak", "Melayani", "Mempengaruhi", "Membuktikan"]},
-        "Psikomotorik": {"P1 (Meniru)": ["Menyalin", "Mengikuti", "Mereplikasi", "Mengulangi"], "P2 (Manipulasi)": ["Mendemonstrasikan", "Melakukan", "Melaksanakan", "Mempraktikkan"], "P3 (Presisi)": ["Menunjukkan", "Menyelesaikan", "Menyempurnakan", "Mengkalibrasi"], "P4 (Artikulasi)": ["Membangun", "Merumuskan", "Memodifikasi", "Mengadaptasi"], "P5 (Naturalisasi)": ["Mendesain", "Menciptakan", "Mengelola", "Menemukan"]}
+        "kognitif (C)": {"C1 (Mengingat)": ["Menyebutkan", "Menjelaskan", "Mengidentifikasi", "Mendaftar", "Menandai"], "C2 (Memahami)": ["Menerangkan", "Meringkas", "Mengartikan", "Mengklasifikasikan", "Mencontohkan"], "C3 (Mengaplikasikan)": ["Melaksanakan", "Menentukan", "Menggunakan", "Menghitung", "Menerapkan"], "C4 (Menganalisis)": ["Menganalisis", "Membandingkan", "Membedakan", "Mendiagnosis", "Menguji"], "C5 (Mengevaluasi)": ["Mengevaluasi", "Menilai", "Mempertahankan", "Memilih", "Memutuskan"], "C6 (Mencipta)": ["Merancang", "Membangun", "Menciptakan", "Merumuskan", "Menyusun"]},
+        "afektif (A)": {"A1 (Menerima)": ["Mendengarkan", "Memperhatikan", "Menerima", "Mengenali"], "A2 (Merespon)": ["Merespon", "Menjawab", "Berpartisipasi", "Membantu"], "A3 (Menilai/Menghargai)": ["Meyakini", "Menghargai", "Mengundang", "Mengusulkan"], "A4 (Mengorganisasikan)": ["Mensintesis", "Mengintegrasikan", "Membangun", "Membentuk"], "A5 (Karakterisasi)": ["Bertindak", "Melayani", "Mempengaruhi", "Membuktikan"]},
+        "psikomotorik (P)": {"P1 (Meniru)": ["Menyalin", "Mengikuti", "Mereplikasi", "Mengulangi"], "P2 (Manipulasi)": ["Mendemonstrasikan", "Melakukan", "Melaksanakan", "Mempraktikkan"], "P3 (Presisi)": ["Menunjukkan", "Menyelesaikan", "Menyempurnakan", "Mengkalibrasi"], "P4 (Artikulasi)": ["Membangun", "Merumuskan", "Memodifikasi", "Mengadaptasi"], "P5 (Naturalisasi)": ["Mendesain", "Menciptakan", "Mengelola", "Menemukan"]}
     }
 
 # --- DATABASE SDGs ANTI-KOSONG ---
